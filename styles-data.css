@@ -1,0 +1,134 @@
+/* ============================================================================
+ * styles-data.css
+ * Estilos para el data layer nuevo: loading, error, badge de fuente, botones.
+ * Se aplica encima de styles.css — no lo modifica.
+ * ============================================================================ */
+
+/* ---------- Loading / Error full-screen ---------- */
+.data-loading {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #15171a;
+  color: #f5f1ea;
+  z-index: 9999;
+}
+.dl-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.dl-pulse {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #d4be8a;
+  animation: dl-pulse 1.2s ease-in-out infinite;
+}
+@keyframes dl-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50%      { opacity: 1;   transform: scale(1.2); }
+}
+.dl-text {
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a3a097;
+}
+
+/* ---------- Badge de fuente de datos (esquina inferior derecha) ---------- */
+.data-source-badge {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid rgba(245, 241, 234, 0.12);
+  background: rgba(21, 23, 26, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.6875rem;
+  color: #a3a097;
+  z-index: 100;
+  transition: all 0.2s ease;
+}
+.data-source-badge:hover {
+  border-color: rgba(212, 190, 138, 0.4);
+  color: #d4be8a;
+}
+.dsb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a3a097;
+}
+.dsb-dot[data-src="cache"]    { background: #d4be8a; }
+.dsb-dot[data-src="fallback"] { background: #c79a8a; }
+.dsb-label {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.dsb-action {
+  color: #d4be8a;
+  font-size: 0.8125rem;
+  margin-left: 4px;
+}
+
+/* ---------- Botón en panel de tweaks: "Recargar desde Sheets" ---------- */
+.tweak-btn {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  margin-top: 8px;
+  border: 1px solid rgba(245, 241, 234, 0.14);
+  background: rgba(245, 241, 234, 0.04);
+  color: #f5f1ea;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  transition: all 0.15s ease;
+}
+.tweak-btn:hover {
+  background: rgba(212, 190, 138, 0.12);
+  border-color: rgba(212, 190, 138, 0.4);
+  color: #d4be8a;
+}
+.tweak-btn:active {
+  transform: scale(0.98);
+}
+
+/* ---------- Botón guardar respuestas en Diagnóstico ---------- */
+.diag-save {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(245, 241, 234, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.diag-save .foot-cta:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.diag-saved-note {
+  font-size: 0.75rem;
+  color: #a4be90;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Imagen real en hero de Alysa (cuando hay img_url) ---------- */
+.hero-img-real {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
