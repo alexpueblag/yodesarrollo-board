@@ -1,9 +1,9 @@
-// Board principal — Yodesarrollo. Datos servidos por DataProvider (Sheets → JSON → cache).
+// Yodesarrollo Board · app.jsx
+// 3 vistas: Cover (carátula) → Dashboard (jerárquico) → Section
+// Modo presentación oculta TweaksPanel + badge + chuleta del header.
 
 const ROMANS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
 
-// --- Mapping: id de tile (viene del Sheet) → componente React ---
-// Los datos viven en Sheets, los componentes viven aquí.
 const ICON_BY_ID = {
   "diagnostico":  IconDiagnostico,
   "comparativo":  IconComparativo,
@@ -30,21 +30,18 @@ const SECTION_BY_ID = {
   "contacto":     SecContacto,
 };
 
-const ACTOS = [
-  { n: "I",   label: "Diagnóstico" },
-  { n: "II",  label: "Análisis comparado" },
-  { n: "III", label: "Tu oportunidad" },
-  { n: "IV",  label: "Decisión" },
-];
+// Cuáles tiles son del nivel jerárquico — define el layout del dashboard
+const TIER_LARGE  = ["casa-alysa", "real-miramar"];
+const TIER_MEDIUM = ["diagnostico", "comparativo", "calculadora", "estrategia"];
+const TIER_CHIPS  = ["garantias", "cronograma", "decision", "contacto"];
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "aesthetic": "carplay",
-  "showActos": false,
   "showClock": true,
-  "client": ""
+  "client": "",
+  "presentation": false
 }/*EDITMODE-END*/;
 
-// Útil para que sections.jsx pueda hacer navigate(id) y resolver el tile
 window.buildTileLookup = (tilesData) => {
   const lookup = {};
   (tilesData || []).forEach((row) => {
@@ -69,30 +66,82 @@ const useClock = () => {
 
 const fmtTime = (d) => d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit", hour12: false });
 const fmtDate = (d) => d.toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long" });
+const fmtDateLong = (d) => d.toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" });
 
-// --------------------------- Dashboard ---------------------------
+// ============================================================================
+// COVER SCREEN — carátula previa al dashboard
+// ============================================================================
+const CoverScreen = ({ onStart, t }) => {
+  const { data } = window.useData();
+  const cfg = data.config || {};
+  const clock = useClock();
+
+  const clientLine = t.client
+    ? <>Reunión con <em>{t.client}</em></>
+    : "Edición fundadora · 2026";
+
+  return (
+    <div className={"cover cover--" + t.aesthetic}>
+      <header className="cover-head">
+        <div className="cover-brand">
+          {cfg.logo_url
+            ? <img src={cfg.logo_url} alt="Yodesarrollo" className="cover-logo" />
+            : <img src="assets/logo_white.png" alt="Yodesarrollo" className="cover-logo" />
+          }
+        </div>
+        <div className="cover-folio mono">{cfg.folio || "YDR-2026-001"}</div>
+      </header>
+
+      <div className="cover-body">
+        <span className="cover-kicker mono">Carpeta de inversión · documento confidencial</span>
+        <h1 className="cover-title">
+          Patrimonio que se<br/>
+          construye, no que<br/>
+          se confía.
+        </h1>
+        <p className="cover-meta">
+          <span className="cover-client">{clientLine}</span>
+          <span className="cover-sep">·</span>
+          <span className="cover-date">{fmtDateLong(clock)}</span>
+        </p>
+      </div>
+
+      <footer className="cover-foot">
+        <button className="cover-cta" onClick={onStart}>
+          <span>Empezar la conversación</span>
+          <IconArrow size={14} sw={2} />
+        </button>
+        <span className="cover-brand-name mono small muted">
+          {cfg.brand_name || "YODESARROLLO · INVERSIÓN PATRIMONIAL"}
+        </span>
+      </footer>
+    </div>
+  );
+};
+
+// ============================================================================
+// DASHBOARD — jerárquico en 3 filas
+// ============================================================================
 const Dashboard = ({ onOpen, t }) => {
   const clock = useClock();
   const { data } = window.useData();
   const cfg = data.config || {};
-  const tiles = (data.tiles || [])
-    .filter((row) => row.enabled !== false)
-    .sort((a, b) => (a.order || 0) - (b.order || 0))
-    .map((row) => ({
-      ...row,
-      Icon:    ICON_BY_ID[row.id]    || (() => null),
-      Section: SECTION_BY_ID[row.id] || (() => null),
-    }));
+  const lookup = window.buildTileLookup(data.tiles);
+  const presentation = !!t.presentation;
 
   const logoSrc = cfg.logo_url || "assets/logo_white.png";
+  const alysa = lookup["casa-alysa"];
+  const mira  = lookup["real-miramar"];
+  const alysaHero  = (data.alysa   && data.alysa.hero)   || {};
+  const miraHero   = (data.miramar && data.miramar.hero) || {};
 
   return (
-    <div className={"board board--" + t.aesthetic}>
-      <header className="board-head">
+    <div className={"board board--" + t.aesthetic} data-mode={presentation ? "presentation" : "edit"}>
+      <header className="board-head board-head--clean">
         <div className="brand">
           <img src={logoSrc} alt="Yodesarrollo" className="brand-logo" />
           <div className="brand-meta">
-            <span className="brand-name mono">{cfg.brand_name || "YODESARROLLO · INVERSIÓN PATRIMONIAL"}</span>
+            <span className="brand-name mono">{cfg.brand_name || "YODESARROLLO"}</span>
             <span className="brand-sub">
               {t.client
                 ? <>Reunión con <em>{t.client}</em></>
@@ -100,60 +149,124 @@ const Dashboard = ({ onOpen, t }) => {
             </span>
           </div>
         </div>
-        <div className="head-right-row">
-          <div className="head-stats">
-            <span className="hs-item">
-              <span className="hs-label mono">{cfg.header_stat_1_label}</span>{" "}
-              <span className="hs-value mono accent">{cfg.header_stat_1_value}</span>
-            </span>
-            <span className="hs-dot">·</span>
-            <span className="hs-item">
-              <span className="hs-label mono">{cfg.header_stat_2_label}</span>{" "}
-              <span className="hs-value mono accent">{cfg.header_stat_2_value}</span>
-            </span>
-            <span className="hs-dot">·</span>
-            <span className="hs-item">
-              <span className="hs-label mono">{cfg.header_stat_3_label}</span>{" "}
-              <span className="hs-value mono">{cfg.header_stat_3_value}</span>
-            </span>
+        {t.showClock && (
+          <div className="board-status">
+            <span className="status-time mono">{fmtTime(clock)}</span>
+            <span className="status-date">{fmtDate(clock)}</span>
           </div>
-          {t.showClock && cfg.show_clock !== false && (
-            <div className="board-status">
-              <span className="status-time mono">{fmtTime(clock)}</span>
-              <span className="status-date">{fmtDate(clock)}</span>
-            </div>
-          )}
-        </div>
+        )}
       </header>
 
-      <div className="tile-grid">
-        {tiles.map((tile, i) => (
-          <div key={tile.id} className="tile-item">
-            <button
-              className="tile"
-              style={{ ["--c"]: tile.color, ["--a"]: tile.accent }}
-              onClick={() => onOpen(tile.id)}
-            >
-              <span className="tile-halo" aria-hidden></span>
-              <span className="tile-accent" aria-hidden></span>
-              <span className="tile-roman">{ROMANS[i]}</span>
-              <div className="tile-icon">
-                <tile.Icon size={56} sw={1.5} />
+      {/* ━━━━━━━━━ FILA 1: Productos (tiles grandes con foto) ━━━━━━━━━ */}
+      <div className="tier-large">
+        {alysa && (
+          <button
+            className="tile-large tile-large--alysa"
+            style={{ ["--c"]: alysa.color, ["--a"]: alysa.accent }}
+            onClick={() => onOpen("casa-alysa")}
+          >
+            {alysaHero.img_url && (
+              <img className="tile-large-bg" src={alysaHero.img_url} alt=""
+                   onError={(e) => { e.target.style.display = 'none'; }} />
+            )}
+            <span className="tile-large-fade" aria-hidden></span>
+            <div className="tile-large-icon"><alysa.Icon size={36} sw={1.5} /></div>
+            <div className="tile-large-content">
+              <span className="tile-large-kicker mono">{alysa.kicker}</span>
+              <span className="tile-large-label">Casa Alysa</span>
+              <div className="tile-large-stats">
+                <span><strong>{alysaHero.stat_1_value}</strong> {alysaHero.stat_1_label}</span>
+                <span className="dot">·</span>
+                <span><strong>{alysaHero.stat_2_value}</strong> {alysaHero.stat_2_label}</span>
+                <span className="dot">·</span>
+                <span><strong>{alysaHero.stat_3_value}</strong> {alysaHero.stat_3_label}</span>
               </div>
-              <div className="tile-meta">
-                <span className="tile-label">{tile.label}</span>
-                <span className="tile-rule" aria-hidden></span>
-                <span className="tile-kicker mono">{tile.kicker}</span>
+            </div>
+            <span className="tile-large-cta mono">
+              Explorar <IconArrow size={12} sw={2} />
+            </span>
+          </button>
+        )}
+
+        {mira && (
+          <button
+            className="tile-large tile-large--miramar"
+            style={{ ["--c"]: mira.color, ["--a"]: mira.accent }}
+            onClick={() => onOpen("real-miramar")}
+          >
+            {miraHero.master_plan_url && (
+              <img className="tile-large-bg" src={miraHero.master_plan_url} alt=""
+                   onError={(e) => { e.target.style.display = 'none'; }} />
+            )}
+            <span className="tile-large-fade" aria-hidden></span>
+            <div className="tile-large-icon"><mira.Icon size={36} sw={1.5} /></div>
+            <div className="tile-large-content">
+              <span className="tile-large-kicker mono">{mira.kicker}</span>
+              <span className="tile-large-label">Real Miramar</span>
+              <div className="tile-large-stats">
+                <span><strong>{miraHero.stat_1_value}</strong> {miraHero.stat_1_label}</span>
+                <span className="dot">·</span>
+                <span><strong>{miraHero.stat_2_value}</strong> {miraHero.stat_2_label}</span>
+                <span className="dot">·</span>
+                <span><strong>{miraHero.stat_3_value}</strong> {miraHero.stat_3_label}</span>
+              </div>
+            </div>
+            <span className="tile-large-cta mono">
+              Explorar <IconArrow size={12} sw={2} />
+            </span>
+          </button>
+        )}
+      </div>
+
+      {/* ━━━━━━━━━ FILA 2: Herramientas (tiles medianos) ━━━━━━━━━ */}
+      <div className="tier-medium">
+        {TIER_MEDIUM.map((id, i) => {
+          const tile = lookup[id];
+          if (!tile) return null;
+          return (
+            <button
+              key={id}
+              className="tile-med"
+              style={{ ["--c"]: tile.color, ["--a"]: tile.accent }}
+              onClick={() => onOpen(id)}
+            >
+              <span className="tile-med-halo" aria-hidden></span>
+              <div className="tile-med-icon"><tile.Icon size={40} sw={1.5} /></div>
+              <div className="tile-med-meta">
+                <span className="tile-med-label">{tile.label}</span>
+                <span className="tile-med-kicker mono">{tile.kicker}</span>
               </div>
             </button>
-            <span className="tile-caption">{tile.label}</span>
-          </div>
-        ))}
+          );
+        })}
+      </div>
+
+      {/* ━━━━━━━━━ FILA 3: Soporte (chips horizontales) ━━━━━━━━━ */}
+      <div className="tier-chips">
+        <span className="tier-chips-label mono">Bajo demanda</span>
+        <div className="tier-chips-row">
+          {TIER_CHIPS.map((id) => {
+            const tile = lookup[id];
+            if (!tile) return null;
+            return (
+              <button
+                key={id}
+                className="tile-chip"
+                style={{ ["--c"]: tile.color, ["--a"]: tile.accent }}
+                onClick={() => onOpen(id)}
+              >
+                <span className="tile-chip-label">{tile.label}</span>
+                <span className="tile-chip-kicker mono">{tile.kicker}</span>
+                <IconArrow size={12} sw={2} />
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <footer className="board-foot">
         <div className="foot-left">
-          <span className="mono small muted">{cfg.foot_left || "CARPETA DE INVERSIÓN"}</span>
+          <span className="mono small muted">{cfg.foot_left || ""}</span>
         </div>
         <button className="foot-cta" onClick={() => onOpen("diagnostico")}>
           {cfg.foot_cta || "Empezar por el diagnóstico"} <IconArrow size={14} sw={2} />
@@ -163,7 +276,9 @@ const Dashboard = ({ onOpen, t }) => {
   );
 };
 
-// --------------------------- Section view ---------------------------
+// ============================================================================
+// SECTION VIEW (sin cambios estructurales)
+// ============================================================================
 const SectionView = ({ id, onHome, onNavigate }) => {
   const { data } = window.useData();
   const tilesById = window.buildTileLookup(data.tiles);
@@ -177,25 +292,32 @@ const SectionView = ({ id, onHome, onNavigate }) => {
   );
 };
 
-// --------------------------- App con DataProvider ---------------------------
+// ============================================================================
+// APP SHELL — orquesta Cover → Dashboard → Section
+// ============================================================================
 const AppShell = () => {
   const { data, status, refresh } = window.useData();
 
   const readHash = () => (location.hash || "").replace(/^#/, "") || null;
   const [view, setView] = React.useState(readHash());
+  const [showCover, setShowCover] = React.useState(() => !readHash());
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
 
   React.useEffect(() => {
-    const onHash = () => setView(readHash());
+    const onHash = () => {
+      const h = readHash();
+      setView(h);
+      if (h) setShowCover(false);
+    };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
   React.useEffect(() => {
     document.body.dataset.aesthetic = t.aesthetic;
-  }, [t.aesthetic]);
+    document.body.dataset.mode = t.presentation ? "presentation" : "edit";
+  }, [t.aesthetic, t.presentation]);
 
-  // Aplica defaults del Sheet (Config) cuando data llega
   React.useEffect(() => {
     if (!data || !data.config) return;
     if (data.config.default_aesthetic && t.aesthetic === TWEAK_DEFAULTS.aesthetic) {
@@ -206,15 +328,19 @@ const AppShell = () => {
     }
   }, [data]);
 
-  const open = (id) => { location.hash = id; setView(id); };
+  const open = (id) => { location.hash = id; setView(id); setShowCover(false); };
   const home = () => { location.hash = ""; setView(null); };
+  const startFromCover = () => { setShowCover(false); };
+  const backToCover = () => { setShowCover(true); home(); };
 
   if (status === "loading" && !data) return <DataLoadingView />;
   if (status === "error" && !data)   return <DataErrorView onRetry={refresh} />;
 
   return (
-    <div className="app">
-      {view ? (
+    <div className="app" data-mode={t.presentation ? "presentation" : "edit"}>
+      {showCover && !view ? (
+        <CoverScreen onStart={startFromCover} t={t} />
+      ) : view ? (
         <SectionView id={view} onHome={home} onNavigate={open} />
       ) : (
         <Dashboard onOpen={open} t={t} />
@@ -223,6 +349,16 @@ const AppShell = () => {
       <DataSourceBadge />
 
       <TweaksPanel>
+        <TweakSection label="Modo de uso" />
+        <TweakToggle
+          label="Modo presentación (oculta panel y stats)"
+          value={t.presentation}
+          onChange={(v) => setTweak("presentation", v)}
+        />
+        <button className="tweak-btn" onClick={backToCover}>
+          Volver a la portada
+        </button>
+
         <TweakSection label="Estética del board" />
         <TweakRadio
           label="Estilo"
@@ -230,10 +366,12 @@ const AppShell = () => {
           options={["carplay", "editorial", "mono"]}
           onChange={(v) => setTweak("aesthetic", v)}
         />
+
         <TweakSection label="Cabecera" />
         <TweakToggle label="Mostrar reloj" value={t.showClock} onChange={(v) => setTweak("showClock", v)} />
         <TweakText label="Nombre del cliente" value={t.client} placeholder="Ej. Sr. Hernández"
           onChange={(v) => setTweak("client", v)} />
+
         <TweakSection label="Datos" />
         <button className="tweak-btn" onClick={refresh}>
           Recargar desde Sheets ⟳
