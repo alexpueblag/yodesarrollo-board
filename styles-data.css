@@ -466,6 +466,41 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
+ * BACK LINK — Sprint 1.A: regreso a yodesarrollo.mx (cover + dashboard)
+ * ════════════════════════════════════════════════════════════════════════════ */
+.cover-foot-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.cover-back-link,
+.board-back-link {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  text-decoration: none;
+  letter-spacing: 0.005em;
+  color: rgba(212,190,138,0.72);
+  transition: color 0.22s ease, transform 0.22s ease;
+}
+.cover-back-link { font-size: 0.9375rem; }
+.board-back-link {
+  font-size: 0.875rem;
+  color: rgba(212,190,138,0.6);
+}
+.cover-back-link:hover,
+.board-back-link:hover {
+  color: #d4be8a;
+  transform: translateX(-3px);
+}
+.board-foot .foot-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
  * Footer del board (mantenido)
  * ════════════════════════════════════════════════════════════════════════════ */
 .board.board--carplay .board-foot,

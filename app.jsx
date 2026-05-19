@@ -111,9 +111,19 @@ const CoverScreen = ({ onStart, t }) => {
           <span>Empezar la conversación</span>
           <IconArrow size={14} sw={2} />
         </button>
-        <span className="cover-brand-name mono small muted">
-          {cfg.brand_name || "YODESARROLLO · INVERSIÓN PATRIMONIAL"}
-        </span>
+        <div className="cover-foot-right">
+          <span className="cover-brand-name mono small muted">
+            {cfg.brand_name || "YODESARROLLO · INVERSIÓN PATRIMONIAL"}
+          </span>
+          <a
+            className="cover-back-link"
+            href={cfg.brand_url || "https://yodesarrollo.mx"}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ← yodesarrollo.mx
+          </a>
+        </div>
       </footer>
     </div>
   );
@@ -266,7 +276,15 @@ const Dashboard = ({ onOpen, t }) => {
 
       <footer className="board-foot">
         <div className="foot-left">
-          <span className="mono small muted">{cfg.foot_left || ""}</span>
+          <a
+            className="board-back-link"
+            href={cfg.brand_url || "https://yodesarrollo.mx"}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ← yodesarrollo.mx
+          </a>
+          {cfg.foot_left && <span className="mono small muted">{cfg.foot_left}</span>}
         </div>
         <button className="foot-cta" onClick={() => onOpen("diagnostico")}>
           {cfg.foot_cta || "Empezar por el diagnóstico"} <IconArrow size={14} sw={2} />
