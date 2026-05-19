@@ -72,6 +72,16 @@
 .hero-img-real { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block; }
 
 /* ════════════════════════════════════════════════════════════════════════════
+ * SCROLL GLOBAL — asegura que el body pueda hacer scroll vertical siempre
+ * Sprint 1.A+: fix para pantallas en horizontal (iPad, laptops chicas)
+ * ════════════════════════════════════════════════════════════════════════════ */
+html, body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100%;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
  * MODO PRESENTACIÓN — oculta chuleta, panel, badge
  * ════════════════════════════════════════════════════════════════════════════ */
 .app[data-mode="presentation"] .data-source-badge,
@@ -86,17 +96,18 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
  * COVER SCREEN — carátula previa
  * ════════════════════════════════════════════════════════════════════════════ */
 .cover {
-  min-height: 100vh;
+  min-height: 100svh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  padding: 48px 56px;
+  padding: clamp(24px, 4vw, 48px) clamp(20px, 4vw, 56px);
   background: radial-gradient(ellipse at top left, #1c1f24 0%, #15171a 50%, #0e1013 100%);
   color: #f5f1ea;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .cover::before {
-  /* Watermark de la "V" gigante atrás */
+  /* Watermark de la "Y" gigante atrás */
   content: "Y";
   position: absolute;
   font-family: 'Instrument Serif', serif;
@@ -168,6 +179,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+  flex-wrap: wrap;
 }
 .cover-cta {
   display: inline-flex;
@@ -203,8 +215,10 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 28px 48px 20px;
+  padding: 28px clamp(20px, 3vw, 48px) 20px;
   border-bottom: 1px solid rgba(245,241,234,0.06);
+  flex-wrap: wrap;
+  gap: 16px;
 }
 .board-head--clean .brand { display: flex; align-items: center; gap: 16px; }
 .board-head--clean .brand-logo { height: 28px; opacity: 0.92; }
@@ -247,7 +261,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  padding: 32px 48px 20px;
+  padding: 32px clamp(20px, 3vw, 48px) 20px;
 }
 .tile-large {
   position: relative;
@@ -358,7 +372,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  padding: 12px 48px 20px;
+  padding: 12px clamp(20px, 3vw, 48px) 20px;
 }
 .tile-med {
   position: relative;
@@ -415,7 +429,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
  * FILA 3 — CHIPS (soporte bajo demanda)
  * ════════════════════════════════════════════════════════════════════════════ */
 .tier-chips {
-  padding: 8px 48px 0;
+  padding: 8px clamp(20px, 3vw, 48px) 0;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -501,25 +515,72 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
- * Footer del board (mantenido)
+ * Footer del board (mantenido + padding fluido)
  * ════════════════════════════════════════════════════════════════════════════ */
 .board.board--carplay .board-foot,
 .board.board--editorial .board-foot,
 .board.board--mono .board-foot {
   margin-top: 24px;
 }
+.board-foot {
+  padding: 20px clamp(20px, 3vw, 48px) 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 
 /* ════════════════════════════════════════════════════════════════════════════
- * RESPONSIVE — proyección en TV o laptop pequeña
+ * RESPONSIVE — escalado para distintas pantallas
  * ════════════════════════════════════════════════════════════════════════════ */
+
+/* — Tablets / laptops chicas: 2 columnas en herramientas — */
 @media (max-width: 1100px) {
-  .tier-large, .tier-medium, .tier-chips, .board-head--clean { padding-left: 24px; padding-right: 24px; }
   .tile-large-label { font-size: 2.25rem; }
   .tier-medium { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* — Tablets en horizontal específicamente (iPad) — */
+@media (min-width: 720px) and (max-width: 1024px) {
+  .tile-large { min-height: 240px; }
+  .tile-large-label { font-size: 2rem; }
+  .tile-large-content { padding: 22px 24px; }
+}
+
+/* — Móvil / pantallas chicas — */
 @media (max-width: 720px) {
   .tier-large { grid-template-columns: 1fr; }
   .tile-large { min-height: 220px; }
-  .cover { padding: 32px 24px; }
   .cover-title { font-size: 2.5rem; }
+  .board-head--clean .status-time { font-size: 1.25rem; }
+  .tier-medium { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* — Altura limitada (laptops antiguas, iPad horizontal) — */
+@media (max-height: 720px) {
+  .tile-large { min-height: 220px; }
+  .tile-large-content { padding: 20px 24px; }
+  .tile-large-label { font-size: 2.25rem; margin: 2px 0 8px; }
+  .tier-large { padding-top: 20px; padding-bottom: 12px; }
+  .tier-medium { padding-top: 8px; padding-bottom: 12px; }
+  .tile-med { min-height: 110px; padding: 16px 18px; }
+  .tile-med-label { font-size: 1.25rem; }
+  .board-head--clean { padding-top: 18px; padding-bottom: 14px; }
+  .board-head--clean .status-time { font-size: 1.25rem; }
+}
+
+/* — Landscape muy compacto (iPad horizontal pequeño, móviles tumbados) — */
+@media (max-height: 600px) and (orientation: landscape) {
+  .cover { padding-top: 24px; padding-bottom: 24px; }
+  .cover-title { font-size: clamp(1.75rem, 4.5vw, 3rem); }
+  .cover-body { gap: 16px; }
+  .cover-cta { padding: 12px 22px; font-size: 0.875rem; }
+  .tile-large { min-height: 180px; }
+  .tile-large-label { font-size: 1.75rem; }
+  .tile-large-content { padding: 16px 20px; }
+  .tier-large { padding-top: 16px; gap: 14px; }
+  .tier-medium { gap: 12px; }
+  .tile-med { min-height: 90px; padding: 12px 16px; gap: 8px; }
+  .tile-med-icon svg { width: 28px; height: 28px; }
 }
