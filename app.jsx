@@ -42,7 +42,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "presentation": false
 }/*EDITMODE-END*/;
 
-window.buildTileLookup = (tilesData) => {
+window.buildTileLookup = (tilesData, proyectosData) => {
   const lookup = {};
   (tilesData || []).forEach((row) => {
     if (row.enabled === false) return;
@@ -50,6 +50,19 @@ window.buildTileLookup = (tilesData) => {
       ...row,
       Icon:    ICON_BY_ID[row.id]    || (() => null),
       Section: SECTION_BY_ID[row.id] || (() => null),
+    };
+  });
+  // Proyectos dinámicos del tab `Proyectos` → ruteados a la sección genérica SecProyecto
+  (proyectosData || []).forEach((p) => {
+    if (!p.id) return;
+    lookup[p.id] = {
+      ...p,
+      label:   p.nombre || p.id,
+      kicker:  p.kicker || "",
+      color:   p.color  || "#2a2a2a",
+      accent:  p.accent || "#d4be8a",
+      Icon:    ICON_BY_ID[p.id] || IconRealMiramar,
+      Section: window.SecProyecto || (() => null),
     };
   });
   return lookup;
@@ -142,7 +155,7 @@ const Dashboard = ({ onOpen, t }) => {
   const clock = useClock();
   const { data } = window.useData();
   const cfg = data.config || {};
-  const lookup = window.buildTileLookup(data.tiles);
+  const lookup = window.buildTileLookup(data.tiles, data.proyectos);
   const presentation = !!t.presentation;
 
   const logoSrc = cfg.logo_url || "assets/logo_white.png";
@@ -150,6 +163,7 @@ const Dashboard = ({ onOpen, t }) => {
   const mira  = lookup["real-miramar"];
   const alysaHero  = (data.alysa   && data.alysa.hero)   || {};
   const miraHero   = (data.miramar && data.miramar.hero) || {};
+  const proyectosDin = (data.proyectos || []).filter((p) => p.nivel !== "medium");
 
   return (
     <div className={"board board--" + t.aesthetic} data-mode={presentation ? "presentation" : "edit"}>
@@ -240,6 +254,39 @@ const Dashboard = ({ onOpen, t }) => {
             </span>
           </button>
         )}
+
+        {/* Proyectos dinámicos (tab Proyectos del Sheet) */}
+        {proyectosDin.map((p) => {
+          const tile = lookup[p.id];
+          if (!tile) return null;
+          return (
+            <button
+              key={p.id}
+              className="tile-large tile-large--dyn"
+              style={{ ["--c"]: tile.color, ["--a"]: tile.accent }}
+              onClick={() => onOpen(p.id)}
+            >
+              {p.img_url && (
+                <img className="tile-large-bg" src={p.img_url} alt=""
+                     onError={(e) => { e.target.style.display = 'none'; }} />
+              )}
+              <span className="tile-large-fade" aria-hidden></span>
+              <div className="tile-large-icon"><tile.Icon size={36} sw={1.5} /></div>
+              <div className="tile-large-content">
+                <span className="tile-large-kicker mono">{p.kicker}</span>
+                <span className="tile-large-label">{p.nombre}</span>
+                <div className="tile-large-stats">
+                  {p.stat_1_value && <span><strong>{p.stat_1_value}</strong> {p.stat_1_label}</span>}
+                  {p.stat_2_value && <><span className="dot">·</span><span><strong>{p.stat_2_value}</strong> {p.stat_2_label}</span></>}
+                  {p.stat_3_value && <><span className="dot">·</span><span><strong>{p.stat_3_value}</strong> {p.stat_3_label}</span></>}
+                </div>
+              </div>
+              <span className="tile-large-cta mono">
+                Explorar <IconArrow size={12} sw={2} />
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* ━━━━━━━━━ FILA 2: Herramientas (tiles medianos) ━━━━━━━━━ */}
@@ -313,7 +360,7 @@ const Dashboard = ({ onOpen, t }) => {
 // ============================================================================
 const SectionView = ({ id, onHome, onNavigate }) => {
   const { data } = window.useData();
-  const tilesById = window.buildTileLookup(data.tiles);
+  const tilesById = window.buildTileLookup(data.tiles, data.proyectos);
   const tile = tilesById[id];
   if (!tile) return null;
   const C = tile.Section;

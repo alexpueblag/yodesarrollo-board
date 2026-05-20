@@ -17,49 +17,323 @@
     "foot_cta": "Empezar por el diagnóstico"
   },
   "tiles": [
-    { "order": 1,  "id": "diagnostico",  "label": "Diagnóstico",  "kicker": "Acto I · Conversación",  "color": "#2d4c55", "accent": "#7fb8c8", "act": "I",   "badge": "Acto I",          "enabled": true },
-    { "order": 2,  "id": "comparativo",  "label": "Comparativo",  "kicker": "Acto II · Rendimientos", "color": "#2a3a52", "accent": "#92b3d8", "act": "II",  "badge": "Acto II",         "enabled": true },
-    { "order": 3,  "id": "casa-alysa",   "label": "Casa Alysa",   "kicker": "Yield · 8 meses",        "color": "#785025", "accent": "#e0b274", "act": "III", "badge": "$1M libre · 80%", "enabled": true },
-    { "order": 4,  "id": "real-miramar", "label": "Real Miramar", "kicker": "Plusvalía · 24 meses",   "color": "#3f5238", "accent": "#a4be90", "act": "III", "badge": "4/6 lotes",       "enabled": true },
-    { "order": 5,  "id": "calculadora",  "label": "Calculadora",  "kicker": "Simulador",              "color": "#443060", "accent": "#b094c7", "act": "III", "badge": "",                "enabled": true },
-    { "order": 6,  "id": "estrategia",   "label": "Estrategia",   "kicker": "Doble plazo",            "color": "#743442", "accent": "#cd9aa5", "act": "III", "badge": "Para $1M+",       "enabled": true },
-    { "order": 7,  "id": "garantias",    "label": "Garantías",    "kicker": "Marco legal",            "color": "#1f3340", "accent": "#8aaac2", "act": "III", "badge": "5 garantías",     "enabled": true },
-    { "order": 8,  "id": "cronograma",   "label": "Cronograma",   "kicker": "Hitos · ventana",        "color": "#3a3c40", "accent": "#b5b3a9", "act": "III", "badge": "+17% próx.",      "enabled": true },
-    { "order": 9,  "id": "decision",     "label": "Decisión",     "kicker": "Acto IV · Cierre",       "color": "#5e2530", "accent": "#d68493", "act": "IV",  "badge": "Acto IV",         "enabled": true },
-    { "order": 10, "id": "contacto",     "label": "Contacto",     "kicker": "Siguiente paso",         "color": "#292828", "accent": "#d4be8a", "act": "IV",  "badge": "",                "enabled": true }
+    {
+      "order": 1,
+      "id": "diagnostico",
+      "label": "Diagnóstico",
+      "kicker": "Acto I · Conversación",
+      "color": "#2d4c55",
+      "accent": "#7fb8c8",
+      "act": "I",
+      "badge": "Acto I",
+      "enabled": true
+    },
+    {
+      "order": 2,
+      "id": "comparativo",
+      "label": "Comparativo",
+      "kicker": "Acto II · Rendimientos",
+      "color": "#2a3a52",
+      "accent": "#92b3d8",
+      "act": "II",
+      "badge": "Acto II",
+      "enabled": true
+    },
+    {
+      "order": 3,
+      "id": "casa-alysa",
+      "label": "Casa Alysa",
+      "kicker": "Yield · 8 meses",
+      "color": "#785025",
+      "accent": "#e0b274",
+      "act": "III",
+      "badge": "$1M libre · 80%",
+      "enabled": true
+    },
+    {
+      "order": 4,
+      "id": "real-miramar",
+      "label": "Real Miramar",
+      "kicker": "Plusvalía · 24 meses",
+      "color": "#3f5238",
+      "accent": "#a4be90",
+      "act": "III",
+      "badge": "4/6 lotes",
+      "enabled": true
+    },
+    {
+      "order": 5,
+      "id": "calculadora",
+      "label": "Calculadora",
+      "kicker": "Simulador",
+      "color": "#443060",
+      "accent": "#b094c7",
+      "act": "III",
+      "badge": "",
+      "enabled": true
+    },
+    {
+      "order": 6,
+      "id": "estrategia",
+      "label": "Estrategia",
+      "kicker": "Doble plazo",
+      "color": "#743442",
+      "accent": "#cd9aa5",
+      "act": "III",
+      "badge": "Para $1M+",
+      "enabled": true
+    },
+    {
+      "order": 7,
+      "id": "garantias",
+      "label": "Garantías",
+      "kicker": "Marco legal",
+      "color": "#1f3340",
+      "accent": "#8aaac2",
+      "act": "III",
+      "badge": "5 garantías",
+      "enabled": true
+    },
+    {
+      "order": 8,
+      "id": "cronograma",
+      "label": "Cronograma",
+      "kicker": "Hitos · ventana",
+      "color": "#3a3c40",
+      "accent": "#b5b3a9",
+      "act": "III",
+      "badge": "+17% próx.",
+      "enabled": true
+    },
+    {
+      "order": 9,
+      "id": "decision",
+      "label": "Decisión",
+      "kicker": "Acto IV · Cierre",
+      "color": "#5e2530",
+      "accent": "#d68493",
+      "act": "IV",
+      "badge": "Acto IV",
+      "enabled": true
+    },
+    {
+      "order": 10,
+      "id": "contacto",
+      "label": "Contacto",
+      "kicker": "Siguiente paso",
+      "color": "#292828",
+      "accent": "#d4be8a",
+      "act": "IV",
+      "badge": "",
+      "enabled": true
+    }
   ],
   "diagnostico": {
     "form": [
-      { "order": 1,  "card_num": 1, "card_legend": "Quiénes somos hoy",      "card_time": "5 min",  "field_key": "nombre",    "field_label": "Nombre completo",                      "field_type": "text",     "field_options": "", "rows": "" },
-      { "order": 2,  "card_num": 1, "card_legend": "Quiénes somos hoy",      "card_time": "5 min",  "field_key": "ocupacion", "field_label": "Ocupación / actividad principal",      "field_type": "text",     "field_options": "", "rows": "" },
-      { "order": 3,  "card_num": 1, "card_legend": "Quiénes somos hoy",      "card_time": "5 min",  "field_key": "como",      "field_label": "¿Cómo llegamos a esta reunión?",       "field_type": "text",     "field_options": "", "rows": "" },
-      { "order": 4,  "card_num": 2, "card_legend": "Cómo manejas tu capital","card_time": "10 min", "field_key": "capital",   "field_label": "Capital líquido disponible",           "field_type": "text",     "field_options": "", "rows": "" },
-      { "order": 5,  "card_num": 2, "card_legend": "Cómo manejas tu capital","card_time": "10 min", "field_key": "donde",     "field_label": "¿Dónde está hoy?",                     "field_type": "chips",    "field_options": "Banco|CETES|Pagaré|Acciones|Bienes raíces|Negocio propio", "rows": "" },
-      { "order": 6,  "card_num": 2, "card_legend": "Cómo manejas tu capital","card_time": "10 min", "field_key": "horizonte", "field_label": "Horizonte de inversión",               "field_type": "chips",    "field_options": "< 1 año|1–3 años|3+ años|Mixto", "rows": "" },
-      { "order": 7,  "card_num": 3, "card_legend": "Experiencia previa",     "card_time": "5 min",  "field_key": "exp",       "field_label": "¿Has invertido en bienes raíces?",     "field_type": "chips",    "field_options": "Nunca|Una vez|Varias veces|Principal vehículo", "rows": "" },
-      { "order": 8,  "card_num": 3, "card_legend": "Experiencia previa",     "card_time": "5 min",  "field_key": "aprendio",  "field_label": "¿Qué aprendiste?",                     "field_type": "textarea", "field_options": "", "rows": 2 },
-      { "order": 9,  "card_num": 4, "card_legend": "Qué buscas realmente",   "card_time": "5 min",  "field_key": "motivo",    "field_label": "Motivación dominante",                 "field_type": "chips",    "field_options": "Preservar|Multiplicar|Pertenecer|Heredar", "rows": "" },
-      { "order": 10, "card_num": 4, "card_legend": "Qué buscas realmente",   "card_time": "5 min",  "field_key": "seguro",    "field_label": "¿Qué necesitarías ver para sentirte 100% seguro?", "field_type": "textarea", "field_options": "", "rows": 2 }
+      {
+        "order": 1,
+        "card_num": 1,
+        "card_legend": "Quiénes somos hoy",
+        "card_time": "5 min",
+        "field_key": "nombre",
+        "field_label": "Nombre completo",
+        "field_type": "text",
+        "field_options": "",
+        "rows": ""
+      },
+      {
+        "order": 2,
+        "card_num": 1,
+        "card_legend": "Quiénes somos hoy",
+        "card_time": "5 min",
+        "field_key": "ocupacion",
+        "field_label": "Ocupación / actividad principal",
+        "field_type": "text",
+        "field_options": "",
+        "rows": ""
+      },
+      {
+        "order": 3,
+        "card_num": 1,
+        "card_legend": "Quiénes somos hoy",
+        "card_time": "5 min",
+        "field_key": "como",
+        "field_label": "¿Cómo llegamos a esta reunión?",
+        "field_type": "text",
+        "field_options": "",
+        "rows": ""
+      },
+      {
+        "order": 4,
+        "card_num": 2,
+        "card_legend": "Cómo manejas tu capital",
+        "card_time": "10 min",
+        "field_key": "capital",
+        "field_label": "Capital líquido disponible",
+        "field_type": "text",
+        "field_options": "",
+        "rows": ""
+      },
+      {
+        "order": 5,
+        "card_num": 2,
+        "card_legend": "Cómo manejas tu capital",
+        "card_time": "10 min",
+        "field_key": "donde",
+        "field_label": "¿Dónde está hoy?",
+        "field_type": "chips",
+        "field_options": "Banco|CETES|Pagaré|Acciones|Bienes raíces|Negocio propio",
+        "rows": ""
+      },
+      {
+        "order": 6,
+        "card_num": 2,
+        "card_legend": "Cómo manejas tu capital",
+        "card_time": "10 min",
+        "field_key": "horizonte",
+        "field_label": "Horizonte de inversión",
+        "field_type": "chips",
+        "field_options": "< 1 año|1–3 años|3+ años|Mixto",
+        "rows": ""
+      },
+      {
+        "order": 7,
+        "card_num": 3,
+        "card_legend": "Experiencia previa",
+        "card_time": "5 min",
+        "field_key": "exp",
+        "field_label": "¿Has invertido en bienes raíces?",
+        "field_type": "chips",
+        "field_options": "Nunca|Una vez|Varias veces|Principal vehículo",
+        "rows": ""
+      },
+      {
+        "order": 8,
+        "card_num": 3,
+        "card_legend": "Experiencia previa",
+        "card_time": "5 min",
+        "field_key": "aprendio",
+        "field_label": "¿Qué aprendiste?",
+        "field_type": "textarea",
+        "field_options": "",
+        "rows": 2
+      },
+      {
+        "order": 9,
+        "card_num": 4,
+        "card_legend": "Qué buscas realmente",
+        "card_time": "5 min",
+        "field_key": "motivo",
+        "field_label": "Motivación dominante",
+        "field_type": "chips",
+        "field_options": "Preservar|Multiplicar|Pertenecer|Heredar",
+        "rows": ""
+      },
+      {
+        "order": 10,
+        "card_num": 4,
+        "card_legend": "Qué buscas realmente",
+        "card_time": "5 min",
+        "field_key": "seguro",
+        "field_label": "¿Qué necesitarías ver para sentirte 100% seguro?",
+        "field_type": "textarea",
+        "field_options": "",
+        "rows": 2
+      }
     ]
   },
   "comparativo": [
-    { "order": 1, "instrumento": "Cuenta bancaria",   "bruto": "1–3%",  "inflacion": "−4.5%", "isr": "—",        "neto": "Negativo",  "nota": "Pierdes poder adquisitivo.",       "star": false, "link": "" },
-    { "order": 2, "instrumento": "CETES",             "bruto": "9–10%", "inflacion": "−4.5%", "isr": "−1.5%",    "neto": "~3–4%",     "nota": "Apenas vence inflación.",          "star": false, "link": "" },
-    { "order": 3, "instrumento": "Pagaré bancario",   "bruto": "8–9%",  "inflacion": "−4.5%", "isr": "−1.5%",    "neto": "~2–3%",     "nota": "Liquidez con costo real.",         "star": false, "link": "" },
-    { "order": 4, "instrumento": "Renta de inmueble", "bruto": "5–7%",  "inflacion": "−4.5%", "isr": "Variable", "neto": "~1–3%",     "nota": "Capital ocioso, mucha operación.", "star": false, "link": "" },
-    { "order": 5, "instrumento": "Casa Alysa $200K",  "bruto": "20%",   "inflacion": "−4.5%", "isr": "Variable", "neto": "~16% real", "nota": "Yield escriturado, 8 meses.",      "star": true,  "link": "casa-alysa" },
-    { "order": 6, "instrumento": "Casa Alysa $1M",    "bruto": "25%",   "inflacion": "−4.5%", "isr": "Variable", "neto": "~20% real", "nota": "Tasa preferente por volumen.",     "star": true,  "link": "casa-alysa" },
-    { "order": 7, "instrumento": "Lote Real Miramar", "bruto": "26%",   "inflacion": "−4.5%", "isr": "Variable", "neto": "~25% real", "nota": "Plusvalía progresiva 24m.",        "star": true,  "link": "real-miramar" }
+    {
+      "order": 1,
+      "instrumento": "Cuenta bancaria",
+      "bruto": "1–3%",
+      "inflacion": "−4.5%",
+      "isr": "—",
+      "neto": "Negativo",
+      "nota": "Pierdes poder adquisitivo.",
+      "star": false,
+      "link": ""
+    },
+    {
+      "order": 2,
+      "instrumento": "CETES",
+      "bruto": "9–10%",
+      "inflacion": "−4.5%",
+      "isr": "−1.5%",
+      "neto": "~3–4%",
+      "nota": "Apenas vence inflación.",
+      "star": false,
+      "link": ""
+    },
+    {
+      "order": 3,
+      "instrumento": "Pagaré bancario",
+      "bruto": "8–9%",
+      "inflacion": "−4.5%",
+      "isr": "−1.5%",
+      "neto": "~2–3%",
+      "nota": "Liquidez con costo real.",
+      "star": false,
+      "link": ""
+    },
+    {
+      "order": 4,
+      "instrumento": "Renta de inmueble",
+      "bruto": "5–7%",
+      "inflacion": "−4.5%",
+      "isr": "Variable",
+      "neto": "~1–3%",
+      "nota": "Capital ocioso, mucha operación.",
+      "star": false,
+      "link": ""
+    },
+    {
+      "order": 5,
+      "instrumento": "Casa Alysa $200K",
+      "bruto": "20%",
+      "inflacion": "−4.5%",
+      "isr": "Variable",
+      "neto": "~16% real",
+      "nota": "Yield escriturado, 8 meses.",
+      "star": true,
+      "link": "casa-alysa"
+    },
+    {
+      "order": 6,
+      "instrumento": "Casa Alysa $1M",
+      "bruto": "25%",
+      "inflacion": "−4.5%",
+      "isr": "Variable",
+      "neto": "~20% real",
+      "nota": "Tasa preferente por volumen.",
+      "star": true,
+      "link": "casa-alysa"
+    },
+    {
+      "order": 7,
+      "instrumento": "Lote Real Miramar",
+      "bruto": "26%",
+      "inflacion": "−4.5%",
+      "isr": "Variable",
+      "neto": "~25% real",
+      "nota": "Plusvalía progresiva 24m.",
+      "star": true,
+      "link": "real-miramar"
+    }
   ],
   "alysa": {
     "hero": {
       "kicker": "Vehículo I · Yield 8 meses",
       "display": "Casa Alysa",
       "lead": "Coinversión escriturada en residencia premium frente al lago, Altozano · Hermosillo. Activo terminado al 80%.",
-      "stat_1_value": "$200K", "stat_1_label": "Ticket mínimo",
-      "stat_2_value": "20–25%", "stat_2_label": "Tasa anual bruta",
-      "stat_3_value": "8m", "stat_3_label": "Plazo a salida",
-      "stat_4_value": "80%", "stat_4_label": "Avance de obra",
+      "stat_1_value": "$200K",
+      "stat_1_label": "Ticket mínimo",
+      "stat_2_value": "20–25%",
+      "stat_2_label": "Tasa anual bruta",
+      "stat_3_value": "8m",
+      "stat_3_label": "Plazo a salida",
+      "stat_4_value": "80%",
+      "stat_4_label": "Avance de obra",
       "img_url": "",
       "img_caption": "Render Casa Alysa — frente al lago Altozano",
       "ubicacion": "Altozano · Hermosillo",
@@ -67,115 +341,621 @@
       "capital_faltante": 1000000
     },
     "tiers": [
-      { "order": 1, "capital": 200000,  "rate": 20.00, "retorno6": 20000,  "retorno8": 26667,  "total": 226667,  "star": false },
-      { "order": 2, "capital": 400000,  "rate": 21.25, "retorno6": 42500,  "retorno8": 56667,  "total": 456667,  "star": false },
-      { "order": 3, "capital": 600000,  "rate": 22.50, "retorno6": 67500,  "retorno8": 90000,  "total": 690000,  "star": false },
-      { "order": 4, "capital": 800000,  "rate": 23.75, "retorno6": 95000,  "retorno8": 126667, "total": 926667,  "star": false },
-      { "order": 5, "capital": 1000000, "rate": 25.00, "retorno6": 125000, "retorno8": 166667, "total": 1166667, "star": true  }
+      {
+        "order": 1,
+        "capital": 200000,
+        "rate": 20.0,
+        "retorno6": 20000,
+        "retorno8": 26667,
+        "total": 226667,
+        "star": false
+      },
+      {
+        "order": 2,
+        "capital": 400000,
+        "rate": 21.25,
+        "retorno6": 42500,
+        "retorno8": 56667,
+        "total": 456667,
+        "star": false
+      },
+      {
+        "order": 3,
+        "capital": 600000,
+        "rate": 22.5,
+        "retorno6": 67500,
+        "retorno8": 90000,
+        "total": 690000,
+        "star": false
+      },
+      {
+        "order": 4,
+        "capital": 800000,
+        "rate": 23.75,
+        "retorno6": 95000,
+        "retorno8": 126667,
+        "total": 926667,
+        "star": false
+      },
+      {
+        "order": 5,
+        "capital": 1000000,
+        "rate": 25.0,
+        "retorno6": 125000,
+        "retorno8": 166667,
+        "total": 1166667,
+        "star": true
+      }
     ],
     "por_que": [
-      { "order": 1, "strong": "Ubicación escasa",                  "text": "frente al lago en Altozano, segmento premium de Hermosillo." },
-      { "order": 2, "strong": "Recámara principal en planta baja", "text": "amplía el universo de compradores." },
-      { "order": 3, "strong": "Diseño con identidad",              "text": "compite por valor, no por precio." },
-      { "order": 4, "strong": "Avance 80%",                        "text": "riesgo de ejecución mitigado." }
+      {
+        "order": 1,
+        "strong": "Ubicación escasa",
+        "text": "frente al lago en Altozano, segmento premium de Hermosillo."
+      },
+      {
+        "order": 2,
+        "strong": "Recámara principal en planta baja",
+        "text": "amplía el universo de compradores."
+      },
+      {
+        "order": 3,
+        "strong": "Diseño con identidad",
+        "text": "compite por valor, no por precio."
+      },
+      {
+        "order": 4,
+        "strong": "Avance 80%",
+        "text": "riesgo de ejecución mitigado."
+      }
     ],
     "como": [
-      { "order": 1, "html": "Copropiedad pro-indiviso <strong>escriturada ante notario</strong>." },
-      { "order": 2, "html": "Tasa preferente con respaldo del activo físico." },
-      { "order": 3, "html": "Cuenta exclusiva del proyecto · reportes trimestrales." },
-      { "order": 4, "html": "Capital faltante: <strong>$1M</strong> sobre valor proyectado de <strong>$5,855,850</strong>." }
+      {
+        "order": 1,
+        "html": "Copropiedad pro-indiviso <strong>escriturada ante notario</strong>."
+      },
+      {
+        "order": 2,
+        "html": "Tasa preferente con respaldo del activo físico."
+      },
+      {
+        "order": 3,
+        "html": "Cuenta exclusiva del proyecto · reportes trimestrales."
+      },
+      {
+        "order": 4,
+        "html": "Capital faltante: <strong>$1M</strong> sobre valor proyectado de <strong>$5,855,850</strong>."
+      }
     ]
   },
   "miramar": {
     "hero": {
       "kicker": "Vehículo II · Plusvalía 24m",
       "display": "Real Miramar",
-      "stat_1_value": "$3,750", "stat_1_label": "$/m² · F.II hoy",
-      "stat_2_value": "+27%",   "stat_2_label": "F.II → Venta",
-      "stat_3_value": "~24m",   "stat_3_label": "Horizonte",
-      "stat_4_value": "800m",   "stat_4_label": "Al malecón",
+      "stat_1_value": "$3,750",
+      "stat_1_label": "$/m² · F.II hoy",
+      "stat_2_value": "+27%",
+      "stat_2_label": "F.II → Venta",
+      "stat_3_value": "~24m",
+      "stat_3_label": "Horizonte",
+      "stat_4_value": "800m",
+      "stat_4_label": "Al malecón",
       "master_plan_url": "",
       "commercial_price_m2": 5250,
       "commercial_label": "Venta directa · Mayo 2026"
     },
     "etapas": [
-      { "order": 1, "id": "fund-i",  "label": "Fundadores I",  "price_m2": 3258, "pct_obra": 55,  "status": "Plan urbano",         "current": false, "done": true  },
-      { "order": 2, "id": "fund-ii", "label": "Fundadores II", "price_m2": 3750, "pct_obra": 60,  "status": "ETAPA ACTUAL",        "current": true,  "done": false },
-      { "order": 3, "id": "prev-i",  "label": "Preventa I",    "price_m2": 4075, "pct_obra": 70,  "status": "Licencia ambiental",  "current": false, "done": false },
-      { "order": 4, "id": "prev-ii", "label": "Preventa II",   "price_m2": 4325, "pct_obra": 85,  "status": "Servicios aprobados", "current": false, "done": false },
-      { "order": 5, "id": "venta",   "label": "Precio Venta",  "price_m2": 4750, "pct_obra": 100, "status": "Inicio urbanización", "current": false, "done": false }
+      {
+        "order": 1,
+        "id": "fund-i",
+        "label": "Fundadores I",
+        "price_m2": 3258,
+        "pct_obra": 55,
+        "status": "Plan urbano",
+        "current": false,
+        "done": true
+      },
+      {
+        "order": 2,
+        "id": "fund-ii",
+        "label": "Fundadores II",
+        "price_m2": 3750,
+        "pct_obra": 60,
+        "status": "ETAPA ACTUAL",
+        "current": true,
+        "done": false
+      },
+      {
+        "order": 3,
+        "id": "prev-i",
+        "label": "Preventa I",
+        "price_m2": 4075,
+        "pct_obra": 70,
+        "status": "Licencia ambiental",
+        "current": false,
+        "done": false
+      },
+      {
+        "order": 4,
+        "id": "prev-ii",
+        "label": "Preventa II",
+        "price_m2": 4325,
+        "pct_obra": 85,
+        "status": "Servicios aprobados",
+        "current": false,
+        "done": false
+      },
+      {
+        "order": 5,
+        "id": "venta",
+        "label": "Precio Venta",
+        "price_m2": 4750,
+        "pct_obra": 100,
+        "status": "Inicio urbanización",
+        "current": false,
+        "done": false
+      }
     ],
     "lotes": [
-      { "n": 1,  "m2": 1529.041, "uso": "COMERCIAL",    "x": 93.5, "y": 33.8, "status": "commercial" },
-      { "n": 47, "m2": 346.799,  "uso": "COMERCIAL",    "x": 91.4, "y": 83.6, "status": "commercial" },
-      { "n": 2,  "m2": 180,      "uso": "HABITACIONAL", "x": 82.4, "y": 51.9, "status": "available" },
-      { "n": 3,  "m2": 208,      "uso": "HABITACIONAL", "x": 77.8, "y": 51.1, "status": "available" },
-      { "n": 4,  "m2": 178,      "uso": "HABITACIONAL", "x": 80.2, "y": 36.0, "status": "available" },
-      { "n": 5,  "m2": 223,      "uso": "HABITACIONAL", "x": 79.6, "y": 23.3, "status": "available" },
-      { "n": 6,  "m2": 318,      "uso": "HABITACIONAL", "x": 74.8, "y": 13.3, "status": "available" },
-      { "n": 7,  "m2": 321,      "uso": "HABITACIONAL", "x": 68.6, "y": 14.1, "status": "available" },
-      { "n": 8,  "m2": 223,      "uso": "HABITACIONAL", "x": 62.1, "y": 24.3, "status": "available" },
-      { "n": 9,  "m2": 178,      "uso": "HABITACIONAL", "x": 61.8, "y": 35.4, "status": "available" },
-      { "n": 10, "m2": 208,      "uso": "HABITACIONAL", "x": 65.1, "y": 50.3, "status": "available" },
-      { "n": 11, "m2": 180,      "uso": "HABITACIONAL", "x": 59.9, "y": 51.1, "status": "available" },
-      { "n": 12, "m2": 180,      "uso": "HABITACIONAL", "x": 55.2, "y": 50.9, "status": "available" },
-      { "n": 13, "m2": 208,      "uso": "HABITACIONAL", "x": 50.9, "y": 50.6, "status": "reserved" },
-      { "n": 14, "m2": 178,      "uso": "HABITACIONAL", "x": 53.2, "y": 36.0, "status": "available" },
-      { "n": 15, "m2": 223,      "uso": "HABITACIONAL", "x": 53.4, "y": 24.3, "status": "available" },
-      { "n": 16, "m2": 324,      "uso": "HABITACIONAL", "x": 47.8, "y": 14.1, "status": "available" },
-      { "n": 17, "m2": 327,      "uso": "HABITACIONAL", "x": 40.8, "y": 13.5, "status": "available" },
-      { "n": 18, "m2": 223,      "uso": "HABITACIONAL", "x": 35.7, "y": 24.1, "status": "available" },
-      { "n": 19, "m2": 178,      "uso": "HABITACIONAL", "x": 35.5, "y": 35.4, "status": "available" },
-      { "n": 20, "m2": 180,      "uso": "HABITACIONAL", "x": 28.7, "y": 50.3, "status": "available" },
-      { "n": 21, "m2": 208,      "uso": "HABITACIONAL", "x": 24.5, "y": 50.0, "status": "available" },
-      { "n": 22, "m2": 178,      "uso": "HABITACIONAL", "x": 27.2, "y": 35.7, "status": "available" },
-      { "n": 23, "m2": 223,      "uso": "HABITACIONAL", "x": 26.1, "y": 24.9, "status": "available" },
-      { "n": 24, "m2": 330,      "uso": "HABITACIONAL", "x": 20.5, "y": 15.2, "status": "available" },
-      { "n": 25, "m2": 328,      "uso": "HABITACIONAL", "x": 13.8, "y": 14.3, "status": "available" },
-      { "n": 26, "m2": 203,      "uso": "HABITACIONAL", "x": 9.9,  "y": 24.1, "status": "available" },
-      { "n": 27, "m2": 181,      "uso": "HABITACIONAL", "x": 9.4,  "y": 38.1, "status": "available" },
-      { "n": 28, "m2": 202,      "uso": "HABITACIONAL", "x": 10.4, "y": 49.5, "status": "available" },
-      { "n": 29, "m2": 200,      "uso": "HABITACIONAL", "x": 11.1, "y": 60.9, "status": "available" },
-      { "n": 30, "m2": 411,      "uso": "HABITACIONAL", "x": 11.3, "y": 77.6, "status": "available" },
-      { "n": 31, "m2": 225,      "uso": "HABITACIONAL", "x": 16.9, "y": 84.4, "status": "available" },
-      { "n": 32, "m2": 180,      "uso": "HABITACIONAL", "x": 21.3, "y": 85.2, "status": "available" },
-      { "n": 33, "m2": 180,      "uso": "HABITACIONAL", "x": 25.9, "y": 84.9, "status": "available" },
-      { "n": 34, "m2": 180,      "uso": "HABITACIONAL", "x": 30.1, "y": 85.2, "status": "available" },
-      { "n": 35, "m2": 180,      "uso": "HABITACIONAL", "x": 34.8, "y": 85.5, "status": "reserved" },
-      { "n": 36, "m2": 180,      "uso": "HABITACIONAL", "x": 38.9, "y": 85.2, "status": "available" },
-      { "n": 37, "m2": 180,      "uso": "HABITACIONAL", "x": 43.0, "y": 86.0, "status": "available" },
-      { "n": 38, "m2": 180,      "uso": "HABITACIONAL", "x": 47.5, "y": 85.5, "status": "available" },
-      { "n": 39, "m2": 180,      "uso": "HABITACIONAL", "x": 52.1, "y": 85.8, "status": "available" },
-      { "n": 40, "m2": 180,      "uso": "HABITACIONAL", "x": 56.1, "y": 85.5, "status": "available" },
-      { "n": 41, "m2": 180,      "uso": "HABITACIONAL", "x": 60.7, "y": 85.5, "status": "available" },
-      { "n": 42, "m2": 180,      "uso": "HABITACIONAL", "x": 64.7, "y": 85.2, "status": "available" },
-      { "n": 43, "m2": 180,      "uso": "HABITACIONAL", "x": 69.1, "y": 85.5, "status": "available" },
-      { "n": 44, "m2": 180,      "uso": "HABITACIONAL", "x": 73.8, "y": 85.2, "status": "available" },
-      { "n": 45, "m2": 180,      "uso": "HABITACIONAL", "x": 78.1, "y": 85.2, "status": "available" },
-      { "n": 46, "m2": 180,      "uso": "HABITACIONAL", "x": 82.3, "y": 84.7, "status": "available" }
+      {
+        "n": 1,
+        "m2": 1529.041,
+        "uso": "COMERCIAL",
+        "x": 93.5,
+        "y": 33.8,
+        "status": "commercial"
+      },
+      {
+        "n": 47,
+        "m2": 346.799,
+        "uso": "COMERCIAL",
+        "x": 91.4,
+        "y": 83.6,
+        "status": "commercial"
+      },
+      {
+        "n": 2,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 82.4,
+        "y": 51.9,
+        "status": "available"
+      },
+      {
+        "n": 3,
+        "m2": 208,
+        "uso": "HABITACIONAL",
+        "x": 77.8,
+        "y": 51.1,
+        "status": "available"
+      },
+      {
+        "n": 4,
+        "m2": 178,
+        "uso": "HABITACIONAL",
+        "x": 80.2,
+        "y": 36.0,
+        "status": "available"
+      },
+      {
+        "n": 5,
+        "m2": 223,
+        "uso": "HABITACIONAL",
+        "x": 79.6,
+        "y": 23.3,
+        "status": "available"
+      },
+      {
+        "n": 6,
+        "m2": 318,
+        "uso": "HABITACIONAL",
+        "x": 74.8,
+        "y": 13.3,
+        "status": "available"
+      },
+      {
+        "n": 7,
+        "m2": 321,
+        "uso": "HABITACIONAL",
+        "x": 68.6,
+        "y": 14.1,
+        "status": "available"
+      },
+      {
+        "n": 8,
+        "m2": 223,
+        "uso": "HABITACIONAL",
+        "x": 62.1,
+        "y": 24.3,
+        "status": "available"
+      },
+      {
+        "n": 9,
+        "m2": 178,
+        "uso": "HABITACIONAL",
+        "x": 61.8,
+        "y": 35.4,
+        "status": "available"
+      },
+      {
+        "n": 10,
+        "m2": 208,
+        "uso": "HABITACIONAL",
+        "x": 65.1,
+        "y": 50.3,
+        "status": "available"
+      },
+      {
+        "n": 11,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 59.9,
+        "y": 51.1,
+        "status": "available"
+      },
+      {
+        "n": 12,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 55.2,
+        "y": 50.9,
+        "status": "available"
+      },
+      {
+        "n": 13,
+        "m2": 208,
+        "uso": "HABITACIONAL",
+        "x": 50.9,
+        "y": 50.6,
+        "status": "reserved"
+      },
+      {
+        "n": 14,
+        "m2": 178,
+        "uso": "HABITACIONAL",
+        "x": 53.2,
+        "y": 36.0,
+        "status": "available"
+      },
+      {
+        "n": 15,
+        "m2": 223,
+        "uso": "HABITACIONAL",
+        "x": 53.4,
+        "y": 24.3,
+        "status": "available"
+      },
+      {
+        "n": 16,
+        "m2": 324,
+        "uso": "HABITACIONAL",
+        "x": 47.8,
+        "y": 14.1,
+        "status": "available"
+      },
+      {
+        "n": 17,
+        "m2": 327,
+        "uso": "HABITACIONAL",
+        "x": 40.8,
+        "y": 13.5,
+        "status": "available"
+      },
+      {
+        "n": 18,
+        "m2": 223,
+        "uso": "HABITACIONAL",
+        "x": 35.7,
+        "y": 24.1,
+        "status": "available"
+      },
+      {
+        "n": 19,
+        "m2": 178,
+        "uso": "HABITACIONAL",
+        "x": 35.5,
+        "y": 35.4,
+        "status": "available"
+      },
+      {
+        "n": 20,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 28.7,
+        "y": 50.3,
+        "status": "available"
+      },
+      {
+        "n": 21,
+        "m2": 208,
+        "uso": "HABITACIONAL",
+        "x": 24.5,
+        "y": 50.0,
+        "status": "available"
+      },
+      {
+        "n": 22,
+        "m2": 178,
+        "uso": "HABITACIONAL",
+        "x": 27.2,
+        "y": 35.7,
+        "status": "available"
+      },
+      {
+        "n": 23,
+        "m2": 223,
+        "uso": "HABITACIONAL",
+        "x": 26.1,
+        "y": 24.9,
+        "status": "available"
+      },
+      {
+        "n": 24,
+        "m2": 330,
+        "uso": "HABITACIONAL",
+        "x": 20.5,
+        "y": 15.2,
+        "status": "available"
+      },
+      {
+        "n": 25,
+        "m2": 328,
+        "uso": "HABITACIONAL",
+        "x": 13.8,
+        "y": 14.3,
+        "status": "available"
+      },
+      {
+        "n": 26,
+        "m2": 203,
+        "uso": "HABITACIONAL",
+        "x": 9.9,
+        "y": 24.1,
+        "status": "available"
+      },
+      {
+        "n": 27,
+        "m2": 181,
+        "uso": "HABITACIONAL",
+        "x": 9.4,
+        "y": 38.1,
+        "status": "available"
+      },
+      {
+        "n": 28,
+        "m2": 202,
+        "uso": "HABITACIONAL",
+        "x": 10.4,
+        "y": 49.5,
+        "status": "available"
+      },
+      {
+        "n": 29,
+        "m2": 200,
+        "uso": "HABITACIONAL",
+        "x": 11.1,
+        "y": 60.9,
+        "status": "available"
+      },
+      {
+        "n": 30,
+        "m2": 411,
+        "uso": "HABITACIONAL",
+        "x": 11.3,
+        "y": 77.6,
+        "status": "available"
+      },
+      {
+        "n": 31,
+        "m2": 225,
+        "uso": "HABITACIONAL",
+        "x": 16.9,
+        "y": 84.4,
+        "status": "available"
+      },
+      {
+        "n": 32,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 21.3,
+        "y": 85.2,
+        "status": "available"
+      },
+      {
+        "n": 33,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 25.9,
+        "y": 84.9,
+        "status": "available"
+      },
+      {
+        "n": 34,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 30.1,
+        "y": 85.2,
+        "status": "available"
+      },
+      {
+        "n": 35,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 34.8,
+        "y": 85.5,
+        "status": "reserved"
+      },
+      {
+        "n": 36,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 38.9,
+        "y": 85.2,
+        "status": "available"
+      },
+      {
+        "n": 37,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 43.0,
+        "y": 86.0,
+        "status": "available"
+      },
+      {
+        "n": 38,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 47.5,
+        "y": 85.5,
+        "status": "available"
+      },
+      {
+        "n": 39,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 52.1,
+        "y": 85.8,
+        "status": "available"
+      },
+      {
+        "n": 40,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 56.1,
+        "y": 85.5,
+        "status": "available"
+      },
+      {
+        "n": 41,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 60.7,
+        "y": 85.5,
+        "status": "available"
+      },
+      {
+        "n": 42,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 64.7,
+        "y": 85.2,
+        "status": "available"
+      },
+      {
+        "n": 43,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 69.1,
+        "y": 85.5,
+        "status": "available"
+      },
+      {
+        "n": 44,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 73.8,
+        "y": 85.2,
+        "status": "available"
+      },
+      {
+        "n": 45,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 78.1,
+        "y": 85.2,
+        "status": "available"
+      },
+      {
+        "n": 46,
+        "m2": 180,
+        "uso": "HABITACIONAL",
+        "x": 82.3,
+        "y": 84.7,
+        "status": "available"
+      }
     ],
     "urbanismo": [
-      { "order": 1, "text": "Diseño orientado al peatón · andadores ecológicos." },
-      { "order": 2, "text": "Vialidad central de concreto · adopasto lateral." },
-      { "order": 3, "text": "Rotondas amenizadas · landscape autóctono." },
-      { "order": 4, "text": "Casa Club · CCTV y seguridad privada." },
-      { "order": 5, "text": "Manejo pluvial ecológico." }
+      {
+        "order": 1,
+        "text": "Diseño orientado al peatón · andadores ecológicos."
+      },
+      {
+        "order": 2,
+        "text": "Vialidad central de concreto · adopasto lateral."
+      },
+      {
+        "order": 3,
+        "text": "Rotondas amenizadas · landscape autóctono."
+      },
+      {
+        "order": 4,
+        "text": "Casa Club · CCTV y seguridad privada."
+      },
+      {
+        "order": 5,
+        "text": "Manejo pluvial ecológico."
+      }
     ],
     "lote_ejemplo": [
-      { "key": "titulo",          "label": "Lote 180 m² Fundador II", "value": "",                    "highlight": false },
-      { "key": "precio_f2",       "label": "Precio F.II",             "value": "$675,000",            "highlight": false },
-      { "key": "anticipo_35",     "label": "Anticipo 35%",            "value": "$236,250",            "highlight": false },
-      { "key": "valor_24m",       "label": "Valor estimado en 24m",   "value": "$855,000",            "highlight": false },
-      { "key": "plusvalia_bruta", "label": "Plusvalía bruta",         "value": "+$180,000 · +27%",    "highlight": true }
+      {
+        "key": "titulo",
+        "label": "Lote 180 m² Fundador II",
+        "value": "",
+        "highlight": false
+      },
+      {
+        "key": "precio_f2",
+        "label": "Precio F.II",
+        "value": "$675,000",
+        "highlight": false
+      },
+      {
+        "key": "anticipo_35",
+        "label": "Anticipo 35%",
+        "value": "$236,250",
+        "highlight": false
+      },
+      {
+        "key": "valor_24m",
+        "label": "Valor estimado en 24m",
+        "value": "$855,000",
+        "highlight": false
+      },
+      {
+        "key": "plusvalia_bruta",
+        "label": "Plusvalía bruta",
+        "value": "+$180,000 · +27%",
+        "highlight": true
+      }
     ]
   },
   "calculadora": {
     "alysa_brackets": [
-      { "min_capital": 0,       "rate": 20.00, "nota": "Tasa base" },
-      { "min_capital": 400000,  "rate": 21.25, "nota": "" },
-      { "min_capital": 600000,  "rate": 22.50, "nota": "" },
-      { "min_capital": 800000,  "rate": 23.75, "nota": "" },
-      { "min_capital": 1000000, "rate": 25.00, "nota": "Tasa preferente máxima" }
+      {
+        "min_capital": 0,
+        "rate": 20.0,
+        "nota": "Tasa base"
+      },
+      {
+        "min_capital": 400000,
+        "rate": 21.25,
+        "nota": ""
+      },
+      {
+        "min_capital": 600000,
+        "rate": 22.5,
+        "nota": ""
+      },
+      {
+        "min_capital": 800000,
+        "rate": 23.75,
+        "nota": ""
+      },
+      {
+        "min_capital": 1000000,
+        "rate": 25.0,
+        "nota": "Tasa preferente máxima"
+      }
     ],
     "miramar_config": {
       "plusvalia_24m_pct": 53,
@@ -191,17 +971,46 @@
       "display_line1": "Cuando los dos",
       "display_line2": "trabajan juntos.",
       "lead": "Para inversionistas con $1M+ líquidos: retorno rápido en Alysa + patrimonio medio plazo en Miramar. Cuando Alysa cierra, ese capital se reinvierte en lotes fundadores II.",
-      "stat_1_value": "$1.0M", "stat_1_label": "Capital total",
-      "stat_2_value": "25%",   "stat_2_label": "Tasa anual Alysa",
-      "stat_3_value": "+53%",  "stat_3_label": "Plusvalía Miramar 24m",
-      "stat_4_value": "~78%",  "stat_4_label": "Retorno acumulado 24m"
+      "stat_1_value": "$1.0M",
+      "stat_1_label": "Capital total",
+      "stat_2_value": "25%",
+      "stat_2_label": "Tasa anual Alysa",
+      "stat_3_value": "+53%",
+      "stat_3_label": "Plusvalía Miramar 24m",
+      "stat_4_value": "~78%",
+      "stat_4_label": "Retorno acumulado 24m"
     },
     "steps": [
-      { "order": 1, "mes": "Mes 0",  "titulo": "Aportación $1M en Casa Alysa",          "note": "Capital al 25% anual preferente." },
-      { "order": 2, "mes": "Mes 8",  "titulo": "Alysa cierra: $1.16M recuperado",       "note": "Yield + capital de regreso." },
-      { "order": 3, "mes": "Mes 9",  "titulo": "Reinversión en lotes Fundadores II",    "note": "Aprox. terreno 311 m² en Real Miramar." },
-      { "order": 4, "mes": "Mes 18", "titulo": "Urbanización · escrituración",          "note": "Hitos verificables del fraccionamiento." },
-      { "order": 5, "mes": "Mes 24", "titulo": "Terreno con valor de $1.78M",           "note": "Retorno acumulado ~78%." }
+      {
+        "order": 1,
+        "mes": "Mes 0",
+        "titulo": "Aportación $1M en Casa Alysa",
+        "note": "Capital al 25% anual preferente."
+      },
+      {
+        "order": 2,
+        "mes": "Mes 8",
+        "titulo": "Alysa cierra: $1.16M recuperado",
+        "note": "Yield + capital de regreso."
+      },
+      {
+        "order": 3,
+        "mes": "Mes 9",
+        "titulo": "Reinversión en lotes Fundadores II",
+        "note": "Aprox. terreno 311 m² en Real Miramar."
+      },
+      {
+        "order": 4,
+        "mes": "Mes 18",
+        "titulo": "Urbanización · escrituración",
+        "note": "Hitos verificables del fraccionamiento."
+      },
+      {
+        "order": 5,
+        "mes": "Mes 24",
+        "titulo": "Terreno con valor de $1.78M",
+        "note": "Retorno acumulado ~78%."
+      }
     ]
   },
   "garantias": {
@@ -212,11 +1021,36 @@
       "lead": "Depende de la ley, del notario, del Registro Público de la Propiedad, y de las cláusulas escritas del contrato."
     },
     "cards": [
-      { "order": 1, "numero": "01", "titulo": "Escritura Individual",     "cuerpo": "Tu participación en escritura pública ante notario, registrada. Si Yodesarrollo desaparece mañana, tu porcentaje sigue siendo tuyo." },
-      { "order": 2, "numero": "02", "titulo": "Cuenta Exclusiva",         "cuerpo": "Cada peso aportado se deposita en cuenta a nombre del proyecto. Reportes trimestrales. Auditoría a solicitud." },
-      { "order": 3, "numero": "03", "titulo": "Activo Tangible",          "cuerpo": "No es un fideicomiso opaco. Es ladrillo y cemento que puedes tocar, visitar, fotografiar cuando quieras." },
-      { "order": 4, "numero": "04", "titulo": "Tres Opciones de Salida",  "cuerpo": "Si pasados 8 meses la casa no se vende: esperar (tasa preferente sigue corriendo) / vender tu porcentaje a un tercero / vender a un copropietario que quiera aumentar su participación." },
-      { "order": 5, "numero": "05", "titulo": "Marco Legal",              "cuerpo": "Operación amparada por los Artículos 938–979 del Código Civil Federal sobre copropiedad pro-indiviso, una de las figuras más sólidas del derecho civil mexicano." }
+      {
+        "order": 1,
+        "numero": "01",
+        "titulo": "Escritura Individual",
+        "cuerpo": "Tu participación en escritura pública ante notario, registrada. Si Yodesarrollo desaparece mañana, tu porcentaje sigue siendo tuyo."
+      },
+      {
+        "order": 2,
+        "numero": "02",
+        "titulo": "Cuenta Exclusiva",
+        "cuerpo": "Cada peso aportado se deposita en cuenta a nombre del proyecto. Reportes trimestrales. Auditoría a solicitud."
+      },
+      {
+        "order": 3,
+        "numero": "03",
+        "titulo": "Activo Tangible",
+        "cuerpo": "No es un fideicomiso opaco. Es ladrillo y cemento que puedes tocar, visitar, fotografiar cuando quieras."
+      },
+      {
+        "order": 4,
+        "numero": "04",
+        "titulo": "Tres Opciones de Salida",
+        "cuerpo": "Si pasados 8 meses la casa no se vende: esperar (tasa preferente sigue corriendo) / vender tu porcentaje a un tercero / vender a un copropietario que quiera aumentar su participación."
+      },
+      {
+        "order": 5,
+        "numero": "05",
+        "titulo": "Marco Legal",
+        "cuerpo": "Operación amparada por los Artículos 938–979 del Código Civil Federal sobre copropiedad pro-indiviso, una de las figuras más sólidas del derecho civil mexicano."
+      }
     ]
   },
   "cronograma": {
@@ -224,44 +1058,196 @@
       "kicker": "Hitos y ventana de oportunidad · Mayo 2026 → Mayo 2028",
       "display": "El momento importa.",
       "lead": "No es presión comercial. Es matemática del mercado: conforme avanza el proyecto, baja el riesgo y sube el precio.",
-      "stat_1_value": "$1M",  "stat_1_label": "Cupo Alysa restante",
-      "stat_2_value": "2/6",  "stat_2_label": "Lotes preventa Miramar",
-      "stat_3_value": "+27%", "stat_3_label": "F.II → Precio Venta · 12m",
-      "stat_4_value": "+10%", "stat_4_label": "Plusvalía anual después",
+      "stat_1_value": "$1M",
+      "stat_1_label": "Cupo Alysa restante",
+      "stat_2_value": "2/6",
+      "stat_2_label": "Lotes preventa Miramar",
+      "stat_3_value": "+27%",
+      "stat_3_label": "F.II → Precio Venta · 12m",
+      "stat_4_value": "+10%",
+      "stat_4_label": "Plusvalía anual después",
       "total_meses": 24
     },
     "meses": [
-      { "mes": 0,  "label": "May 26" }, { "mes": 2,  "label": "Jul 26" }, { "mes": 4,  "label": "Sep 26" },
-      { "mes": 6,  "label": "Nov 26" }, { "mes": 8,  "label": "Ene 27" }, { "mes": 10, "label": "Mar 27" },
-      { "mes": 12, "label": "May 27" }, { "mes": 14, "label": "Jul 27" }, { "mes": 16, "label": "Sep 27" },
-      { "mes": 18, "label": "Nov 27" }, { "mes": 20, "label": "Ene 28" }, { "mes": 22, "label": "Mar 28" },
-      { "mes": 24, "label": "May 28" }
+      {
+        "mes": 0,
+        "label": "May 26"
+      },
+      {
+        "mes": 2,
+        "label": "Jul 26"
+      },
+      {
+        "mes": 4,
+        "label": "Sep 26"
+      },
+      {
+        "mes": 6,
+        "label": "Nov 26"
+      },
+      {
+        "mes": 8,
+        "label": "Ene 27"
+      },
+      {
+        "mes": 10,
+        "label": "Mar 27"
+      },
+      {
+        "mes": 12,
+        "label": "May 27"
+      },
+      {
+        "mes": 14,
+        "label": "Jul 27"
+      },
+      {
+        "mes": 16,
+        "label": "Sep 27"
+      },
+      {
+        "mes": 18,
+        "label": "Nov 27"
+      },
+      {
+        "mes": 20,
+        "label": "Ene 28"
+      },
+      {
+        "mes": 22,
+        "label": "Mar 28"
+      },
+      {
+        "mes": 24,
+        "label": "May 28"
+      }
     ],
     "alysa_hitos": [
-      { "mes": 0,  "label": "HOY · 80% obra",  "note": "" },
-      { "mes": 4,  "label": "Acabados",         "note": "Casa terminada" },
-      { "mes": 8,  "label": "Venta estimada",   "note": "Cierre y reparto" },
-      { "mes": 10, "label": "Venta máx.",       "note": "Salida tope" }
+      {
+        "mes": 0,
+        "label": "HOY · 80% obra",
+        "note": ""
+      },
+      {
+        "mes": 4,
+        "label": "Acabados",
+        "note": "Casa terminada"
+      },
+      {
+        "mes": 8,
+        "label": "Venta estimada",
+        "note": "Cierre y reparto"
+      },
+      {
+        "mes": 10,
+        "label": "Venta máx.",
+        "note": "Salida tope"
+      }
     ],
     "miramar_hitos": [
-      { "mes": 0,  "label": "Fundadores II", "price": "$3,750/m²", "gain": "HOY",    "hi": true,  "bigDot": false },
-      { "mes": 4,  "label": "Preventa I",    "price": "$4,075/m²", "gain": "+8.7%",  "hi": false, "bigDot": false },
-      { "mes": 8,  "label": "Preventa II",   "price": "$4,325/m²", "gain": "+15.3%", "hi": false, "bigDot": false },
-      { "mes": 12, "label": "Precio Venta",  "price": "$4,750/m²", "gain": "+26.7%", "hi": false, "bigDot": true },
-      { "mes": 24, "label": "Año 2 mercado", "price": "$5,225/m²", "gain": "+39.3%", "hi": false, "bigDot": true }
+      {
+        "mes": 0,
+        "label": "Fundadores II",
+        "price": "$3,750/m²",
+        "gain": "HOY",
+        "hi": true,
+        "bigDot": false
+      },
+      {
+        "mes": 4,
+        "label": "Preventa I",
+        "price": "$4,075/m²",
+        "gain": "+8.7%",
+        "hi": false,
+        "bigDot": false
+      },
+      {
+        "mes": 8,
+        "label": "Preventa II",
+        "price": "$4,325/m²",
+        "gain": "+15.3%",
+        "hi": false,
+        "bigDot": false
+      },
+      {
+        "mes": 12,
+        "label": "Precio Venta",
+        "price": "$4,750/m²",
+        "gain": "+26.7%",
+        "hi": false,
+        "bigDot": true
+      },
+      {
+        "mes": 24,
+        "label": "Año 2 mercado",
+        "price": "$5,225/m²",
+        "gain": "+39.3%",
+        "hi": false,
+        "bigDot": true
+      }
     ],
     "bullets_alysa": [
-      { "order": 1, "mes_label": "Mes 0 (Mayo 26)",  "titulo": "obra al 80%",          "descripcion": "inicia ventana de coinversión." },
-      { "order": 2, "mes_label": "Mes 4 (Sep 26)",   "titulo": "acabados terminados",  "descripcion": "casa lista para vender." },
-      { "order": 3, "mes_label": "Mes 8 (Ene 27)",   "titulo": "venta estimada",       "descripcion": "y cierre con el inversionista." },
-      { "order": 4, "mes_label": "Mes 10 (Mar 27)",  "titulo": "plazo máximo de venta","descripcion": "si no se vende, opciones de salida del contrato." }
+      {
+        "order": 1,
+        "mes_label": "Mes 0 (Mayo 26)",
+        "titulo": "obra al 80%",
+        "descripcion": "inicia ventana de coinversión."
+      },
+      {
+        "order": 2,
+        "mes_label": "Mes 4 (Sep 26)",
+        "titulo": "acabados terminados",
+        "descripcion": "casa lista para vender."
+      },
+      {
+        "order": 3,
+        "mes_label": "Mes 8 (Ene 27)",
+        "titulo": "venta estimada",
+        "descripcion": "y cierre con el inversionista."
+      },
+      {
+        "order": 4,
+        "mes_label": "Mes 10 (Mar 27)",
+        "titulo": "plazo máximo de venta",
+        "descripcion": "si no se vende, opciones de salida del contrato."
+      }
     ],
     "bullets_miramar": [
-      { "order": 1, "mes_label": "Mes 0",           "titulo": "Fundadores II HOY", "precio": "$3,750/m²", "extra": "" },
-      { "order": 2, "mes_label": "Mes 4",           "titulo": "Preventa I",        "precio": "$4,075/m²", "extra": "(+8.7%)" },
-      { "order": 3, "mes_label": "Mes 8",           "titulo": "Preventa II",       "precio": "$4,325/m²", "extra": "(+15.3%)" },
-      { "order": 4, "mes_label": "Mes 12",          "titulo": "Precio Venta",      "precio": "$4,750/m²", "extra": "(+26.7%)" },
-      { "order": 5, "mes_label": "Año 2 (mes 24)",  "titulo": "mercado consolidado","precio": "$5,225/m²","extra": "(+39.3%)" }
+      {
+        "order": 1,
+        "mes_label": "Mes 0",
+        "titulo": "Fundadores II HOY",
+        "precio": "$3,750/m²",
+        "extra": ""
+      },
+      {
+        "order": 2,
+        "mes_label": "Mes 4",
+        "titulo": "Preventa I",
+        "precio": "$4,075/m²",
+        "extra": "(+8.7%)"
+      },
+      {
+        "order": 3,
+        "mes_label": "Mes 8",
+        "titulo": "Preventa II",
+        "precio": "$4,325/m²",
+        "extra": "(+15.3%)"
+      },
+      {
+        "order": 4,
+        "mes_label": "Mes 12",
+        "titulo": "Precio Venta",
+        "precio": "$4,750/m²",
+        "extra": "(+26.7%)"
+      },
+      {
+        "order": 5,
+        "mes_label": "Año 2 (mes 24)",
+        "titulo": "mercado consolidado",
+        "precio": "$5,225/m²",
+        "extra": "(+39.3%)"
+      }
     ],
     "quote": {
       "quote": "Los mejores inversionistas que he conocido entran en momentos de incertidumbre — porque ahí está el mejor precio. La certeza la pagas en plusvalía perdida."
@@ -275,10 +1261,38 @@
       "lead": "Si entras hoy, lo haces con escritura, con garantías, con plazo claro. Si decides que aún no es momento, te respetamos tu tiempo y te enviamos toda la información para que la revises con calma."
     },
     "paths": [
-      { "letra": "A", "titulo": "Reservo hoy",       "sub": "$30,000 reembolsables", "descripcion": "Aparta tu lugar en cupo Alysa o lote fundador II. Si no avanzas en 7 días, devolución total.", "cta": "Llenar reserva",      "strong": true  },
-      { "letra": "B", "titulo": "Visito la obra",    "sub": "esta semana",           "descripcion": "Recorrido privado en Casa Alysa o Real Miramar con el equipo de obra.",                       "cta": "Agendar visita",      "strong": false },
-      { "letra": "C", "titulo": "Reviso con asesor", "sub": "o pareja",              "descripcion": "Te enviamos el dossier completo + grabación de esta sesión.",                                 "cta": "Recibir documentos",  "strong": false },
-      { "letra": "D", "titulo": "No es para mí",     "sub": "en este momento",       "descripcion": "Lo respetamos. Te quedas en la lista para edición fundadora 2027.",                            "cta": "Cerrar conversación", "strong": false }
+      {
+        "letra": "A",
+        "titulo": "Reservo hoy",
+        "sub": "$30,000 reembolsables",
+        "descripcion": "Aparta tu lugar en cupo Alysa o lote fundador II. Si no avanzas en 7 días, devolución total.",
+        "cta": "Llenar reserva",
+        "strong": true
+      },
+      {
+        "letra": "B",
+        "titulo": "Visito la obra",
+        "sub": "esta semana",
+        "descripcion": "Recorrido privado en Casa Alysa o Real Miramar con el equipo de obra.",
+        "cta": "Agendar visita",
+        "strong": false
+      },
+      {
+        "letra": "C",
+        "titulo": "Reviso con asesor",
+        "sub": "o pareja",
+        "descripcion": "Te enviamos el dossier completo + grabación de esta sesión.",
+        "cta": "Recibir documentos",
+        "strong": false
+      },
+      {
+        "letra": "D",
+        "titulo": "No es para mí",
+        "sub": "en este momento",
+        "descripcion": "Lo respetamos. Te quedas en la lista para edición fundadora 2027.",
+        "cta": "Cerrar conversación",
+        "strong": false
+      }
     ]
   },
   "contacto": {
@@ -298,11 +1312,36 @@
       "oficina": "Hermosillo · Sonora"
     },
     "docs": [
-      { "order": 1, "titulo": "Carpeta de inversión completa",     "meta": "PDF · 13 pp",    "url": "" },
-      { "order": 2, "titulo": "Dossier de diagnóstico patrimonial","meta": "PDF · 4 pp",     "url": "" },
-      { "order": 3, "titulo": "Casa Alysa — ficha técnica",         "meta": "PDF · 16 pp",   "url": "" },
-      { "order": 4, "titulo": "Real Miramar — plano maestro",       "meta": "PDF · 17 pp",   "url": "" },
-      { "order": 5, "titulo": "Modelo de contrato de copropiedad",  "meta": "PDF · borrador","url": "" }
+      {
+        "order": 1,
+        "titulo": "Carpeta de inversión completa",
+        "meta": "PDF · 13 pp",
+        "url": ""
+      },
+      {
+        "order": 2,
+        "titulo": "Dossier de diagnóstico patrimonial",
+        "meta": "PDF · 4 pp",
+        "url": ""
+      },
+      {
+        "order": 3,
+        "titulo": "Casa Alysa — ficha técnica",
+        "meta": "PDF · 16 pp",
+        "url": ""
+      },
+      {
+        "order": 4,
+        "titulo": "Real Miramar — plano maestro",
+        "meta": "PDF · 17 pp",
+        "url": ""
+      },
+      {
+        "order": 5,
+        "titulo": "Modelo de contrato de copropiedad",
+        "meta": "PDF · borrador",
+        "url": ""
+      }
     ],
     "cta": {
       "titulo": "Agenda visita privada",
@@ -310,5 +1349,6 @@
       "cta": "Agendar esta semana",
       "url": ""
     }
-  }
+  },
+  "proyectos": []
 }

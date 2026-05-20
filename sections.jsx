@@ -403,10 +403,15 @@ const SecCalculadora = (props) => {
       pct: plusvalia24m * 100,
     };
   } else {
+    // Estrategia Alysa → Miramar:
+    // 1) Capital en Alysa 8m al rate escalonado.
+    // 2) Se recupera capital + rendimiento y se reinvierte a PRECIO CONGELADO de mes 0.
+    // 3) Captura la plusvalía COMPLETA de 24m — el precio anclado es el beneficio de
+    //    ser cliente aliado, así que no se prorratea. Ejemplo $1M → +78.5%.
     const r = alysaRate(capital);
     const r8 = capital * (r / 100) * (8 / 12);
     const after8 = capital + r8;
-    const miramarGain = after8 * (plusvalia24m * 16 / 24);
+    const miramarGain = after8 * plusvalia24m;   // plusvalía completa, sin × 16/24
     const total = after8 + miramarGain;
     result = {
       rate: Math.round(((total / capital - 1) * 100)) + "% acumulado",
@@ -436,7 +441,7 @@ const SecCalculadora = (props) => {
                 {[
                   { id: "alysa", t: "Casa Alysa · 8m" },
                   { id: "miramar", t: "Real Miramar · 24m" },
-                  { id: "combo", t: "Combinado · 24m" },
+                  { id: "estrategia", t: "Estrategia · Alysa→Miramar" },
                 ].map((o) => (
                   <button key={o.id} className={proj === o.id ? "on" : ""} onClick={() => setProj(o.id)}>{o.t}</button>
                 ))}
@@ -794,8 +799,120 @@ const SecContacto = (props) => {
   );
 };
 
+// =============================================================================
+// PROYECTO (genérico) — render dinámico de proyectos del tab `Proyectos`
+// modelo: "simple" | "coinversion" | "plusvalia"
+// =============================================================================
+const SecProyecto = (props) => {
+  const p = props.tile || {};
+  const modelo = p.modelo || "simple";
+  const tiers  = (p.tiers || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+  const porQue = p.por_que || [];
+  const como   = p.como || [];
+
+  return (
+    <Shell {...props} related={["calculadora", "garantias", "decision", "contacto"]}>
+      <div className="proj">
+        <div className="proj-hero alysa-hero">
+          <div className="hero-text">
+            <span className="kicker">{p.kicker}</span>
+            <h1 className="display">{p.hero_display || p.nombre}</h1>
+            <p className="lead">{p.hero_lead}</p>
+            <div className="stat-row">
+              {p.stat_1_value && <div className="stat"><span className="big mono">{p.stat_1_value}</span><span className="mini">{p.stat_1_label}</span></div>}
+              {p.stat_2_value && <div className="stat"><span className="big mono">{p.stat_2_value}</span><span className="mini">{p.stat_2_label}</span></div>}
+              {p.stat_3_value && <div className="stat"><span className="big mono">{p.stat_3_value}</span><span className="mini">{p.stat_3_label}</span></div>}
+              {p.stat_4_value && <div className="stat"><span className="big mono accent">{p.stat_4_value}</span><span className="mini">{p.stat_4_label}</span></div>}
+            </div>
+          </div>
+          <div className="hero-img">
+            {p.img_url ? (
+              <img src={p.img_url} alt={p.nombre} className="hero-img-real" />
+            ) : (
+              <div className="img-placeholder">
+                <span className="ph-label">{p.nombre}</span>
+                <span className="ph-sub">— {p.ubicacion || ""} —</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tabla de tiers — solo coinversión escalonada */}
+        {modelo === "coinversion" && tiers.length > 0 && (
+          <section className="block">
+            <h2 className="block-title">Estructura escalonada · más capital, mejor tasa</h2>
+            <table className="comp-table">
+              <thead>
+                <tr><th>Capital</th><th className="num">Tasa anual</th><th className="num">Retorno 6m</th><th className="num">Retorno 8m</th><th className="num">Total 8m</th></tr>
+              </thead>
+              <tbody>
+                {tiers.map((t) => (
+                  <tr key={t.capital} className={t.star ? "star" : ""}>
+                    <td className="mono">{t.star && <span className="star-mark">★</span>}{fmt(t.capital)}</td>
+                    <td className="num mono">{Number(t.rate).toFixed(2)}%</td>
+                    <td className="num mono muted">{fmt(t.retorno6)}</td>
+                    <td className="num mono muted">{fmt(t.retorno8)}</td>
+                    <td className="num mono accent">{fmt(t.total)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        )}
+
+        {/* Lotes — solo plusvalía (reusa el LoteSelector si el proyecto trae lotes) */}
+        {modelo === "plusvalia" && (p.lotes || []).length > 0 && (
+          <LoteSelector />
+        )}
+
+        {/* Por qué / Cómo */}
+        {(porQue.length > 0 || como.length > 0) && (
+          <section className="block two-col">
+            {porQue.length > 0 && (
+              <div>
+                <h2 className="block-title">Por qué</h2>
+                <ul className="bullets">{porQue.map((b, i) => <li key={i}>{b}</li>)}</ul>
+              </div>
+            )}
+            {como.length > 0 && (
+              <div>
+                <h2 className="block-title">Cómo entras</h2>
+                <ul className="bullets">{como.map((b, i) => <li key={i}>{b}</li>)}</ul>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Material del proyecto — PDF de propuesta, video de avance, CTA */}
+        {(p.pdf_dossier_url || p.video_url || p.cta_url) && (
+          <section className="block">
+            <h2 className="block-title">Material del proyecto</h2>
+            <div className="proj-action-row">
+              {p.pdf_dossier_url && (
+                <a className="path-cta" href={p.pdf_dossier_url} target="_blank" rel="noreferrer">
+                  Ver propuesta (PDF) <IconArrow size={14} sw={2} />
+                </a>
+              )}
+              {p.video_url && (
+                <a className="path-cta" href={p.video_url} target="_blank" rel="noreferrer">
+                  Ver avance de obra <IconArrow size={14} sw={2} />
+                </a>
+              )}
+              {p.cta_url && (
+                <a className="path-cta" href={p.cta_url} target="_blank" rel="noreferrer">
+                  {p.cta_text || "Más información"} <IconArrow size={14} sw={2} />
+                </a>
+              )}
+            </div>
+          </section>
+        )}
+      </div>
+    </Shell>
+  );
+};
+
 Object.assign(window, {
   SecDiagnostico, SecComparativo, SecCasaAlysa, SecRealMiramar,
   SecCalculadora, SecEstrategia, SecGarantias, SecCronograma,
-  SecDecision, SecContacto,
+  SecDecision, SecContacto, SecProyecto,
 });
