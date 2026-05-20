@@ -514,6 +514,24 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   gap: 6px;
 }
 
+/* ── Logo como link a yodesarrollo.mx (cover + dashboard) ── */
+.brand-logo-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.brand-logo-link:hover { opacity: 0.62; }
+
+/* ── "YODESARROLLO · SAPI" como link en las secciones ── */
+.head-brand-link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.head-brand-link:hover { color: #d4be8a !important; }
+
 /* ════════════════════════════════════════════════════════════════════════════
  * Footer del board (mantenido + padding fluido)
  * ════════════════════════════════════════════════════════════════════════════ */

@@ -83,12 +83,18 @@ const CoverScreen = ({ onStart, t }) => {
   return (
     <div className={"cover cover--" + t.aesthetic}>
       <header className="cover-head">
-        <div className="cover-brand">
+        <a
+          className="cover-brand brand-logo-link"
+          href={cfg.brand_url || "https://yodesarrollo.mx"}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Ir a yodesarrollo.mx"
+        >
           {cfg.logo_url
             ? <img src={cfg.logo_url} alt="Yodesarrollo" className="cover-logo" />
             : <img src="assets/logo_white.png" alt="Yodesarrollo" className="cover-logo" />
           }
-        </div>
+        </a>
         <div className="cover-folio mono">{cfg.folio || "YDR-2026-001"}</div>
       </header>
 
@@ -149,7 +155,15 @@ const Dashboard = ({ onOpen, t }) => {
     <div className={"board board--" + t.aesthetic} data-mode={presentation ? "presentation" : "edit"}>
       <header className="board-head board-head--clean">
         <div className="brand">
-          <img src={logoSrc} alt="Yodesarrollo" className="brand-logo" />
+          <a
+            className="brand-logo-link"
+            href={cfg.brand_url || "https://yodesarrollo.mx"}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Ir a yodesarrollo.mx"
+          >
+            <img src={logoSrc} alt="Yodesarrollo" className="brand-logo" />
+          </a>
           <div className="brand-meta">
             <span className="brand-name mono">{cfg.brand_name || "YODESARROLLO"}</span>
             <span className="brand-sub">

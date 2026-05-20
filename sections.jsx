@@ -5,43 +5,54 @@ const fmt   = (n) => "$" + Number(n || 0).toLocaleString("en-US");
 const fmtMx = (n) => "$" + Number(n || 0).toLocaleString("en-US") + " MXN";
 
 // --------------------------- Section shell ---------------------------
-const Shell = ({ tile, onHome, navigate, related, kicker, children }) => (
-  <div className="section" style={{ ["--accent"]: tile.accent }}>
-    <header className="sec-head">
-      <button className="chip-btn" onClick={onHome}>
-        <IconHome size={18} /> <span>Board</span>
-      </button>
-      <div className="breadcrumb">
-        <span className="kicker">{kicker || tile.kicker}</span>
-        <span className="dot">·</span>
-        <span className="crumb">{tile.label}</span>
-      </div>
-      <div className="head-right">
-        <span className="mono small muted">YODESARROLLO · SAPI</span>
-      </div>
-    </header>
-    <main className="sec-body">{children}</main>
-    {related && related.length > 0 && (
-      <footer className="related">
-        <span className="related-label">Saltar a</span>
-        <div className="related-row">
-          {related.map((r) => {
-            const { data } = window.useData();
-            const lookup = window.buildTileLookup(data.tiles);
-            const t = lookup[r];
-            if (!t) return null;
-            return (
-              <button key={r} className="related-pill" onClick={() => navigate(r)}>
-                {t.label}
-                <IconArrow size={14} sw={2} />
-              </button>
-            );
-          })}
+const Shell = ({ tile, onHome, navigate, related, kicker, children }) => {
+  const { data } = window.useData();
+  const brandUrl = ((data && data.config) || {}).brand_url || "https://yodesarrollo.mx";
+  return (
+    <div className="section" style={{ ["--accent"]: tile.accent }}>
+      <header className="sec-head">
+        <button className="chip-btn" onClick={onHome}>
+          <IconHome size={18} /> <span>Board</span>
+        </button>
+        <div className="breadcrumb">
+          <span className="kicker">{kicker || tile.kicker}</span>
+          <span className="dot">·</span>
+          <span className="crumb">{tile.label}</span>
         </div>
-      </footer>
-    )}
-  </div>
-);
+        <div className="head-right">
+          <a
+            className="head-brand-link mono small muted"
+            href={brandUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Ir a yodesarrollo.mx"
+          >
+            YODESARROLLO · SAPI
+          </a>
+        </div>
+      </header>
+      <main className="sec-body">{children}</main>
+      {related && related.length > 0 && (
+        <footer className="related">
+          <span className="related-label">Saltar a</span>
+          <div className="related-row">
+            {related.map((r) => {
+              const lookup = window.buildTileLookup(data.tiles);
+              const t = lookup[r];
+              if (!t) return null;
+              return (
+                <button key={r} className="related-pill" onClick={() => navigate(r)}>
+                  {t.label}
+                  <IconArrow size={14} sw={2} />
+                </button>
+              );
+            })}
+          </div>
+        </footer>
+      )}
+    </div>
+  );
+};
 
 // =============================================================================
 // 1. DIAGNÓSTICO
