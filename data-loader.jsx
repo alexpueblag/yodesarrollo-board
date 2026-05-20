@@ -1,10 +1,13 @@
 // Yodesarrollo-Board · Data Loader
 //
-// Carga híbrida:
-//   1. Si hay caché fresco en localStorage (< 5 min) → usa ese
-//   2. Sino: fetch al Apps Script /exec
-//   3. Si Apps Script tarda > 3 seg o falla → cae a data.json local
-//   4. Si fetch live tiene éxito, sobrescribe caché y notifica
+// Carga "red primero" (network-first):
+//   1. Al abrir, muestra el loader e intenta SIEMPRE traer lo más fresco del Apps Script.
+//   2. Si la red responde → usa eso (y lo guarda en caché).
+//   3. Si la red falla o se pasa del timeout → usa la caché local (aunque sea de antes).
+//   4. Si tampoco hay caché → cae a data.json (offline).
+//
+// Así nunca arrancamos mostrando datos viejos: o es fresco, o es lo mejor disponible
+// solo cuando de plano no hay conexión.
 //
 // Expone:
 //   - DataContext (React.createContext)
@@ -14,8 +17,8 @@
 // La URL del Apps Script vive en window.YDR_CONFIG.appsScriptUrl (ver index.html)
 
 const CACHE_KEY      = "ydr_board_data_v1";
-const CACHE_TTL_MS   = 5 * 60 * 1000;     // 5 minutos
-const FETCH_TIMEOUT  = 3000;              // 3 segundos
+const CACHE_TTL_MS   = 5 * 60 * 1000;     // 5 minutos (solo informativo; ya no bloquea el arranque)
+const FETCH_TIMEOUT  = 9000;              // 9 segundos — da margen al cold start de Apps Script
 const FALLBACK_URL   = "data.json";
 
 const DataContext = React.createContext(null);
@@ -31,6 +34,15 @@ const cacheRead = () => {
     const { ts, data } = JSON.parse(raw);
     if (Date.now() - ts > CACHE_TTL_MS) return null;
     return data;
+  } catch (e) { return null; }
+};
+
+// Lee la caché sin importar su antigüedad — solo se usa de emergencia cuando la red falló.
+const cacheReadAny = () => {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw).data || null;
   } catch (e) { return null; }
 };
 
@@ -80,26 +92,9 @@ const DataProvider = ({ children }) => {
   const [source, setSource] = React.useState(null);        // cache | live | fallback
 
   const load = React.useCallback(async (forceLive = false) => {
-    // 1. Caché fresco
-    if (!forceLive) {
-      const cached = cacheRead();
-      if (cached) {
-        setData(cached);
-        setStatus("ready");
-        setSource("cache");
-        // refresca en background sin bloquear
-        fetchLive().then((live) => {
-          cacheWrite(live);
-          setData(live);
-          setSource("live");
-        }).catch(() => { /* mantiene caché */ });
-        return;
-      }
-    }
-
     setStatus("loading");
 
-    // 2. Apps Script live (con timeout)
+    // 1. RED PRIMERO — siempre intentamos lo más fresco del Apps Script.
     try {
       const live = await fetchLive();
       cacheWrite(live);
@@ -111,7 +106,16 @@ const DataProvider = ({ children }) => {
       console.warn("[data-loader] live fetch falló:", e.message);
     }
 
-    // 3. Fallback al JSON local
+    // 2. Si la red falló: usamos la caché local (lo mejor disponible aunque no sea de ahorita).
+    const cached = cacheReadAny();
+    if (cached) {
+      setData(cached);
+      setStatus("ready");
+      setSource("cache");
+      return;
+    }
+
+    // 3. Último recurso: data.json offline.
     try {
       const fb = await fetchFallback();
       setData(fb);
@@ -159,8 +163,8 @@ const DataProvider = ({ children }) => {
 const DataLoadingView = () => (
   <div className="data-loading">
     <div className="dl-inner">
-      <div className="dl-pulse"></div>
-      <span className="dl-text mono">Cargando board…</span>
+      <img src="assets/logo_white.png" alt="Yodesarrollo" className="dl-logo" />
+      <span className="dl-text mono">Cargando la información más reciente…</span>
     </div>
   </div>
 );

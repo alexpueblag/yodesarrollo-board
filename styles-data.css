@@ -27,6 +27,18 @@
 }
 .dl-text { font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase; color: #a3a097; }
 
+/* Loader con logo animado (respiración) — Sprint loader */
+.dl-logo {
+  height: 52px;
+  width: auto;
+  opacity: 0.9;
+  animation: dl-breathe 1.6s ease-in-out infinite;
+}
+@keyframes dl-breathe {
+  0%, 100% { opacity: 0.35; transform: scale(0.95); }
+  50%      { opacity: 1;    transform: scale(1.05); }
+}
+
 .data-source-badge {
   position: fixed; bottom: 12px; right: 12px;
   display: inline-flex; align-items: center; gap: 8px;
@@ -531,6 +543,19 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   transition: color 0.2s ease;
 }
 .head-brand-link:hover { color: #d4be8a !important; }
+
+/* ── Fila de acciones de proyecto (PDF, video, CTA) ── */
+.proj-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+.proj-action-row .path-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 
 /* ════════════════════════════════════════════════════════════════════════════
  * Footer del board (mantenido + padding fluido)
