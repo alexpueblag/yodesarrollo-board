@@ -93,6 +93,16 @@ html, body {
   min-height: 100%;
 }
 
+/* El dashboard debe CRECER con su contenido (no quedar clavado en 100vh).
+   Antes se cortaba lo de abajo cuando hay 3+ tiles grandes (p. ej. al sumar
+   proyectos dinámicos como Casa María). Dejamos que el body haga el scroll. */
+.app   { min-height: 100svh; height: auto; }
+.board {
+  height: auto;
+  min-height: 100svh;
+  overflow: visible;
+}
+
 /* ════════════════════════════════════════════════════════════════════════════
  * MODO PRESENTACIÓN — oculta chuleta, panel, badge
  * ════════════════════════════════════════════════════════════════════════════ */
