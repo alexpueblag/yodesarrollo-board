@@ -710,7 +710,10 @@ const SecDecision = (props) => {
               <h3>{p.titulo}</h3>
               <span className="path-sub muted">{p.sub}</span>
               <p>{p.descripcion}</p>
-              <button className="path-cta">{p.cta} <IconArrow size={14} sw={2} /></button>
+              {p.url
+                ? <a href={p.url} target="_blank" rel="noreferrer" className="path-cta">{p.cta} <IconArrow size={14} sw={2} /></a>
+                : <button className="path-cta">{p.cta} <IconArrow size={14} sw={2} /></button>
+              }
             </article>
           ))}
         </div>
