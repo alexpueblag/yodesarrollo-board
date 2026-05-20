@@ -164,9 +164,19 @@ const IconAutor = (p) => (
   </I>
 );
 
+// Acuerdo de pago — documento con líneas y firma
+const IconAcuerdo = (p) => (
+  <I {...p}>
+    <rect x="5" y="3" width="14" height="18" rx="2" />
+    <path d="M8.5 8h7" />
+    <path d="M8.5 11h5" />
+    <path d="M8.5 17c1.2-1.6 2.4-1.6 3.6 0 1.2 1.6 2.4 1.6 3.4 0" />
+  </I>
+);
+
 Object.assign(window, {
   IconDiagnostico, IconComparativo, IconCasaAlysa, IconRealMiramar,
   IconCalculadora, IconEstrategia, IconGarantias, IconCronograma,
   IconDecision, IconContacto, IconBack, IconHome, IconArrow,
-  IconPPP, IconQuienesSomos, IconAutor
+  IconPPP, IconQuienesSomos, IconAutor, IconAcuerdo
 });

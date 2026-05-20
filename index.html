@@ -17,13 +17,16 @@
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
+  <!-- Generación de PDF en 1 clic (Acuerdo de pago) -->
+  <script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script>
+
   <!--
     ⚠ CONFIG · pega aquí la URL /exec de tu Apps Script desplegado.
     Si está vacío, el board funciona solo con data.json (offline mode).
   -->
   <script>
     window.YDR_CONFIG = {
-      appsScriptUrl: "https://script.google.com/macros/s/AKfycbydELrGzjtZqRZfk3S_ccaapovgdW0j5geqoW2eT8O5AR87ZN4DL5tEwwIXOEyQKYEF-w/exec"
+      appsScriptUrl: ""  // ej. "https://script.google.com/macros/s/AKfycb.../exec"
     };
   </script>
 </head>

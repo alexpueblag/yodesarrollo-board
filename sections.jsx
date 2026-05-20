@@ -911,8 +911,305 @@ const SecProyecto = (props) => {
   );
 };
 
+// =============================================================================
+// ACUERDO DE PAGO — editor + documento "Promesa de Pago" (molde Meave) + PDF 1 clic
+// Todos los campos se llenan a mano; el total de aportaciones se autosuma.
+// =============================================================================
+const fmtMoney = (n) => "$" + (Math.round(parseFloat(n) || 0)).toLocaleString("en-US");
+const fmtTotal = (n) => fmtMoney(n) + " MXN";
+
+const SecAcuerdoPagos = (props) => {
+  const { data } = window.useData();
+  const cfg = (data && data.config) || {};
+
+  const [d, setD] = React.useState({
+    inversionista: "",
+    lugar: "Hermosillo, Sonora, México",
+    emitido: "",
+    folio: "CA-HM-2026-001",
+    subtitulo: "Coinversión escriturada en Casa Alysa",
+    intro_aportacion: "Cuatro pagos. Cuenta exclusiva del proyecto. Cada peso trazable.",
+    aportaciones: [
+      { fecha: "", concepto: "Aportación inicial", monto: "" },
+      { fecha: "", concepto: "Aportación 2 de 4", monto: "" },
+      { fecha: "", concepto: "Aportación 3 de 4", monto: "" },
+      { fecha: "", concepto: "Aportación final", monto: "" },
+    ],
+    intro_rendimiento: "25% anual preferente, prorrateado según el momento real de venta.",
+    rendimientos: [
+      { momento: "Mes 1 - 6", tasa: "12.50%", total: "" },
+      { momento: "Mes 6 - 8", tasa: "16.67%", total: "" },
+      { momento: "Mes 9 - 12", tasa: "25.00%", total: "" },
+      { momento: "Mes 13 - 24", tasa: "27% - 50%", total: "0.0685% adicional por día" },
+    ],
+    nota_rendimiento: "Si la venta excede 12 meses, cada día acumula 0.0685% adicional sobre el capital, equivalente al 25% anual del siguiente periodo, proporcional.",
+    referencias: [
+      { ref: "13 meses", total: "", rend: "" },
+      { ref: "18 meses", total: "", rend: "" },
+      { ref: "24 meses", total: "", rend: "" },
+    ],
+    banco: cfg.dep_banco || "BBVA",
+    beneficiario: cfg.dep_beneficiario || "YODESARROLLO SAPI DE CV",
+    cuenta: cfg.dep_cuenta || "011628459",
+    clabe: cfg.dep_clabe || "012760001186284598",
+    concepto_dep: "",
+    nota_dep: "Cada pago deberá notificarse enviando el comprobante correspondiente para su registro y trazabilidad dentro del proyecto.",
+    texto_conformidad: "Las partes manifiestan su conformidad con el calendario de aportaciones, la estructura de rendimiento y las garantías arriba descritas. Este documento se complementará con el contrato definitivo escriturado ante notario, mismo que prevalecerá en caso de discrepancia.",
+    firma_rep: cfg.firma_rep || "Alejandro Puebla Gayón",
+  });
+
+  const set = (k, v) => setD((p) => ({ ...p, [k]: v }));
+  const setRow = (arr, i, k, v) =>
+    setD((p) => ({ ...p, [arr]: p[arr].map((r, j) => (j === i ? { ...r, [k]: v } : r)) }));
+  const addRow = (arr, tpl) => setD((p) => ({ ...p, [arr]: [...p[arr], tpl] }));
+  const delRow = (arr, i) => setD((p) => ({ ...p, [arr]: p[arr].filter((_, j) => j !== i) }));
+
+  const totalAport = d.aportaciones.reduce((s, a) => s + (parseFloat(a.monto) || 0), 0);
+
+  const descargar = () => {
+    const el = document.getElementById("ap-doc");
+    if (!el) return;
+    if (!window.html2pdf) {
+      alert("La librería de PDF aún se está cargando. Espera 2 segundos y vuelve a intentar.");
+      return;
+    }
+    const nombre = (d.inversionista || "inversionista").replace(/[^a-zA-Z0-9]+/g, "-");
+    window.html2pdf().set({
+      margin: 0,
+      filename: "Promesa-de-Pago-" + nombre + ".pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 3, useCORS: true, backgroundColor: "#ffffff" },
+      jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
+      pagebreak: { mode: ["css", "legacy"] },
+    }).from(el).save();
+  };
+
+  const fld = (label, key, ph) => (
+    <label className="ap-fld">
+      <span>{label}</span>
+      <input value={d[key]} placeholder={ph || ""} onChange={(e) => set(key, e.target.value)} />
+    </label>
+  );
+
+  return (
+    <Shell {...props} related={["calculadora", "garantias", "contacto"]}>
+      <div className="ap-wrap">
+
+        {/* ---------- EDITOR ---------- */}
+        <div className="ap-form">
+          <div className="ap-form-head">
+            <h2>Datos del acuerdo</h2>
+            <button className="ap-download" onClick={descargar}>
+              Descargar PDF <IconArrow size={14} sw={2} />
+            </button>
+          </div>
+          <p className="ap-hint">Llena los campos; el documento de la derecha se arma solo. El total de aportaciones se suma automáticamente.</p>
+
+          <div className="ap-grid2">
+            {fld("Inversionista", "inversionista", "Nombre completo")}
+            {fld("Folio", "folio")}
+            {fld("Emitido", "emitido", "19 de mayo de 2026")}
+            {fld("Lugar", "lugar")}
+          </div>
+          {fld("Subtítulo", "subtitulo")}
+
+          {/* Aportaciones */}
+          <div className="ap-block">
+            <div className="ap-block-head"><span>I · Aportaciones</span>
+              <button onClick={() => addRow("aportaciones", { fecha: "", concepto: "", monto: "" })}>+ fila</button>
+            </div>
+            {fld("Bajada", "intro_aportacion")}
+            {d.aportaciones.map((a, i) => (
+              <div className="ap-row" key={i}>
+                <input className="c-f" value={a.fecha} placeholder="19 mayo 2026" onChange={(e) => setRow("aportaciones", i, "fecha", e.target.value)} />
+                <input className="c-c" value={a.concepto} placeholder="Concepto" onChange={(e) => setRow("aportaciones", i, "concepto", e.target.value)} />
+                <input className="c-m" value={a.monto} placeholder="Monto $" onChange={(e) => setRow("aportaciones", i, "monto", e.target.value)} />
+                <button className="ap-del" onClick={() => delRow("aportaciones", i)}>×</button>
+              </div>
+            ))}
+            <div className="ap-total-line">Total: <strong>{fmtTotal(totalAport)}</strong></div>
+          </div>
+
+          {/* Rendimientos */}
+          <div className="ap-block">
+            <div className="ap-block-head"><span>II · Rendimiento</span>
+              <button onClick={() => addRow("rendimientos", { momento: "", tasa: "", total: "" })}>+ fila</button>
+            </div>
+            {fld("Bajada", "intro_rendimiento")}
+            {d.rendimientos.map((r, i) => (
+              <div className="ap-row" key={i}>
+                <input className="c-f" value={r.momento} placeholder="Mes 1 - 6" onChange={(e) => setRow("rendimientos", i, "momento", e.target.value)} />
+                <input className="c-c" value={r.tasa} placeholder="Tasa" onChange={(e) => setRow("rendimientos", i, "tasa", e.target.value)} />
+                <input className="c-m" value={r.total} placeholder="Total a recibir" onChange={(e) => setRow("rendimientos", i, "total", e.target.value)} />
+                <button className="ap-del" onClick={() => delRow("rendimientos", i)}>×</button>
+              </div>
+            ))}
+            {fld("Nota", "nota_rendimiento")}
+          </div>
+
+          {/* Referencias */}
+          <div className="ap-block">
+            <div className="ap-block-head"><span>Tabla de referencia</span>
+              <button onClick={() => addRow("referencias", { ref: "", total: "", rend: "" })}>+ fila</button>
+            </div>
+            {d.referencias.map((r, i) => (
+              <div className="ap-row" key={i}>
+                <input className="c-f" value={r.ref} placeholder="13 meses" onChange={(e) => setRow("referencias", i, "ref", e.target.value)} />
+                <input className="c-c" value={r.total} placeholder="Total a recibir" onChange={(e) => setRow("referencias", i, "total", e.target.value)} />
+                <input className="c-m" value={r.rend} placeholder="Rendimiento" onChange={(e) => setRow("referencias", i, "rend", e.target.value)} />
+                <button className="ap-del" onClick={() => delRow("referencias", i)}>×</button>
+              </div>
+            ))}
+          </div>
+
+          {/* Cuenta */}
+          <div className="ap-block">
+            <div className="ap-block-head"><span>III · Cuenta de depósito</span></div>
+            <div className="ap-grid2">
+              {fld("Banco", "banco")}
+              {fld("Beneficiario", "beneficiario")}
+              {fld("Cuenta", "cuenta")}
+              {fld("CLABE", "clabe")}
+            </div>
+            {fld("Concepto sugerido", "concepto_dep", "Aportación Casa Alysa - Nombre - Folio")}
+            {fld("Nota", "nota_dep")}
+          </div>
+
+          {/* Conformidad */}
+          <div className="ap-block">
+            <div className="ap-block-head"><span>IV · Conformidad</span></div>
+            {fld("Texto", "texto_conformidad")}
+            {fld("Representante legal", "firma_rep")}
+          </div>
+        </div>
+
+        {/* ---------- DOCUMENTO ---------- */}
+        <div className="ap-preview-col">
+          <div id="ap-doc" className="ap-doc">
+
+            {/* PÁGINA 1 */}
+            <div className="ap-page">
+              <div className="ap-doc-head">
+                <div className="ap-logo-row">
+                  <span className="ap-wordmark">YODESARROLLO<span className="ap-wordmark-tld">.MX</span></span>
+                </div>
+                <span className="ap-folio">Folio {d.folio}</span>
+              </div>
+              <hr className="ap-rule" />
+
+              <h1 className="ap-title">PROMESA DE PAGO</h1>
+              <div className="ap-title-dash"></div>
+              <p className="ap-subtitle">{d.subtitulo}</p>
+
+              <div className="ap-meta">
+                <div><span className="ap-meta-k">Para</span><span className="ap-meta-v">{d.inversionista || "—"}</span></div>
+                <div><span className="ap-meta-k">Emitido</span><span className="ap-meta-v">{d.emitido || "—"}</span></div>
+                <div><span className="ap-meta-k">Lugar</span><span className="ap-meta-v">{d.lugar}</span></div>
+                <div><span className="ap-meta-k">Folio</span><span className="ap-meta-v">{d.folio}</span></div>
+              </div>
+
+              <div className="ap-sec"><span className="ap-num">I</span><h3>Tu aportación.</h3></div>
+              <p className="ap-bajada">{d.intro_aportacion}</p>
+              <table className="ap-table ap-table--navy">
+                <thead><tr><th>No.</th><th>Fecha</th><th>Concepto</th><th className="r">Monto</th></tr></thead>
+                <tbody>
+                  {d.aportaciones.map((a, i) => (
+                    <tr key={i}>
+                      <td>{String(i + 1).padStart(2, "0")}</td>
+                      <td>{a.fecha}</td>
+                      <td>{a.concepto}</td>
+                      <td className="r">{a.monto ? fmtMoney(a.monto) : ""}</td>
+                    </tr>
+                  ))}
+                  <tr className="ap-total-row">
+                    <td colSpan="3" className="r"><strong>Total aportación íntegra</strong></td>
+                    <td className="r"><strong>{fmtTotal(totalAport)}</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div className="ap-sec"><span className="ap-num">II</span><h3>Tu rendimiento.</h3></div>
+              <p className="ap-bajada">{d.intro_rendimiento}</p>
+              <table className="ap-table ap-table--navy">
+                <thead><tr><th>Momento de salida</th><th>Tasa total</th><th>Total a recibir</th></tr></thead>
+                <tbody>
+                  {d.rendimientos.map((r, i) => (
+                    <tr key={i}><td>{r.momento}</td><td>{r.tasa}</td><td>{r.total}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+              {d.nota_rendimiento && <p className="ap-fineprint">{d.nota_rendimiento}</p>}
+              <table className="ap-table ap-table--gray">
+                <thead><tr><th>Referencia</th><th>Total a recibir</th><th>Rendimiento</th></tr></thead>
+                <tbody>
+                  {d.referencias.map((r, i) => (
+                    <tr key={i}><td>{r.ref}</td><td>{r.total}</td><td>{r.rend}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="ap-foot">Documento confidencial · {d.lugar} · Página 1 / 2</div>
+            </div>
+
+            <div className="html2pdf__page-break"></div>
+
+            {/* PÁGINA 2 */}
+            <div className="ap-page">
+              <div className="ap-doc-head">
+                <div className="ap-logo-row">
+                  <span className="ap-wordmark">YODESARROLLO<span className="ap-wordmark-tld">.MX</span></span>
+                </div>
+                <span className="ap-folio">Folio {d.folio}</span>
+              </div>
+              <hr className="ap-rule" />
+
+              <div className="ap-sec"><span className="ap-num">III</span><h3>Cuenta de depósito.</h3></div>
+              <p className="ap-bajada">Las aportaciones deberán realizarse únicamente a la siguiente cuenta bancaria del proyecto:</p>
+              <div className="ap-bank">
+                <div><span className="ap-meta-k">Banco</span><span className="ap-meta-v">{d.banco}</span></div>
+                <div><span className="ap-meta-k">Beneficiario</span><span className="ap-meta-v">{d.beneficiario}</span></div>
+                <div><span className="ap-meta-k">Cuenta</span><span className="ap-meta-v">{d.cuenta}</span></div>
+                <div><span className="ap-meta-k">CLABE</span><span className="ap-meta-v">{d.clabe}</span></div>
+              </div>
+              {d.concepto_dep && <p className="ap-concepto"><strong>Concepto sugerido:</strong> {d.concepto_dep}</p>}
+              {d.nota_dep && <p className="ap-bajada">{d.nota_dep}</p>}
+
+              <div className="ap-sec"><span className="ap-num">IV</span><h3>Construyamos juntos.</h3></div>
+              <p className="ap-bajada">{d.texto_conformidad}</p>
+
+              <div className="ap-signs">
+                <div className="ap-sign">
+                  <div className="ap-sign-line"></div>
+                  <span className="ap-sign-name">{d.firma_rep}</span>
+                  <span className="ap-sign-rol">Yodesarrollo SAPI de C.V.</span>
+                  <span className="ap-sign-rol">Representante Legal</span>
+                </div>
+                <div className="ap-sign">
+                  <div className="ap-sign-line"></div>
+                  <span className="ap-sign-name">{d.inversionista || "Inversionista"}</span>
+                  <span className="ap-sign-rol">Inversionista</span>
+                  <span className="ap-sign-rol">Firma de conformidad</span>
+                </div>
+              </div>
+
+              <div className="ap-doc-footer">
+                <strong>{d.beneficiario}</strong>
+                <span>{d.lugar}</span>
+                <span>Documento confidencial · Folio {d.folio}{d.emitido ? " · Emitido el " + d.emitido : ""}</span>
+              </div>
+
+              <div className="ap-foot">Documento confidencial · {d.lugar} · Página 2 / 2</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </Shell>
+  );
+};
+
 Object.assign(window, {
   SecDiagnostico, SecComparativo, SecCasaAlysa, SecRealMiramar,
   SecCalculadora, SecEstrategia, SecGarantias, SecCronograma,
-  SecDecision, SecContacto, SecProyecto,
+  SecDecision, SecContacto, SecProyecto, SecAcuerdoPagos,
 });

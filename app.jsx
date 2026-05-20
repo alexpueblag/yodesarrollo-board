@@ -18,6 +18,7 @@ const ICON_BY_ID = {
   "ppp":                IconPPP,
   "quienes-somos":      IconQuienesSomos,
   "arquitectura-autor": IconAutor,
+  "acuerdo-pago":       IconAcuerdo,
 };
 
 const SECTION_BY_ID = {
@@ -31,12 +32,13 @@ const SECTION_BY_ID = {
   "cronograma":   SecCronograma,
   "decision":     SecDecision,
   "contacto":     SecContacto,
+  "acuerdo-pago": window.SecAcuerdoPagos || (() => null),
 };
 
 // Cuáles tiles son del nivel jerárquico — define el layout del dashboard
 const TIER_LARGE  = ["casa-alysa", "real-miramar"];
 const TIER_MEDIUM = ["diagnostico", "comparativo", "calculadora", "estrategia"];
-const TIER_CHIPS  = ["garantias", "cronograma", "decision", "contacto"];
+const TIER_CHIPS  = ["garantias", "cronograma", "decision", "contacto", "acuerdo-pago"];
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "aesthetic": "carplay",

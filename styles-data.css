@@ -724,3 +724,113 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
 @media (max-width: 720px) {
   .tier-eco-row { grid-template-columns: 1fr; }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+ * ACUERDO DE PAGO — editor (oscuro) + documento "Promesa de Pago" (blanco). Lote 2 (G).
+ * ════════════════════════════════════════════════════════════════════════════ */
+.ap-wrap { display: grid; grid-template-columns: minmax(320px, 380px) 1fr; gap: 24px; align-items: start; }
+
+/* ---- Editor ---- */
+.ap-form {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(212,190,138,0.14);
+  border-radius: 14px;
+  padding: 18px;
+  max-height: calc(100svh - 160px);
+  overflow-y: auto;
+}
+.ap-form-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ap-form-head h2 { font-family: var(--f-display, serif); font-style: italic; font-weight: 400; font-size: 22px; color: var(--text, #F5F1EA); margin: 0; }
+.ap-download {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--gold, #D4BE8A); color: #15171a;
+  border: none; border-radius: 999px; padding: 9px 16px;
+  font-family: var(--f-mono, monospace); font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+  cursor: pointer; transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.ap-download:hover { transform: translateY(-1px); opacity: 0.92; }
+.ap-hint { font-size: 12px; color: var(--muted, #a3a097); margin: 8px 0 16px; line-height: 1.5; }
+.ap-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ap-fld { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.ap-fld span { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted, #a3a097); }
+.ap-fld input,
+.ap-row input {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 8px 10px;
+  color: var(--text, #F5F1EA); font-family: var(--f-body, sans-serif); font-size: 13px;
+  width: 100%;
+}
+.ap-fld input:focus,
+.ap-row input:focus { outline: none; border-color: var(--gold, #D4BE8A); }
+.ap-block { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); }
+.ap-block-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.ap-block-head span { font-family: var(--f-mono, monospace); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold, #D4BE8A); }
+.ap-block-head button { background: none; border: 1px solid rgba(212,190,138,0.3); color: var(--gold, #D4BE8A); border-radius: 999px; padding: 3px 10px; font-size: 11px; cursor: pointer; }
+.ap-row { display: grid; grid-template-columns: 1fr 1.2fr 1fr auto; gap: 6px; margin-bottom: 6px; align-items: center; }
+.ap-del { background: none; border: none; color: #a3a097; font-size: 18px; line-height: 1; cursor: pointer; padding: 0 4px; }
+.ap-del:hover { color: #d68493; }
+.ap-total-line { text-align: right; font-size: 13px; color: var(--text, #F5F1EA); margin-top: 6px; }
+.ap-total-line strong { font-family: var(--f-mono, monospace); color: var(--gold, #D4BE8A); }
+
+/* ---- Documento (blanco, réplica del molde) ---- */
+.ap-preview-col { overflow-x: auto; }
+.ap-doc {
+  width: 800px; margin: 0 auto;
+  background: #ffffff; color: #1f2326;
+  font-family: var(--f-body, "Manrope", sans-serif);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+}
+.ap-page { padding: 46px 54px; min-height: 1020px; box-sizing: border-box; position: relative; display: block; }
+.html2pdf__page-break { page-break-before: always; break-before: page; height: 0; }
+
+.ap-doc-head { display: flex; align-items: center; justify-content: space-between; }
+.ap-wordmark { font-size: 18px; font-weight: 800; letter-spacing: 0.01em; color: #1f2326; }
+.ap-wordmark-tld { font-weight: 500; color: #8a8a85; margin-left: 2px; }
+.ap-folio { font-size: 11px; color: #8a8a85; letter-spacing: 0.02em; }
+.ap-rule { border: none; border-top: 1px solid #1f2326; margin: 10px 0 0; opacity: 0.85; }
+
+.ap-title { text-align: center; font-size: 40px; font-weight: 800; letter-spacing: -0.01em; color: #1f2326; margin: 40px 0 0; }
+.ap-title-dash { width: 46px; height: 3px; background: #b8965a; margin: 12px auto 0; border-radius: 2px; }
+.ap-subtitle { text-align: center; font-size: 15px; color: #6b6b66; margin: 14px 0 30px; }
+
+.ap-meta, .ap-bank { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 28px; background: #f6f5f2; border: 1px solid #ebe9e3; border-radius: 10px; padding: 18px 22px; }
+.ap-bank { grid-template-columns: 1fr; }
+.ap-meta > div, .ap-bank > div { display: grid; grid-template-columns: 86px 1fr; align-items: baseline; }
+.ap-meta-k { font-size: 12px; color: #9a9a93; }
+.ap-meta-v { font-size: 14px; font-weight: 600; color: #1f2326; }
+
+.ap-sec { display: flex; align-items: baseline; gap: 12px; margin: 30px 0 4px; }
+.ap-num { font-size: 15px; font-weight: 700; color: #b8965a; min-width: 14px; }
+.ap-sec h3 { font-size: 19px; font-weight: 700; color: #1f2326; margin: 0; }
+.ap-bajada { font-size: 13px; color: #6b6b66; margin: 4px 0 12px 26px; line-height: 1.5; }
+
+.ap-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 13px; }
+.ap-table th { text-align: left; padding: 10px 14px; font-weight: 600; font-size: 12px; }
+.ap-table td { padding: 10px 14px; border-bottom: 1px solid #ececea; }
+.ap-table .r { text-align: right; }
+.ap-table--navy th { background: #243b53; color: #fff; }
+.ap-table--navy th:first-child { border-radius: 6px 0 0 0; }
+.ap-table--navy th:last-child { border-radius: 0 6px 0 0; }
+.ap-table--gray th { background: #eceae5; color: #4a4a45; }
+.ap-total-row td { background: #f6f5f2; border-bottom: none; font-size: 14px; }
+.ap-fineprint { font-size: 11px; color: #8a8a85; line-height: 1.5; margin: 4px 0 14px; }
+.ap-fineprint strong, .ap-concepto strong { color: #1f2326; }
+.ap-concepto { font-size: 13px; color: #4a4a45; margin: 14px 0 8px; }
+
+.ap-signs { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin: 56px 0 0; }
+.ap-sign { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.ap-sign-line { width: 100%; border-top: 1px solid #1f2326; margin-bottom: 8px; }
+.ap-sign-name { font-size: 14px; font-weight: 700; color: #1f2326; }
+.ap-sign-rol { font-size: 12px; color: #8a8a85; }
+
+.ap-doc-footer { margin-top: 48px; display: flex; flex-direction: column; gap: 2px; }
+.ap-doc-footer strong { font-size: 14px; color: #1f2326; }
+.ap-doc-footer span { font-size: 11px; color: #9a9a93; }
+
+.ap-foot { position: absolute; bottom: 22px; left: 54px; right: 54px; border-top: 1px solid #ececea; padding-top: 10px; font-size: 10px; color: #b0b0a8; display: flex; justify-content: space-between; }
+
+@media (max-width: 980px) {
+  .ap-wrap { grid-template-columns: 1fr; }
+  .ap-form { max-height: none; }
+}
