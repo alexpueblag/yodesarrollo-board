@@ -134,8 +134,39 @@ const IconArrow = (p) => (
   </I>
 );
 
+// PPP — aportar terreno para codesarrollo: una parcela con flecha de plusvalía
+const IconPPP = (p) => (
+  <I {...p}>
+    <path d="M3 16.5 12 20l9-3.5" />
+    <path d="M3 12 12 15.5 21 12" />
+    <path d="M3 7.5 12 4l9 3.5-9 3.5z" />
+  </I>
+);
+
+// Quiénes somos — edificio institucional con identidad
+const IconQuienesSomos = (p) => (
+  <I {...p}>
+    <path d="M4 20.5h16" />
+    <path d="M5 20.5V9l7-4.5L19 9v11.5" />
+    <path d="M9 20.5v-5h6v5" />
+    <path d="M9 11h2M13 11h2" />
+  </I>
+);
+
+// Arquitectura de Autor — compás de dibujo (Aurum Arquitectos)
+const IconAutor = (p) => (
+  <I {...p}>
+    <circle cx="12" cy="4.5" r="1.4" />
+    <path d="M12 5.9 7 20" />
+    <path d="M12 5.9 17 20" />
+    <path d="M9.4 13.5h5.2" />
+    <path d="m6 20 1.4-2.2M18 20l-1.4-2.2" />
+  </I>
+);
+
 Object.assign(window, {
   IconDiagnostico, IconComparativo, IconCasaAlysa, IconRealMiramar,
   IconCalculadora, IconEstrategia, IconGarantias, IconCronograma,
-  IconDecision, IconContacto, IconBack, IconHome, IconArrow
+  IconDecision, IconContacto, IconBack, IconHome, IconArrow,
+  IconPPP, IconQuienesSomos, IconAutor
 });

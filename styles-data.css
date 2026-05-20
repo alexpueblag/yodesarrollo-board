@@ -637,3 +637,90 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   .tile-med { min-height: 90px; padding: 12px 16px; gap: 8px; }
   .tile-med-icon svg { width: 28px; height: 28px; }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+ * FRANJA ECOSISTEMA YODESARROLLO — tiles dinámicos (nivel=ecosistema)
+ * PPP, Quiénes somos, Arquitectura de Autor. Lote 2.
+ * ════════════════════════════════════════════════════════════════════════════ */
+.tier-eco {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tier-eco-label {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted, #a3a097);
+  opacity: 0.8;
+}
+.tier-eco-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.tile-eco {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(212, 190, 138, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.015), transparent),
+    color-mix(in srgb, var(--c, #2a2a2a) 30%, #15171a);
+  color: var(--text, #F5F1EA);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.tile-eco:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--a, #d4be8a) 55%, transparent);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+}
+.tile-eco-halo {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(80% 70% at 0% 0%, color-mix(in srgb, var(--a, #d4be8a) 14%, transparent), transparent 70%);
+  opacity: 0.7;
+  pointer-events: none;
+}
+.tile-eco-icon {
+  flex: 0 0 auto;
+  color: var(--a, #d4be8a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tile-eco-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.tile-eco-label {
+  font-family: var(--f-display, "Instrument Serif", serif);
+  font-style: italic;
+  font-size: clamp(16px, 1.2vw, 19px);
+  line-height: 1.1;
+  color: var(--text, #F5F1EA);
+}
+.tile-eco-kicker {
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted, #a3a097);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tile-eco > svg { flex: 0 0 auto; color: var(--a, #d4be8a); opacity: 0.7; }
+
+/* Responsive: en pantallas chicas, la franja eco se apila */
+@media (max-width: 720px) {
+  .tier-eco-row { grid-template-columns: 1fr; }
+}

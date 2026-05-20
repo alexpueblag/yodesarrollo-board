@@ -15,6 +15,9 @@ const ICON_BY_ID = {
   "cronograma":   IconCronograma,
   "decision":     IconDecision,
   "contacto":     IconContacto,
+  "ppp":                IconPPP,
+  "quienes-somos":      IconQuienesSomos,
+  "arquitectura-autor": IconAutor,
 };
 
 const SECTION_BY_ID = {
@@ -163,7 +166,8 @@ const Dashboard = ({ onOpen, t }) => {
   const mira  = lookup["real-miramar"];
   const alysaHero  = (data.alysa   && data.alysa.hero)   || {};
   const miraHero   = (data.miramar && data.miramar.hero) || {};
-  const proyectosDin = (data.proyectos || []).filter((p) => p.nivel !== "medium");
+  const proyectosDin = (data.proyectos || []).filter((p) => !p.nivel || p.nivel === "large");
+  const proyectosEco = (data.proyectos || []).filter((p) => p.nivel === "ecosistema");
 
   return (
     <div className={"board board--" + t.aesthetic} data-mode={presentation ? "presentation" : "edit"}>
@@ -334,6 +338,35 @@ const Dashboard = ({ onOpen, t }) => {
           })}
         </div>
       </div>
+
+      {/* ━━━━━━━━━ FRANJA: Ecosistema Yodesarrollo (proyectos nivel=ecosistema) ━━━━━━━━━ */}
+      {proyectosEco.length > 0 && (
+        <div className="tier-eco">
+          <span className="tier-eco-label mono">Ecosistema Yodesarrollo</span>
+          <div className="tier-eco-row">
+            {proyectosEco.map((p) => {
+              const tile = lookup[p.id];
+              if (!tile) return null;
+              return (
+                <button
+                  key={p.id}
+                  className="tile-eco"
+                  style={{ ["--c"]: tile.color, ["--a"]: tile.accent }}
+                  onClick={() => onOpen(p.id)}
+                >
+                  <span className="tile-eco-halo" aria-hidden></span>
+                  <div className="tile-eco-icon"><tile.Icon size={30} sw={1.5} /></div>
+                  <div className="tile-eco-meta">
+                    <span className="tile-eco-label">{p.nombre}</span>
+                    <span className="tile-eco-kicker mono">{p.kicker}</span>
+                  </div>
+                  <IconArrow size={13} sw={2} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <footer className="board-foot">
         <div className="foot-left">
