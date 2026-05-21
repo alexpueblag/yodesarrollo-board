@@ -776,20 +776,21 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
 /* ---- Documento (blanco, réplica del molde) ---- */
 .ap-preview-col { overflow-x: auto; }
 .ap-doc {
-  width: 800px; margin: 0 auto;
+  width: 720px; margin: 0 auto; padding: 40px 42px; box-sizing: border-box;
   background: #ffffff; color: #1f2326;
   font-family: var(--f-body, "Manrope", sans-serif);
   box-shadow: 0 12px 40px rgba(0,0,0,0.35);
 }
-.ap-page { padding: 46px 54px; min-height: 1020px; box-sizing: border-box; position: relative; display: block; }
-.html2pdf__page-break { page-break-before: always; break-before: page; height: 0; }
+/* Flujo continuo: el PDF corta solo, sin partir estos bloques */
+.ap-table, .ap-meta, .ap-bank, .ap-signs { page-break-inside: avoid; break-inside: avoid; }
+.ap-sec { page-break-after: avoid; break-after: avoid; }
 
 .ap-doc-head { display: flex; align-items: center; justify-content: space-between; }
 .ap-logo { height: 30px; width: auto; }
 .ap-folio { font-size: 11px; color: #8a8a85; letter-spacing: 0.02em; }
 .ap-rule { border: none; border-top: 1px solid #1f2326; margin: 10px 0 0; opacity: 0.85; }
 
-.ap-title { text-align: center; font-size: 40px; font-weight: 800; letter-spacing: -0.01em; color: #1f2326; margin: 40px 0 0; }
+.ap-title { text-align: center; font-size: 34px; font-weight: 800; letter-spacing: -0.01em; color: #1f2326; margin: 30px 0 0; }
 .ap-title-dash { width: 46px; height: 3px; background: #b8965a; margin: 12px auto 0; border-radius: 2px; }
 .ap-subtitle { text-align: center; font-size: 15px; color: #6b6b66; margin: 14px 0 30px; }
 
@@ -839,3 +840,7 @@ input[type="date"] { color-scheme: dark; }
 .ap-calc { font-family: var(--f-mono, monospace); font-size: 12px; color: var(--gold, #D4BE8A); display: flex; align-items: center; padding-left: 4px; }
 .ap-row--ref { grid-template-columns: 0.8fr 1.2fr 1fr auto; }
 .ap-microhint { font-size: 10.5px; color: var(--muted, #a3a097); opacity: 0.75; margin: 4px 0 8px; line-height: 1.4; }
+
+/* Acuerdo de pago — preview del folio automático */
+.ap-folio-preview { font-size: 12px; color: var(--text, #F5F1EA); margin: 4px 0 12px; padding: 8px 12px; background: rgba(212,190,138,0.08); border: 1px solid rgba(212,190,138,0.2); border-radius: 8px; }
+.ap-folio-preview strong { font-family: var(--f-mono, monospace); color: var(--gold, #D4BE8A); letter-spacing: 0.03em; }
