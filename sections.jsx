@@ -1005,12 +1005,12 @@ const SecAcuerdoPagos = (props) => {
     if (!window.html2pdf) { alert("La librería de PDF aún se está cargando. Espera 2 segundos y vuelve a intentar."); return; }
     const nombre = (d.inversionista || "inversionista").replace(/[^a-zA-Z0-9]+/g, "-");
     window.html2pdf().set({
-      margin: [13, 13, 14, 13],
+      margin: [9, 13, 10, 13],
       filename: "Promesa-de-Pago-" + nombre + ".pdf",
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 3, useCORS: true, backgroundColor: "#ffffff" },
       jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
-      pagebreak: { mode: ["css", "legacy"], before: [".ap-page2"], avoid: [".ap-table", ".ap-meta", ".ap-bank", ".ap-signs"] },
+      pagebreak: { mode: ["css", "legacy"], avoid: [".ap-table", ".ap-meta", ".ap-bank", ".ap-signs"] },
     }).from(el).save();
   };
 
@@ -1158,7 +1158,7 @@ const SecAcuerdoPagos = (props) => {
               </tbody>
             </table>
 
-            <div className="ap-sec ap-page2"><span className="ap-num">III</span><h3>Cuenta de depósito.</h3></div>
+            <div className="ap-sec"><span className="ap-num">III</span><h3>Cuenta de depósito.</h3></div>
             <p className="ap-bajada">Las aportaciones deberán realizarse únicamente a la siguiente cuenta bancaria del proyecto:</p>
             <div className="ap-bank">
               <div><span className="ap-meta-k">Banco</span><span className="ap-meta-v">{d.banco}</span></div>
