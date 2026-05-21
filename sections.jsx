@@ -912,23 +912,42 @@ const SecProyecto = (props) => {
 };
 
 // =============================================================================
-// ACUERDO DE PAGO — editor + documento "Promesa de Pago" (molde Meave) + PDF 1 clic
-// Todos los campos se llenan a mano; el total de aportaciones se autosuma.
+// ACUERDO DE PAGO — editor + documento "Promesa de Pago" + PDF 1 clic
+// Rendimiento y tabla de referencia se calculan solos. Fechas con calendario.
+// El conteo de pagos de la bajada se genera del número de filas.
 // =============================================================================
 const fmtMoney = (n) => "$" + (Math.round(parseFloat(n) || 0)).toLocaleString("en-US");
 const fmtTotal = (n) => fmtMoney(n) + " MXN";
+const AP_MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const AP_NUMS  = ["Cero","Un","Dos","Tres","Cuatro","Cinco","Seis","Siete","Ocho","Nueve","Diez","Once","Doce"];
+const apNumPalabra = (n) => AP_NUMS[n] || String(n);
+const apFmtFecha = (iso) => {
+  if (!iso) return "";
+  const p = String(iso).split("-").map(Number);
+  if (p.length !== 3 || !p[0] || !p[1] || !p[2]) return iso;
+  return p[2] + " " + AP_MESES[p[1] - 1] + " " + p[0];
+};
+const apFmtFechaLarga = (iso) => {
+  if (!iso) return "";
+  const p = String(iso).split("-").map(Number);
+  if (p.length !== 3 || !p[0] || !p[1] || !p[2]) return iso;
+  return p[2] + " de " + AP_MESES[p[1] - 1] + " de " + p[0];
+};
+const apParsePct = (s) => {
+  if (s === 0) return 0;
+  if (!s) return null;
+  const m = String(s).trim().match(/^(\d+(?:\.\d+)?)\s*%?$/);
+  return m ? parseFloat(m[1]) : null;
+};
 
 const SecAcuerdoPagos = (props) => {
   const { data } = window.useData();
   const cfg = (data && data.config) || {};
 
   const [d, setD] = React.useState({
-    inversionista: "",
-    lugar: "Hermosillo, Sonora, México",
-    emitido: "",
-    folio: "CA-HM-2026-001",
-    subtitulo: "Coinversión escriturada en Casa Alysa",
-    intro_aportacion: "Cuatro pagos. Cuenta exclusiva del proyecto. Cada peso trazable.",
+    inversionista: "", lugar: "Hermosillo, Sonora, México", emitido: "",
+    folio: "CA-HM-2026-001", subtitulo: "Coinversión escriturada en Casa Alysa",
+    intro_aportacion: "Cuenta exclusiva del proyecto. Cada peso trazable.",
     aportaciones: [
       { fecha: "", concepto: "Aportación inicial", monto: "" },
       { fecha: "", concepto: "Aportación 2 de 4", monto: "" },
@@ -936,22 +955,17 @@ const SecAcuerdoPagos = (props) => {
       { fecha: "", concepto: "Aportación final", monto: "" },
     ],
     intro_rendimiento: "25% anual preferente, prorrateado según el momento real de venta.",
+    tasa_anual: "25",
     rendimientos: [
-      { momento: "Mes 1 - 6", tasa: "12.50%", total: "" },
-      { momento: "Mes 6 - 8", tasa: "16.67%", total: "" },
-      { momento: "Mes 9 - 12", tasa: "25.00%", total: "" },
-      { momento: "Mes 13 - 24", tasa: "27% - 50%", total: "0.0685% adicional por día" },
+      { momento: "Mes 1 - 6", tasa: "12.50%", total_manual: "" },
+      { momento: "Mes 6 - 8", tasa: "16.67%", total_manual: "" },
+      { momento: "Mes 9 - 12", tasa: "25.00%", total_manual: "" },
+      { momento: "Mes 13 - 24", tasa: "27% - 50%", total_manual: "0.0685% adicional por día" },
     ],
     nota_rendimiento: "Si la venta excede 12 meses, cada día acumula 0.0685% adicional sobre el capital, equivalente al 25% anual del siguiente periodo, proporcional.",
-    referencias: [
-      { ref: "13 meses", total: "", rend: "" },
-      { ref: "18 meses", total: "", rend: "" },
-      { ref: "24 meses", total: "", rend: "" },
-    ],
-    banco: cfg.dep_banco || "BBVA",
-    beneficiario: cfg.dep_beneficiario || "YODESARROLLO SAPI DE CV",
-    cuenta: cfg.dep_cuenta || "011628459",
-    clabe: cfg.dep_clabe || "012760001186284598",
+    referencias: [{ meses: "13" }, { meses: "18" }, { meses: "24" }],
+    banco: cfg.dep_banco || "BBVA", beneficiario: cfg.dep_beneficiario || "YODESARROLLO SAPI DE CV",
+    cuenta: cfg.dep_cuenta || "011628459", clabe: cfg.dep_clabe || "012760001186284598",
     concepto_dep: "",
     nota_dep: "Cada pago deberá notificarse enviando el comprobante correspondiente para su registro y trazabilidad dentro del proyecto.",
     texto_conformidad: "Las partes manifiestan su conformidad con el calendario de aportaciones, la estructura de rendimiento y las garantías arriba descritas. Este documento se complementará con el contrato definitivo escriturado ante notario, mismo que prevalecerá en caso de discrepancia.",
@@ -959,24 +973,31 @@ const SecAcuerdoPagos = (props) => {
   });
 
   const set = (k, v) => setD((p) => ({ ...p, [k]: v }));
-  const setRow = (arr, i, k, v) =>
-    setD((p) => ({ ...p, [arr]: p[arr].map((r, j) => (j === i ? { ...r, [k]: v } : r)) }));
+  const setRow = (arr, i, k, v) => setD((p) => ({ ...p, [arr]: p[arr].map((r, j) => (j === i ? { ...r, [k]: v } : r)) }));
   const addRow = (arr, tpl) => setD((p) => ({ ...p, [arr]: [...p[arr], tpl] }));
   const delRow = (arr, i) => setD((p) => ({ ...p, [arr]: p[arr].filter((_, j) => j !== i) }));
 
-  const totalAport = d.aportaciones.reduce((s, a) => s + (parseFloat(a.monto) || 0), 0);
+  const capital = d.aportaciones.reduce((s, a) => s + (parseFloat(a.monto) || 0), 0);
+  const tasaAnual = parseFloat(d.tasa_anual) || 0;
+  const rendTotal = (r) => {
+    if (r.total_manual && String(r.total_manual).trim()) return r.total_manual;
+    const pct = apParsePct(r.tasa);
+    return pct != null ? fmtTotal(capital * (1 + pct / 100)) : "";
+  };
+  const refCalc = (meses) => {
+    const m = parseFloat(meses) || 0;
+    if (!m) return { label: "", rend: "", total: "" };
+    const rendPct = tasaAnual * m / 12;
+    return { label: m + " meses", rend: "+" + rendPct.toFixed(2) + "%", total: fmtMoney(capital * (1 + rendPct / 100)) };
+  };
 
   const descargar = () => {
     const el = document.getElementById("ap-doc");
     if (!el) return;
-    if (!window.html2pdf) {
-      alert("La librería de PDF aún se está cargando. Espera 2 segundos y vuelve a intentar.");
-      return;
-    }
+    if (!window.html2pdf) { alert("La librería de PDF aún se está cargando. Espera 2 segundos y vuelve a intentar."); return; }
     const nombre = (d.inversionista || "inversionista").replace(/[^a-zA-Z0-9]+/g, "-");
     window.html2pdf().set({
-      margin: 0,
-      filename: "Promesa-de-Pago-" + nombre + ".pdf",
+      margin: 0, filename: "Promesa-de-Pago-" + nombre + ".pdf",
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 3, useCORS: true, backgroundColor: "#ffffff" },
       jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
@@ -984,98 +1005,102 @@ const SecAcuerdoPagos = (props) => {
     }).from(el).save();
   };
 
-  const fld = (label, key, ph) => (
+  const fld = (label, key, ph, type) => (
     <label className="ap-fld">
       <span>{label}</span>
-      <input value={d[key]} placeholder={ph || ""} onChange={(e) => set(key, e.target.value)} />
+      <input type={type || "text"} value={d[key]} placeholder={ph || ""} onChange={(e) => set(key, e.target.value)} />
     </label>
+  );
+
+  const DocHead = () => (
+    <div className="ap-doc-head">
+      <img src="assets/logo_dark.png" alt="Yodesarrollo" className="ap-logo"
+           onError={(e) => { e.target.style.display = 'none'; }} />
+      <span className="ap-folio">Folio {d.folio}</span>
+    </div>
   );
 
   return (
     <Shell {...props} related={["calculadora", "garantias", "contacto"]}>
       <div className="ap-wrap">
 
-        {/* ---------- EDITOR ---------- */}
         <div className="ap-form">
           <div className="ap-form-head">
             <h2>Datos del acuerdo</h2>
-            <button className="ap-download" onClick={descargar}>
-              Descargar PDF <IconArrow size={14} sw={2} />
-            </button>
+            <button className="ap-download" onClick={descargar}>Descargar PDF <IconArrow size={14} sw={2} /></button>
           </div>
-          <p className="ap-hint">Llena los campos; el documento de la derecha se arma solo. El total de aportaciones se suma automáticamente.</p>
+          <p className="ap-hint">Llena los campos; el documento se arma solo. Rendimientos y tabla de referencia se calculan automáticamente a partir del capital y la tasa.</p>
 
           <div className="ap-grid2">
             {fld("Inversionista", "inversionista", "Nombre completo")}
             {fld("Folio", "folio")}
-            {fld("Emitido", "emitido", "19 de mayo de 2026")}
-            {fld("Lugar", "lugar")}
+            {fld("Emitido", "emitido", "", "date")}
+            {fld("Tasa anual %", "tasa_anual", "25")}
           </div>
+          {fld("Lugar", "lugar")}
           {fld("Subtítulo", "subtitulo")}
 
-          {/* Aportaciones */}
           <div className="ap-block">
             <div className="ap-block-head"><span>I · Aportaciones</span>
-              <button onClick={() => addRow("aportaciones", { fecha: "", concepto: "", monto: "" })}>+ fila</button>
+              <button onClick={() => addRow("aportaciones", { fecha: "", concepto: "", monto: "" })}>+ pago</button>
             </div>
-            {fld("Bajada", "intro_aportacion")}
+            {fld("Bajada (va después de \"N pagos.\")", "intro_aportacion")}
             {d.aportaciones.map((a, i) => (
-              <div className="ap-row" key={i}>
-                <input className="c-f" value={a.fecha} placeholder="19 mayo 2026" onChange={(e) => setRow("aportaciones", i, "fecha", e.target.value)} />
+              <div className="ap-row ap-row--ap" key={i}>
+                <input type="date" className="c-f" value={a.fecha} onChange={(e) => setRow("aportaciones", i, "fecha", e.target.value)} />
                 <input className="c-c" value={a.concepto} placeholder="Concepto" onChange={(e) => setRow("aportaciones", i, "concepto", e.target.value)} />
-                <input className="c-m" value={a.monto} placeholder="Monto $" onChange={(e) => setRow("aportaciones", i, "monto", e.target.value)} />
+                <input className="c-m" value={a.monto} placeholder="Monto $" inputMode="numeric" onChange={(e) => setRow("aportaciones", i, "monto", e.target.value)} />
                 <button className="ap-del" onClick={() => delRow("aportaciones", i)}>×</button>
               </div>
             ))}
-            <div className="ap-total-line">Total: <strong>{fmtTotal(totalAport)}</strong></div>
+            <div className="ap-total-line">{apNumPalabra(d.aportaciones.length)} pagos · Total: <strong>{fmtTotal(capital)}</strong></div>
           </div>
 
-          {/* Rendimientos */}
           <div className="ap-block">
             <div className="ap-block-head"><span>II · Rendimiento</span>
-              <button onClick={() => addRow("rendimientos", { momento: "", tasa: "", total: "" })}>+ fila</button>
+              <button onClick={() => addRow("rendimientos", { momento: "", tasa: "", total_manual: "" })}>+ fila</button>
             </div>
             {fld("Bajada", "intro_rendimiento")}
             {d.rendimientos.map((r, i) => (
               <div className="ap-row" key={i}>
                 <input className="c-f" value={r.momento} placeholder="Mes 1 - 6" onChange={(e) => setRow("rendimientos", i, "momento", e.target.value)} />
-                <input className="c-c" value={r.tasa} placeholder="Tasa" onChange={(e) => setRow("rendimientos", i, "tasa", e.target.value)} />
-                <input className="c-m" value={r.total} placeholder="Total a recibir" onChange={(e) => setRow("rendimientos", i, "total", e.target.value)} />
+                <input className="c-c" value={r.tasa} placeholder="Tasa %" onChange={(e) => setRow("rendimientos", i, "tasa", e.target.value)} />
+                <input className="c-m" value={r.total_manual} placeholder={rendTotal(r) || "auto"} onChange={(e) => setRow("rendimientos", i, "total_manual", e.target.value)} />
                 <button className="ap-del" onClick={() => delRow("rendimientos", i)}>×</button>
               </div>
             ))}
+            <p className="ap-microhint">El "Total a recibir" se calcula solo (tasa × capital). El último campo solo se llena si quieres texto especial.</p>
             {fld("Nota", "nota_rendimiento")}
           </div>
 
-          {/* Referencias */}
           <div className="ap-block">
-            <div className="ap-block-head"><span>Tabla de referencia</span>
-              <button onClick={() => addRow("referencias", { ref: "", total: "", rend: "" })}>+ fila</button>
+            <div className="ap-block-head"><span>Tabla de referencia (meses)</span>
+              <button onClick={() => addRow("referencias", { meses: "" })}>+ fila</button>
             </div>
-            {d.referencias.map((r, i) => (
-              <div className="ap-row" key={i}>
-                <input className="c-f" value={r.ref} placeholder="13 meses" onChange={(e) => setRow("referencias", i, "ref", e.target.value)} />
-                <input className="c-c" value={r.total} placeholder="Total a recibir" onChange={(e) => setRow("referencias", i, "total", e.target.value)} />
-                <input className="c-m" value={r.rend} placeholder="Rendimiento" onChange={(e) => setRow("referencias", i, "rend", e.target.value)} />
-                <button className="ap-del" onClick={() => delRow("referencias", i)}>×</button>
-              </div>
-            ))}
+            {d.referencias.map((r, i) => {
+              const c = refCalc(r.meses);
+              return (
+                <div className="ap-row ap-row--ref" key={i}>
+                  <input className="c-f" value={r.meses} placeholder="meses" inputMode="numeric" onChange={(e) => setRow("referencias", i, "meses", e.target.value)} />
+                  <span className="ap-calc">{c.total || "—"}</span>
+                  <span className="ap-calc">{c.rend || "—"}</span>
+                  <button className="ap-del" onClick={() => delRow("referencias", i)}>×</button>
+                </div>
+              );
+            })}
+            <p className="ap-microhint">Solo escribes los meses; el total y el rendimiento se calculan.</p>
           </div>
 
-          {/* Cuenta */}
           <div className="ap-block">
             <div className="ap-block-head"><span>III · Cuenta de depósito</span></div>
             <div className="ap-grid2">
-              {fld("Banco", "banco")}
-              {fld("Beneficiario", "beneficiario")}
-              {fld("Cuenta", "cuenta")}
-              {fld("CLABE", "clabe")}
+              {fld("Banco", "banco")}{fld("Beneficiario", "beneficiario")}
+              {fld("Cuenta", "cuenta")}{fld("CLABE", "clabe")}
             </div>
             {fld("Concepto sugerido", "concepto_dep", "Aportación Casa Alysa - Nombre - Folio")}
             {fld("Nota", "nota_dep")}
           </div>
 
-          {/* Conformidad */}
           <div className="ap-block">
             <div className="ap-block-head"><span>IV · Conformidad</span></div>
             {fld("Texto", "texto_conformidad")}
@@ -1083,86 +1108,55 @@ const SecAcuerdoPagos = (props) => {
           </div>
         </div>
 
-        {/* ---------- DOCUMENTO ---------- */}
         <div className="ap-preview-col">
           <div id="ap-doc" className="ap-doc">
 
-            {/* PÁGINA 1 */}
             <div className="ap-page">
-              <div className="ap-doc-head">
-                <div className="ap-logo-row">
-                  <span className="ap-wordmark">YODESARROLLO<span className="ap-wordmark-tld">.MX</span></span>
-                </div>
-                <span className="ap-folio">Folio {d.folio}</span>
-              </div>
+              <DocHead />
               <hr className="ap-rule" />
-
               <h1 className="ap-title">PROMESA DE PAGO</h1>
               <div className="ap-title-dash"></div>
               <p className="ap-subtitle">{d.subtitulo}</p>
-
               <div className="ap-meta">
                 <div><span className="ap-meta-k">Para</span><span className="ap-meta-v">{d.inversionista || "—"}</span></div>
-                <div><span className="ap-meta-k">Emitido</span><span className="ap-meta-v">{d.emitido || "—"}</span></div>
+                <div><span className="ap-meta-k">Emitido</span><span className="ap-meta-v">{apFmtFechaLarga(d.emitido) || "—"}</span></div>
                 <div><span className="ap-meta-k">Lugar</span><span className="ap-meta-v">{d.lugar}</span></div>
                 <div><span className="ap-meta-k">Folio</span><span className="ap-meta-v">{d.folio}</span></div>
               </div>
-
               <div className="ap-sec"><span className="ap-num">I</span><h3>Tu aportación.</h3></div>
-              <p className="ap-bajada">{d.intro_aportacion}</p>
+              <p className="ap-bajada">{apNumPalabra(d.aportaciones.length)} pagos. {d.intro_aportacion}</p>
               <table className="ap-table ap-table--navy">
                 <thead><tr><th>No.</th><th>Fecha</th><th>Concepto</th><th className="r">Monto</th></tr></thead>
                 <tbody>
                   {d.aportaciones.map((a, i) => (
-                    <tr key={i}>
-                      <td>{String(i + 1).padStart(2, "0")}</td>
-                      <td>{a.fecha}</td>
-                      <td>{a.concepto}</td>
-                      <td className="r">{a.monto ? fmtMoney(a.monto) : ""}</td>
-                    </tr>
+                    <tr key={i}><td>{String(i + 1).padStart(2, "0")}</td><td>{apFmtFecha(a.fecha)}</td><td>{a.concepto}</td><td className="r">{a.monto ? fmtMoney(a.monto) : ""}</td></tr>
                   ))}
-                  <tr className="ap-total-row">
-                    <td colSpan="3" className="r"><strong>Total aportación íntegra</strong></td>
-                    <td className="r"><strong>{fmtTotal(totalAport)}</strong></td>
-                  </tr>
+                  <tr className="ap-total-row"><td colSpan="3" className="r"><strong>Total aportación íntegra</strong></td><td className="r"><strong>{fmtTotal(capital)}</strong></td></tr>
                 </tbody>
               </table>
-
               <div className="ap-sec"><span className="ap-num">II</span><h3>Tu rendimiento.</h3></div>
               <p className="ap-bajada">{d.intro_rendimiento}</p>
               <table className="ap-table ap-table--navy">
                 <thead><tr><th>Momento de salida</th><th>Tasa total</th><th>Total a recibir</th></tr></thead>
                 <tbody>
-                  {d.rendimientos.map((r, i) => (
-                    <tr key={i}><td>{r.momento}</td><td>{r.tasa}</td><td>{r.total}</td></tr>
-                  ))}
+                  {d.rendimientos.map((r, i) => (<tr key={i}><td>{r.momento}</td><td>{r.tasa}</td><td>{rendTotal(r)}</td></tr>))}
                 </tbody>
               </table>
               {d.nota_rendimiento && <p className="ap-fineprint">{d.nota_rendimiento}</p>}
               <table className="ap-table ap-table--gray">
                 <thead><tr><th>Referencia</th><th>Total a recibir</th><th>Rendimiento</th></tr></thead>
                 <tbody>
-                  {d.referencias.map((r, i) => (
-                    <tr key={i}><td>{r.ref}</td><td>{r.total}</td><td>{r.rend}</td></tr>
-                  ))}
+                  {d.referencias.map((r, i) => { const c = refCalc(r.meses); return <tr key={i}><td>{c.label}</td><td>{c.total}</td><td>{c.rend}</td></tr>; })}
                 </tbody>
               </table>
-
-              <div className="ap-foot">Documento confidencial · {d.lugar} · Página 1 / 2</div>
+              <div className="ap-foot"><span>Documento confidencial · {d.lugar}</span><span>Página 1 / 2</span></div>
             </div>
 
             <div className="html2pdf__page-break"></div>
 
-            {/* PÁGINA 2 */}
             <div className="ap-page">
-              <div className="ap-doc-head">
-                <div className="ap-logo-row">
-                  <span className="ap-wordmark">YODESARROLLO<span className="ap-wordmark-tld">.MX</span></span>
-                </div>
-                <span className="ap-folio">Folio {d.folio}</span>
-              </div>
+              <DocHead />
               <hr className="ap-rule" />
-
               <div className="ap-sec"><span className="ap-num">III</span><h3>Cuenta de depósito.</h3></div>
               <p className="ap-bajada">Las aportaciones deberán realizarse únicamente a la siguiente cuenta bancaria del proyecto:</p>
               <div className="ap-bank">
@@ -1173,32 +1167,14 @@ const SecAcuerdoPagos = (props) => {
               </div>
               {d.concepto_dep && <p className="ap-concepto"><strong>Concepto sugerido:</strong> {d.concepto_dep}</p>}
               {d.nota_dep && <p className="ap-bajada">{d.nota_dep}</p>}
-
               <div className="ap-sec"><span className="ap-num">IV</span><h3>Construyamos juntos.</h3></div>
               <p className="ap-bajada">{d.texto_conformidad}</p>
-
               <div className="ap-signs">
-                <div className="ap-sign">
-                  <div className="ap-sign-line"></div>
-                  <span className="ap-sign-name">{d.firma_rep}</span>
-                  <span className="ap-sign-rol">Yodesarrollo SAPI de C.V.</span>
-                  <span className="ap-sign-rol">Representante Legal</span>
-                </div>
-                <div className="ap-sign">
-                  <div className="ap-sign-line"></div>
-                  <span className="ap-sign-name">{d.inversionista || "Inversionista"}</span>
-                  <span className="ap-sign-rol">Inversionista</span>
-                  <span className="ap-sign-rol">Firma de conformidad</span>
-                </div>
+                <div className="ap-sign"><div className="ap-sign-line"></div><span className="ap-sign-name">{d.firma_rep}</span><span className="ap-sign-rol">Yodesarrollo SAPI de C.V.</span><span className="ap-sign-rol">Representante Legal</span></div>
+                <div className="ap-sign"><div className="ap-sign-line"></div><span className="ap-sign-name">{d.inversionista || "Inversionista"}</span><span className="ap-sign-rol">Inversionista</span><span className="ap-sign-rol">Firma de conformidad</span></div>
               </div>
-
-              <div className="ap-doc-footer">
-                <strong>{d.beneficiario}</strong>
-                <span>{d.lugar}</span>
-                <span>Documento confidencial · Folio {d.folio}{d.emitido ? " · Emitido el " + d.emitido : ""}</span>
-              </div>
-
-              <div className="ap-foot">Documento confidencial · {d.lugar} · Página 2 / 2</div>
+              <div className="ap-doc-footer"><strong>{d.beneficiario}</strong><span>{d.lugar}</span><span>Documento confidencial · Folio {d.folio}{d.emitido ? " · Emitido el " + apFmtFechaLarga(d.emitido) : ""}</span></div>
+              <div className="ap-foot"><span>Documento confidencial · {d.lugar}</span><span>Página 2 / 2</span></div>
             </div>
 
           </div>

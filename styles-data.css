@@ -785,8 +785,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
 .html2pdf__page-break { page-break-before: always; break-before: page; height: 0; }
 
 .ap-doc-head { display: flex; align-items: center; justify-content: space-between; }
-.ap-wordmark { font-size: 18px; font-weight: 800; letter-spacing: 0.01em; color: #1f2326; }
-.ap-wordmark-tld { font-weight: 500; color: #8a8a85; margin-left: 2px; }
+.ap-logo { height: 30px; width: auto; }
 .ap-folio { font-size: 11px; color: #8a8a85; letter-spacing: 0.02em; }
 .ap-rule { border: none; border-top: 1px solid #1f2326; margin: 10px 0 0; opacity: 0.85; }
 
@@ -834,3 +833,9 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   .ap-wrap { grid-template-columns: 1fr; }
   .ap-form { max-height: none; }
 }
+
+/* Acuerdo de pago — elementos v2 (calculados, calendario, filas) */
+input[type="date"] { color-scheme: dark; }
+.ap-calc { font-family: var(--f-mono, monospace); font-size: 12px; color: var(--gold, #D4BE8A); display: flex; align-items: center; padding-left: 4px; }
+.ap-row--ref { grid-template-columns: 0.8fr 1.2fr 1fr auto; }
+.ap-microhint { font-size: 10.5px; color: var(--muted, #a3a097); opacity: 0.75; margin: 4px 0 8px; line-height: 1.4; }
