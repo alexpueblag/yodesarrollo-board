@@ -167,9 +167,10 @@ const Dashboard = ({ onOpen, t }) => {
   const logoSrc = cfg.logo_url || "assets/logo_white.png";
   const alysa = lookup["casa-alysa"];
   const mira  = lookup["real-miramar"];
-  const alysaHero  = (data.alysa   && data.alysa.hero)   || {};
-  const miraHero   = (data.miramar && data.miramar.hero) || {};
-  const proyectosDin = (data.proyectos || []).filter((p) => p.activo !== false && (!p.nivel || p.nivel === "large"));
+  const alysaHero  = Object.assign({}, (data.alysa   && data.alysa.hero)   || {}, alysa || {});
+  const miraHero   = Object.assign({}, (data.miramar && data.miramar.hero) || {}, mira  || {});
+  const TILES_GRANDES = ["casa-alysa", "real-miramar"];
+  const proyectosDin = (data.proyectos || []).filter((p) => p.activo !== false && TILES_GRANDES.indexOf(p.id) === -1 && (!p.nivel || p.nivel === "large"));
   const proyectosEco = (data.proyectos || []).filter((p) => p.activo !== false && p.nivel === "ecosistema");
 
   return (
@@ -239,8 +240,8 @@ const Dashboard = ({ onOpen, t }) => {
             style={{ ["--c"]: mira.color, ["--a"]: mira.accent }}
             onClick={() => onOpen("real-miramar")}
           >
-            {miraHero.master_plan_url && (
-              <img className="tile-large-bg" src={miraHero.master_plan_url} alt=""
+            {(miraHero.master_plan_url || miraHero.img_url) && (
+              <img className="tile-large-bg" src={miraHero.master_plan_url || miraHero.img_url} alt=""
                    onError={(e) => { e.target.style.display = 'none'; }} />
             )}
             <span className="tile-large-fade" aria-hidden></span>

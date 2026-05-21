@@ -809,9 +809,10 @@ const SecProyecto = (props) => {
   const tiers  = (p.tiers || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
   const porQue = p.por_que || [];
   const como   = p.como || [];
+  const related = (p.related ? String(p.related).split("|").map((x) => x.trim()).filter(Boolean) : null) || ["calculadora", "garantias", "decision", "contacto"];
 
   return (
-    <Shell {...props} related={["calculadora", "garantias", "decision", "contacto"]}>
+    <Shell {...props} related={related}>
       <div className="proj">
         <div className="proj-hero alysa-hero">
           <div className="hero-text">
@@ -857,12 +858,30 @@ const SecProyecto = (props) => {
                 ))}
               </tbody>
             </table>
+            {p.tiers_nota && <p className="small muted">{p.tiers_nota}</p>}
           </section>
         )}
 
         {/* Lotes — solo plusvalía (reusa el LoteSelector si el proyecto trae lotes) */}
         {modelo === "plusvalia" && (p.lotes || []).length > 0 && (
-          <LoteSelector />
+          <LoteSelector tile={p} />
+        )}
+
+        {/* Lote ejemplo (caso fundador) — derivado de los precios y el tamaño de lote */}
+        {modelo === "plusvalia" && p.lote_ejemplo && (p.lote_ejemplo.filas || []).length > 0 && (
+          <details className="rm-extras">
+            <summary>{p.lote_ejemplo.titulo || "Caso fundador"}</summary>
+            <table className="kv" style={{ marginTop: "12px" }}>
+              <tbody>
+                {p.lote_ejemplo.filas.map((r, i) => (
+                  <tr key={i} className={r.highlight ? "hi" : ""}>
+                    <td>{r.label}</td>
+                    <td className={"num mono" + (r.highlight ? " accent" : "")}>{r.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
         )}
 
         {/* Por qué / Cómo */}
@@ -871,23 +890,28 @@ const SecProyecto = (props) => {
             {porQue.length > 0 && (
               <div>
                 <h2 className="block-title">Por qué</h2>
-                <ul className="bullets">{porQue.map((b, i) => <li key={i}>{b}</li>)}</ul>
+                <ul className="bullets">{porQue.map((b, i) => <li key={i} dangerouslySetInnerHTML={{ __html: typeof b === "string" ? b : (b.html || ((b.strong ? "<strong>" + b.strong + "</strong> — " : "") + (b.text || ""))) }} />)}</ul>
               </div>
             )}
             {como.length > 0 && (
               <div>
                 <h2 className="block-title">Cómo entras</h2>
-                <ul className="bullets">{como.map((b, i) => <li key={i}>{b}</li>)}</ul>
+                <ul className="bullets">{como.map((b, i) => <li key={i} dangerouslySetInnerHTML={{ __html: typeof b === "string" ? b : (b.html || b.text || "") }} />)}</ul>
               </div>
             )}
           </section>
         )}
 
         {/* Material del proyecto — PDF de propuesta, video de avance, CTA */}
-        {(p.pdf_dossier_url || p.video_url || p.cta_url) && (
+        {(p.presentacion_url || p.pdf_dossier_url || p.video_url || p.cta_url) && (
           <section className="block">
             <h2 className="block-title">Material del proyecto</h2>
             <div className="proj-action-row">
+              {p.presentacion_url && (
+                <a className="path-cta" href={p.presentacion_url} target="_blank" rel="noreferrer">
+                  Ver presentación completa <IconArrow size={14} sw={2} />
+                </a>
+              )}
               {p.pdf_dossier_url && (
                 <a className="path-cta" href={p.pdf_dossier_url} target="_blank" rel="noreferrer">
                   Ver propuesta (PDF) <IconArrow size={14} sw={2} />

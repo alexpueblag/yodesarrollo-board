@@ -14,17 +14,20 @@ const STATUS_META = {
 };
 window.STATUS_META = STATUS_META;
 
-const LoteSelector = () => {
+const LoteSelector = (props) => {
   const { data } = window.useData();
-  const LOTES = ((data.miramar && data.miramar.lotes) || []);
-  const ETAPAS = ((data.miramar && data.miramar.etapas) || [])
+  const tile = (props && props.tile) || {};
+  const mir = (data.miramar) || {};
+  const heroData = mir.hero || {};
+
+  const LOTES = (tile.lotes && tile.lotes.length) ? tile.lotes : (mir.lotes || []);
+  const ETAPAS = ((tile.etapas && tile.etapas.length) ? tile.etapas : (mir.etapas || []))
     .slice()
     .sort((a, b) => (a.order || 0) - (b.order || 0));
-  const heroData = (data.miramar && data.miramar.hero) || {};
 
-  const COMERCIAL_PRICE_M2 = heroData.commercial_price_m2 || 5250;
-  const COMERCIAL_LABEL    = heroData.commercial_label || "Venta directa · Mayo 2026";
-  const masterPlanUrl      = heroData.master_plan_url || "assets/miramar_master_plan_h.png";
+  const COMERCIAL_PRICE_M2 = tile.pv_lista || heroData.commercial_price_m2 || 5250;
+  const COMERCIAL_LABEL    = tile.commercial_label || heroData.commercial_label || "Venta directa · Mayo 2026";
+  const masterPlanUrl      = tile.master_plan_url || tile.img_url || heroData.master_plan_url || "assets/miramar_master_plan_h.png";
 
   // Encuentra la etapa actual (current = true). Fallback: la primera no-done.
   const fundII = ETAPAS.find((e) => e.current) || ETAPAS.find((e) => !e.done) || ETAPAS[0] || {};
