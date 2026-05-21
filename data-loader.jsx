@@ -18,7 +18,7 @@
 
 const CACHE_KEY      = "ydr_board_data_v1";
 const CACHE_TTL_MS   = 5 * 60 * 1000;     // 5 minutos (solo informativo; ya no bloquea el arranque)
-const FETCH_TIMEOUT  = 9000;              // 9 segundos — da margen al cold start de Apps Script
+const FETCH_TIMEOUT  = 20000;             // 20 s — el cold start del Apps Script puede tardar ~10-15s
 const FALLBACK_URL   = "data.json";
 
 const DataContext = React.createContext(null);
