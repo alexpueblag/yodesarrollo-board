@@ -1000,18 +1000,11 @@ const SecAcuerdoPagos = (props) => {
   };
 
   const descargar = () => {
-    const el = document.getElementById("ap-doc");
-    if (!el) return;
-    if (!window.html2pdf) { alert("La librería de PDF aún se está cargando. Espera 2 segundos y vuelve a intentar."); return; }
-    const nombre = (d.inversionista || "inversionista").replace(/[^a-zA-Z0-9]+/g, "-");
-    window.html2pdf().set({
-      margin: [9, 13, 10, 13],
-      filename: "Promesa-de-Pago-" + nombre + ".pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 3, useCORS: true, backgroundColor: "#ffffff" },
-      jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
-      pagebreak: { mode: ["css", "legacy"], avoid: [".ap-table", ".ap-meta", ".ap-bank", ".ap-signs"] },
-    }).from(el).save();
+    const prev = document.title;
+    document.title = "Promesa-de-Pago-" + (d.inversionista || "inversionista").replace(/[^a-zA-Z0-9]+/g, "-");
+    const restore = () => { document.title = prev; window.removeEventListener("afterprint", restore); };
+    window.addEventListener("afterprint", restore);
+    window.print();
   };
 
   const fld = (label, key, ph, type) => (
@@ -1030,7 +1023,7 @@ const SecAcuerdoPagos = (props) => {
             <h2>Datos del acuerdo</h2>
             <button className="ap-download" onClick={descargar}>Descargar PDF <IconArrow size={14} sw={2} /></button>
           </div>
-          <p className="ap-hint">Llena los campos; el documento se arma solo. El folio se genera con las iniciales del inversionista y el consecutivo que elijas.</p>
+          <p className="ap-hint">Llena los campos; el documento se arma solo. Al dar <strong>Descargar PDF</strong> se abre el diálogo de impresión: elige <strong>“Guardar como PDF”</strong> y activa <strong>Gráficos de fondo</strong>.</p>
 
           <div className="ap-grid2">
             {fld("Inversionista", "inversionista", "Nombre completo")}
@@ -1158,7 +1151,7 @@ const SecAcuerdoPagos = (props) => {
               </tbody>
             </table>
 
-            <div className="ap-sec"><span className="ap-num">III</span><h3>Cuenta de depósito.</h3></div>
+            <div className="ap-sec ap-page2"><span className="ap-num">III</span><h3>Cuenta de depósito.</h3></div>
             <p className="ap-bajada">Las aportaciones deberán realizarse únicamente a la siguiente cuenta bancaria del proyecto:</p>
             <div className="ap-bank">
               <div><span className="ap-meta-k">Banco</span><span className="ap-meta-v">{d.banco}</span></div>

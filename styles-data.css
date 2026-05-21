@@ -845,3 +845,30 @@ input[type="date"] { color-scheme: dark; }
 .ap-folio-preview { font-size: 12px; color: var(--text, #F5F1EA); margin: 4px 0 12px; padding: 8px 12px; background: rgba(212,190,138,0.08); border: 1px solid rgba(212,190,138,0.2); border-radius: 8px; }
 .ap-folio-preview strong { font-family: var(--f-mono, monospace); color: var(--gold, #D4BE8A); letter-spacing: 0.03em; }
 
+
+/* =========================================================================
+   ACUERDO DE PAGO — Impresión nativa a PDF (window.print)
+   El navegador respeta saltos de página de verdad y produce texto nítido.
+   ========================================================================= */
+@media print {
+  @page { size: Letter; margin: 13mm; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
+  body * { visibility: hidden !important; }
+  #ap-doc, #ap-doc * { visibility: visible !important; }
+  /* sacar del camino los contenedores del board para no recortar el documento */
+  .app, .board, .section, .ap-wrap, .ap-preview-col {
+    position: static !important; overflow: visible !important; transform: none !important;
+    height: auto !important; max-height: none !important; display: block !important;
+  }
+  .ap-form { display: none !important; }
+  #ap-doc {
+    position: absolute !important; left: 0 !important; top: 0 !important;
+    width: 100% !important; max-width: 100% !important;
+    box-shadow: none !important; padding: 0 !important; margin: 0 !important;
+  }
+  /* III (Cuenta de depósito) siempre arranca en la página 2 */
+  .ap-page2 { page-break-before: always !important; break-before: page !important; }
+  /* nunca partir estos bloques a la mitad */
+  .ap-table, .ap-meta, .ap-bank, .ap-signs, .ap-doc-footer { page-break-inside: avoid !important; break-inside: avoid !important; }
+}
