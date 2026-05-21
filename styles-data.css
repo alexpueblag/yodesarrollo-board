@@ -845,30 +845,26 @@ input[type="date"] { color-scheme: dark; }
 .ap-folio-preview { font-size: 12px; color: var(--text, #F5F1EA); margin: 4px 0 12px; padding: 8px 12px; background: rgba(212,190,138,0.08); border: 1px solid rgba(212,190,138,0.2); border-radius: 8px; }
 .ap-folio-preview strong { font-family: var(--f-mono, monospace); color: var(--gold, #D4BE8A); letter-spacing: 0.03em; }
 
+/* Acuerdo de pago — hojas (preview en pantalla) */
+.ap-sheet--2 { margin-top: 14px; padding-top: 16px; border-top: 1px dashed #e3e1db; }
 
 /* =========================================================================
-   ACUERDO DE PAGO — Impresión nativa a PDF (window.print)
-   El navegador respeta saltos de página de verdad y produce texto nítido.
+   ACUERDO DE PAGO — Impresión a PDF (se imprime dentro de un iframe aislado)
    ========================================================================= */
 @media print {
   @page { size: Letter; margin: 13mm; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
-  body * { visibility: hidden !important; }
-  #ap-doc, #ap-doc * { visibility: visible !important; }
-  /* sacar del camino los contenedores del board para no recortar el documento */
-  .app, .board, .section, .ap-wrap, .ap-preview-col {
-    position: static !important; overflow: visible !important; transform: none !important;
-    height: auto !important; max-height: none !important; display: block !important;
+  html, body { background: #fff !important; margin: 0 !important; }
+  #ap-doc { box-shadow: none !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
+  /* cada hoja ocupa exactamente una pagina carta (area util ~253mm) */
+  .ap-sheet { min-height: 247mm; box-sizing: border-box; }
+  .ap-sheet--2 {
+    page-break-before: always; break-before: page;
+    display: flex; flex-direction: column;
+    margin-top: 0 !important; padding-top: 0 !important; border-top: none !important;
   }
-  .ap-form { display: none !important; }
-  #ap-doc {
-    position: absolute !important; left: 0 !important; top: 0 !important;
-    width: 100% !important; max-width: 100% !important;
-    box-shadow: none !important; padding: 0 !important; margin: 0 !important;
-  }
-  /* III (Cuenta de depósito) siempre arranca en la página 2 */
-  .ap-page2 { page-break-before: always !important; break-before: page !important; }
-  /* nunca partir estos bloques a la mitad */
-  .ap-table, .ap-meta, .ap-bank, .ap-signs, .ap-doc-footer { page-break-inside: avoid !important; break-inside: avoid !important; }
+  /* IV + firmas + leyenda ancladas al pie de la hoja 2 */
+  .ap-sheet-bottom { margin-top: auto; }
+  /* no partir estos bloques */
+  .ap-table, .ap-meta, .ap-bank, .ap-signs, .ap-doc-footer { page-break-inside: avoid; break-inside: avoid; }
 }

@@ -1000,11 +1000,18 @@ const SecAcuerdoPagos = (props) => {
   };
 
   const descargar = () => {
-    const prev = document.title;
-    document.title = "Promesa-de-Pago-" + (d.inversionista || "inversionista").replace(/[^a-zA-Z0-9]+/g, "-");
-    const restore = () => { document.title = prev; window.removeEventListener("afterprint", restore); };
-    window.addEventListener("afterprint", restore);
-    window.print();
+    const doc = document.getElementById("ap-doc");
+    if (!doc) return;
+    const nombre = "Promesa-de-Pago-" + (d.inversionista || "inversionista").replace(/[^a-zA-Z0-9]+/g, "-");
+    const sheets = Array.from(document.querySelectorAll('link[rel="stylesheet"], style')).map(function (n) { return n.outerHTML; }).join("");
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
+    document.body.appendChild(iframe);
+    const idoc = iframe.contentWindow.document;
+    idoc.open();
+    idoc.write("<!doctype html><html><head><title>" + nombre + "</title>" + sheets + "<style>html,body{margin:0;background:#fff;}#ap-doc{box-shadow:none!important;margin:0!important;}</style></head><body>" + doc.outerHTML + "</body></html>");
+    idoc.close();
+    setTimeout(function () { try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch (e) {} setTimeout(function () { iframe.remove(); }, 1500); }, 500);
   };
 
   const fld = (label, key, ph, type) => (
@@ -1106,6 +1113,7 @@ const SecAcuerdoPagos = (props) => {
 
         <div className="ap-preview-col">
           <div id="ap-doc" className="ap-doc">
+            <div className="ap-sheet">
             <div className="ap-doc-head">
               <img src="assets/logo_dark.png" alt="Yodesarrollo" className="ap-logo" onError={(e) => { e.target.style.display = 'none'; }} />
               <span className="ap-folio">Folio {folio}</span>
@@ -1150,8 +1158,10 @@ const SecAcuerdoPagos = (props) => {
                 {d.referencias.map((r, i) => { const c = refCalc(r.meses); return <tr key={i}><td>{c.label}</td><td>{c.total}</td><td>{c.rend}</td></tr>; })}
               </tbody>
             </table>
+            </div>
 
-            <div className="ap-sec ap-page2"><span className="ap-num">III</span><h3>Cuenta de depósito.</h3></div>
+            <div className="ap-sheet ap-sheet--2">
+            <div className="ap-sec"><span className="ap-num">III</span><h3>Cuenta de depósito.</h3></div>
             <p className="ap-bajada">Las aportaciones deberán realizarse únicamente a la siguiente cuenta bancaria del proyecto:</p>
             <div className="ap-bank">
               <div><span className="ap-meta-k">Banco</span><span className="ap-meta-v">{d.banco}</span></div>
@@ -1162,6 +1172,7 @@ const SecAcuerdoPagos = (props) => {
             {d.concepto_dep && <p className="ap-concepto"><strong>Concepto sugerido:</strong> {d.concepto_dep}</p>}
             {d.nota_dep && <p className="ap-bajada">{d.nota_dep}</p>}
 
+            <div className="ap-sheet-bottom">
             <div className="ap-sec"><span className="ap-num">IV</span><h3>Construyamos juntos.</h3></div>
             <p className="ap-bajada">{d.texto_conformidad}</p>
             <div className="ap-signs">
@@ -1173,6 +1184,8 @@ const SecAcuerdoPagos = (props) => {
               <strong>{d.beneficiario}</strong>
               <span>{d.lugar}</span>
               <span>Documento confidencial · Folio {folio}{d.emitido ? " · Emitido el " + apFmtFechaLarga(d.emitido) : ""}</span>
+            </div>
+            </div>
             </div>
           </div>
         </div>
