@@ -1,13 +1,13 @@
 // Yodesarrollo-Board · Data Loader
 //
-// Carga "red primero" (network-first):
-//   1. Al abrir, muestra el loader e intenta SIEMPRE traer lo más fresco del Apps Script.
-//   2. Si la red responde → usa eso (y lo guarda en caché).
-//   3. Si la red falla o se pasa del timeout → usa la caché local (aunque sea de antes).
-//   4. Si tampoco hay caché → cae a data.json (offline).
+// Carga "instantánea" (pinta-ya, revalida-después / stale-while-revalidate):
+//   1. Al abrir, pinta AL INSTANTE lo último disponible: caché local (de cualquier edad),
+//      o data.json local si no hay caché. El cliente nunca espera.
+//   2. EN SEGUNDO PLANO busca lo más fresco del Apps Script (sin bloquear la pantalla ya pintada).
+//   3. Cuando llega lo fresco, actualiza la vista solo y lo guarda en caché.
+//   4. Si el Apps Script no responde, se queda con lo que ya mostró. Sin loader largo.
 //
-// Así nunca arrancamos mostrando datos viejos: o es fresco, o es lo mejor disponible
-// solo cuando de plano no hay conexión.
+// Pensado para presentaciones en vivo: arranque inmediato + datos frescos cuando lleguen.
 //
 // Expone:
 //   - DataContext (React.createContext)
@@ -18,7 +18,7 @@
 
 const CACHE_KEY      = "ydr_board_data_v1";
 const CACHE_TTL_MS   = 5 * 60 * 1000;     // 5 minutos (solo informativo; ya no bloquea el arranque)
-const FETCH_TIMEOUT  = 20000;             // 20 s — el cold start del Apps Script puede tardar ~10-15s
+const FETCH_TIMEOUT  = 15000;             // 15 s para la revalidación en segundo plano (no bloquea la pantalla)
 const FALLBACK_URL   = "data.json";
 
 const DataContext = React.createContext(null);
@@ -91,46 +91,40 @@ const DataProvider = ({ children }) => {
   const [status, setStatus] = React.useState("loading");   // loading | ready | error
   const [source, setSource] = React.useState(null);        // cache | live | fallback
 
-  const load = React.useCallback(async (forceLive = false) => {
-    setStatus("loading");
+  const load = React.useCallback(async () => {
+    // 1. PINTA YA — muestra al instante lo último disponible para que el cliente nunca espere.
+    let shown = false;
+    const cached = cacheReadAny();
+    if (cached) {
+      setData(cached);
+      setStatus("ready");
+      setSource("cache");
+      shown = true;
+    } else {
+      // Sin caché todavía: data.json local (mismo origen, carga en <1s) para no dejar pantalla vacía.
+      try {
+        const fb = await fetchFallback();
+        setData(fb);
+        setStatus("ready");
+        setSource("fallback");
+        shown = true;
+      } catch (e) { /* aún no hay nada; el loader sigue hasta que llegue lo live */ }
+    }
 
-    // 1. RED PRIMERO — siempre intentamos lo más fresco del Apps Script.
+    // 2. REVALIDA EN SEGUNDO PLANO — trae lo más fresco sin bloquear lo ya pintado.
     try {
       const live = await fetchLive();
       cacheWrite(live);
       setData(live);
       setStatus("ready");
       setSource("live");
-      return;
     } catch (e) {
-      console.warn("[data-loader] live fetch falló:", e.message);
-    }
-
-    // 2. Si la red falló: usamos la caché local (lo mejor disponible aunque no sea de ahorita).
-    const cached = cacheReadAny();
-    if (cached) {
-      setData(cached);
-      setStatus("ready");
-      setSource("cache");
-      return;
-    }
-
-    // 3. Último recurso: data.json offline.
-    try {
-      const fb = await fetchFallback();
-      setData(fb);
-      setStatus("ready");
-      setSource("fallback");
-    } catch (e) {
-      console.error("[data-loader] fallback también falló:", e.message);
-      setStatus("error");
+      console.warn("[data-loader] revalidación en segundo plano falló:", e.message);
+      if (!shown) setStatus("error");  // solo es error si nunca logramos mostrar nada
     }
   }, []);
 
-  const refresh = React.useCallback(() => {
-    cacheClear();
-    return load(true);
-  }, [load]);
+  const refresh = React.useCallback(() => load(), [load]);
 
   const save = React.useCallback(async (action, payload) => {
     const url = (window.YDR_CONFIG && window.YDR_CONFIG.appsScriptUrl) || "";
