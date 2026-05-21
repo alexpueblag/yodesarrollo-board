@@ -60,6 +60,7 @@ window.buildTileLookup = (tilesData, proyectosData) => {
   // Proyectos dinámicos del tab `Proyectos` → ruteados a la sección genérica SecProyecto
   (proyectosData || []).forEach((p) => {
     if (!p.id) return;
+    if (p.activo === false) return;
     lookup[p.id] = {
       ...p,
       label:   p.nombre || p.id,
@@ -168,8 +169,8 @@ const Dashboard = ({ onOpen, t }) => {
   const mira  = lookup["real-miramar"];
   const alysaHero  = (data.alysa   && data.alysa.hero)   || {};
   const miraHero   = (data.miramar && data.miramar.hero) || {};
-  const proyectosDin = (data.proyectos || []).filter((p) => !p.nivel || p.nivel === "large");
-  const proyectosEco = (data.proyectos || []).filter((p) => p.nivel === "ecosistema");
+  const proyectosDin = (data.proyectos || []).filter((p) => p.activo !== false && (!p.nivel || p.nivel === "large"));
+  const proyectosEco = (data.proyectos || []).filter((p) => p.activo !== false && p.nivel === "ecosistema");
 
   return (
     <div className={"board board--" + t.aesthetic} data-mode={presentation ? "presentation" : "edit"}>
