@@ -29,8 +29,66 @@
       appsScriptUrl: "https://script.google.com/macros/s/AKfycbydELrGzjtZqRZfk3S_ccaapovgdW0j5geqoW2eT8O5AR87ZN4DL5tEwwIXOEyQKYEF-w/exec"
     };
   </script>
+
+  <style id="ydr-gate-style">
+    #ydr-gate { position: fixed; inset: 0; z-index: 99999; background: #0E1013; color: #F5F1EA;
+      display: flex; align-items: center; justify-content: center; font-family: 'Manrope', sans-serif; }
+    #ydr-gate.hidden { display: none; }
+    .ydr-gate-card { width: min(92vw, 380px); text-align: center; padding: 0 24px; }
+    .ydr-gate-brand { font-family: 'Instrument Serif', serif; font-size: 40px; line-height: 1.05; margin: 0 0 8px; font-weight: 400; }
+    .ydr-gate-brand em { font-style: italic; color: #D4BE8A; }
+    .ydr-gate-sub { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: #8a857b; margin: 0 0 34px; }
+    .ydr-gate-input { width: 100%; box-sizing: border-box; background: #15171a; border: 1px solid #2a2d31;
+      color: #F5F1EA; font-size: 16px; padding: 14px 16px; border-radius: 10px; text-align: center;
+      letter-spacing: 1px; outline: none; font-family: 'Manrope', sans-serif; }
+    .ydr-gate-input:focus { border-color: #D4BE8A; }
+    .ydr-gate-btn { width: 100%; margin-top: 12px; background: #D4BE8A; color: #15171a; border: 0;
+      font-size: 13px; font-weight: 600; letter-spacing: 1.5px; padding: 14px; border-radius: 10px;
+      cursor: pointer; font-family: 'Manrope', sans-serif; text-transform: uppercase; }
+    .ydr-gate-btn:hover { background: #e0cda0; }
+    .ydr-gate-err { color: #d98a8a; font-size: 13px; margin-top: 16px; min-height: 18px; opacity: 0; transition: opacity .2s; }
+    .ydr-gate-err.show { opacity: 1; }
+    @keyframes ydrShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    .ydr-shake { animation: ydrShake .3s; }
+  </style>
 </head>
 <body>
+  <div id="ydr-gate">
+    <div class="ydr-gate-card">
+      <h1 class="ydr-gate-brand">Yo<em>desarrollo</em></h1>
+      <p class="ydr-gate-sub">Acceso privado</p>
+      <input id="ydr-gate-input" class="ydr-gate-input" type="password" placeholder="Palabra clave" autocomplete="off" autocapitalize="off" />
+      <button id="ydr-gate-btn" class="ydr-gate-btn">Entrar</button>
+      <div id="ydr-gate-err" class="ydr-gate-err">Palabra clave incorrecta</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var KEY = atob("TWFzdGVyMjAyNg==");
+      var SS = "ydr_gate_ok";
+      var gate = document.getElementById("ydr-gate");
+      if (sessionStorage.getItem(SS) === "1") { gate.classList.add("hidden"); return; }
+      var input = document.getElementById("ydr-gate-input");
+      var btn = document.getElementById("ydr-gate-btn");
+      var err = document.getElementById("ydr-gate-err");
+      var card = gate.querySelector(".ydr-gate-card");
+      function tryEnter() {
+        if (input.value === KEY) {
+          try { sessionStorage.setItem(SS, "1"); } catch (e) {}
+          gate.classList.add("hidden");
+        } else {
+          err.classList.add("show");
+          card.classList.add("ydr-shake");
+          setTimeout(function () { card.classList.remove("ydr-shake"); }, 300);
+          input.select();
+        }
+      }
+      btn.addEventListener("click", tryEnter);
+      input.addEventListener("keydown", function (e) { if (e.key === "Enter") tryEnter(); });
+      setTimeout(function () { input.focus(); }, 100);
+    })();
+  </script>
+
   <div id="root"></div>
 
   <!-- Iconos + UI helpers (sin dependencias de data) -->
