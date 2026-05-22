@@ -449,8 +449,15 @@ const SecCalculadora = (props) => {
             </div>
 
             <div className="control">
-              <label>Capital a invertir <span className="cap-value mono">{fmt(capital)}</span></label>
-              <input type="range" min={minCap} max={maxCap} step={step} value={capital}
+              <label>Capital a invertir
+                <input className="cap-input mono" type="text" inputMode="numeric"
+                  style={{ background: "transparent", border: "none", borderBottom: "1px solid #9A7B2A",
+                           color: "inherit", font: "inherit", width: "150px", textAlign: "right", marginLeft: "8px", padding: "2px 0" }}
+                  value={fmt(capital)}
+                  onChange={(e) => { const n = parseInt((e.target.value || "").replace(/[^0-9]/g, ""), 10); setCapital(isNaN(n) ? 0 : n); }} />
+              </label>
+              <input type="range" min={minCap} max={maxCap} step={step}
+                value={Math.min(Math.max(capital, minCap), maxCap)}
                 onChange={(e) => setCapital(+e.target.value)} />
               <div className="ticks">
                 <span>{fmt(minCap)}</span>
