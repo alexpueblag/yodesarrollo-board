@@ -1040,7 +1040,18 @@ const SecAcuerdoPagos = (props) => {
     document.body.appendChild(iframe);
     const idoc = iframe.contentWindow.document;
     idoc.open();
-    idoc.write("<!doctype html><html><head><title>" + nombre + "</title>" + sheets + "<style>html,body{margin:0;background:#fff;}#ap-doc{box-shadow:none!important;margin:0!important;}</style></head><body>" + doc.outerHTML + "</body></html>");
+    const printCss = "<style>"
+      + "@page{size:A4;margin:14mm;}"
+      + "html,body{margin:0;padding:0;background:#fff;height:auto!important;overflow:visible!important;}"
+      + "#ap-doc,#ap-doc .ap-sheet{box-shadow:none!important;border:0!important;margin:0!important;padding:0!important;"
+      + "width:auto!important;max-width:none!important;height:auto!important;max-height:none!important;min-height:0!important;"
+      + "overflow:visible!important;transform:none!important;}"
+      + "#ap-doc *{overflow:visible!important;}"
+      + "#ap-doc .ap-table,#ap-doc .ap-block,#ap-doc .ap-sec,#ap-doc tr,#ap-doc .ap-sign,#ap-doc .ap-meta,#ap-doc .ap-total-row{break-inside:avoid;page-break-inside:avoid;}"
+      + "#ap-doc h1,#ap-doc h3{break-after:avoid;page-break-after:avoid;}"
+      + "#ap-doc thead{display:table-header-group;}"
+      + "</style>";
+    idoc.write("<!doctype html><html><head><title>" + nombre + "</title>" + sheets + printCss + "</head><body>" + doc.outerHTML + "</body></html>");
     idoc.close();
     setTimeout(function () { try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch (e) {} setTimeout(function () { iframe.remove(); }, 1500); }, 500);
   };
