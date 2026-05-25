@@ -18,6 +18,7 @@ const LoteSelector = (props) => {
   const { data } = window.useData();
   const tile = (props && props.tile) || {};
   const nombreProy = tile.nombre || "Real Miramar";
+  const asesorWa = String((data.contacto && data.contacto.asesor && data.contacto.asesor.whatsapp) || "").replace(/[^0-9]/g, "");
   const mir = (data.miramar) || {};
   const heroData = mir.hero || {};
 
@@ -219,6 +220,7 @@ const LoteSelector = (props) => {
               lote={sel} fundII={fundII} ventaEtapa={ventaEtapa} ETAPAS={ETAPAS}
               highlight={highlight} setHighlight={setHighlight} isComercial={isComercial}
               comercialPriceM2={COMERCIAL_PRICE_M2} comercialLabel={COMERCIAL_LABEL}
+              nombreProy={nombreProy} whatsapp={asesorWa}
             />
           ) : (
             <EmptyState fundII={fundII} />
@@ -279,9 +281,18 @@ const LoteSelector = (props) => {
 // ═══════════════════════════════════════════════════════════════════
 // LoteDetail — panel de detalle con plusvalía calculada desde F.II
 // ═══════════════════════════════════════════════════════════════════
-const LoteDetail = ({ lote, fundII, ventaEtapa, ETAPAS, highlight, setHighlight, isComercial, comercialPriceM2, comercialLabel }) => {
+const LoteDetail = ({ lote, fundII, ventaEtapa, ETAPAS, highlight, setHighlight, isComercial, comercialPriceM2, comercialLabel, nombreProy, whatsapp }) => {
   const fIIPrice = lote.m2 * (fundII.price_m2 || 0);
   const meta = STATUS_META[lote.status] || STATUS_META.available;
+
+  const precioLote = isComercial(lote) ? lote.m2 * comercialPriceM2 : fIIPrice;
+  const reservable = whatsapp && lote.status !== "sold" && lote.status !== "reserved";
+  const waMsg = "Hola, me interesa el lote " + lote.n + " de " + (nombreProy || "Real Miramar") + ", precio " + fmtMxLot(precioLote);
+  const waBtn = reservable ? (
+    <a className="ld-wa-cta" href={"https://wa.me/" + whatsapp + "?text=" + encodeURIComponent(waMsg)} target="_blank" rel="noreferrer">
+      Reservar este lote · WhatsApp
+    </a>
+  ) : null;
 
   if (isComercial(lote)) {
     const total = lote.m2 * comercialPriceM2;
@@ -309,6 +320,7 @@ const LoteDetail = ({ lote, fundII, ventaEtapa, ETAPAS, highlight, setHighlight,
         <p className="ld-note">
           Los lotes <strong>COMERCIAL</strong> ya no entran en preventa escalonada. <strong className="accent">Precio fijo de venta directa</strong> al público.
         </p>
+        {waBtn}
       </>
     );
   }
@@ -403,6 +415,7 @@ const LoteDetail = ({ lote, fundII, ventaEtapa, ETAPAS, highlight, setHighlight,
           </div>
         </div>
       )}
+      {waBtn}
     </>
   );
 };

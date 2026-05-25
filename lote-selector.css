@@ -513,3 +513,13 @@
   .pn-val { font-size: 20px; }
   .proj-numbers { gap: 16px; }
 }
+
+/* ── Botón Reservar por WhatsApp (lote seleccionado) ── */
+.ld-wa-cta {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 14px; padding: 12px 16px; border-radius: 10px;
+  background: #25D366; color: #0b1f14 !important; font-weight: 600;
+  font-size: 13px; letter-spacing: 0.02em; cursor: pointer;
+  transition: background 160ms, transform 120ms;
+}
+.ld-wa-cta:hover { background: #2ee06f; transform: translateY(-1px); }

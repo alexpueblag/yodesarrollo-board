@@ -281,7 +281,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
  * ════════════════════════════════════════════════════════════════════════════ */
 .tier-large {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   padding: 32px clamp(20px, 3vw, 48px) 20px;
 }
