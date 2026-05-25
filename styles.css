@@ -1239,3 +1239,10 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
   .proj-hero { grid-template-columns: 1fr; }
   .gantt-row, .gantt-axis { grid-template-columns: 120px 1fr; }
 }
+
+/* ── Header · stats dinámicos desde Config (header_stat_1..3) ── */
+.board-head-stats { display: flex; gap: 26px; align-items: center; }
+.bhs { display: flex; flex-direction: column; gap: 2px; text-align: center; }
+.bhs-val { font-family: var(--f-display); font-size: 19px; line-height: 1; color: var(--text); letter-spacing: -0.01em; }
+.bhs-lbl { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; }
+@media (max-width: 720px) { .board-head-stats { display: none; } }

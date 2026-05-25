@@ -195,6 +195,18 @@ const Dashboard = ({ onOpen, t }) => {
             </span>
           </div>
         </div>
+        {(cfg.header_stat_1_value || cfg.header_stat_2_value || cfg.header_stat_3_value) && (
+          <div className="board-head-stats">
+            {[1, 2, 3].map((i) => (
+              cfg["header_stat_" + i + "_value"] ? (
+                <div className="bhs" key={i}>
+                  <span className="bhs-val mono">{cfg["header_stat_" + i + "_value"]}</span>
+                  <span className="bhs-lbl mono">{cfg["header_stat_" + i + "_label"]}</span>
+                </div>
+              ) : null
+            ))}
+          </div>
+        )}
         {t.showClock && (
           <div className="board-status">
             <span className="status-time mono">{fmtTime(clock)}</span>

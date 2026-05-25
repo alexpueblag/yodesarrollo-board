@@ -361,65 +361,110 @@ const SecRealMiramar = (props) => {
 // =============================================================================
 const SecCalculadora = (props) => {
   const { data } = window.useData();
-  const brackets   = ((data.calculadora && data.calculadora.alysa_brackets) || []).slice().sort((a, b) => a.min_capital - b.min_capital);
-  const mirConfig  = (data.calculadora && data.calculadora.miramar_config) || {};
 
-  const minCap  = mirConfig.min_capital || 200000;
-  const maxCap  = mirConfig.max_capital || 3000000;
-  const step    = mirConfig.step || 50000;
-  const plusvalia24m = (mirConfig.plusvalia_24m_pct || 53) / 100;
-  const anualizado   = mirConfig.anualizado_pct || 26;
+  // Proyectos invertibles activos (coinversión o plusvalía) — el motor entrega
+  // sus tiers/plusvalía ya derivados por proyecto.
+  const invertibles = ((data.proyectos) || []).filter(
+    (p) => p.activo !== false && (p.modelo === "coinversion" || p.modelo === "plusvalia")
+  );
 
-  const [proj, setProj] = React.useState("alysa");
+  // Fallback al esquema viejo si el motor no entrega proyectos (modo offline / data.json).
+  const legacyBrackets = ((data.calculadora && data.calculadora.alysa_brackets) || [])
+    .slice().sort((a, b) => a.min_capital - b.min_capital);
+  const legacyMir = (data.calculadora && data.calculadora.miramar_config) || {};
+
+  const firstCoinv = invertibles.find((p) => p.modelo === "coinversion");
+  const firstPlus  = invertibles.find((p) => p.modelo === "plusvalia");
+
+  // Tabs: uno por proyecto activo + Estrategia (si hay coinversión y plusvalía).
+  const opciones = invertibles.map((p) => ({
+    id: p.id,
+    t: p.nombre + " · " + (p.modelo === "coinversion"
+      ? (Number(p.ci_plazo) || 8) + "m"
+      : (Number(p.pv_plazo) || 24) + "m"),
+  }));
+  if (firstCoinv && firstPlus) {
+    opciones.push({ id: "estrategia", t: "Estrategia · " + firstCoinv.nombre + "\u2192" + firstPlus.nombre });
+  }
+  if (!opciones.length) {
+    // Fallback legacy
+    opciones.push({ id: "alysa", t: "Casa Alysa \u00b7 8m" });
+    opciones.push({ id: "miramar", t: "Real Miramar \u00b7 24m" });
+    opciones.push({ id: "estrategia", t: "Estrategia \u00b7 Alysa\u2192Miramar" });
+  }
+
+  const [proj, setProj] = React.useState(opciones[0].id);
   const [capital, setCapital] = React.useState(1000000);
 
-  // Alysa tasa escalonada — busca el bracket más alto que cumpla c >= min_capital
-  const alysaRate = (c) => {
-    let rate = brackets.length ? brackets[0].rate : 20;
-    for (const b of brackets) {
-      if (c >= b.min_capital) rate = b.rate;
+  const sel = invertibles.find((p) => p.id === proj);
+
+  // Config del slider según la selección.
+  let minCap = 200000, maxCap = 3000000, step = 50000;
+  if (sel && sel.modelo === "plusvalia") {
+    minCap = Number(sel.pv_calc_min) || 200000;
+    maxCap = Number(sel.pv_calc_max) || 3000000;
+    step   = Number(sel.pv_calc_step) || 50000;
+  } else if (sel && sel.modelo === "coinversion" && sel.tiers && sel.tiers.length) {
+    minCap = sel.tiers[0].capital;
+    maxCap = sel.tiers[sel.tiers.length - 1].capital;
+    step   = Number(sel.ci_paso) || 50000;
+  } else if (!invertibles.length) {
+    minCap = legacyMir.min_capital || 200000;
+    maxCap = legacyMir.max_capital || 3000000;
+    step   = legacyMir.step || 50000;
+  }
+
+  // Tasa escalonada de una coinversión a partir de sus tramos (o de los brackets legacy).
+  const coinvRate = (tiers, c) => {
+    if (tiers && tiers.length) {
+      let r = tiers[0].rate;
+      for (const t of tiers) if (c >= t.capital) r = t.rate;
+      return r;
     }
-    return rate;
+    let r = legacyBrackets.length ? legacyBrackets[0].rate : 20;
+    for (const b of legacyBrackets) if (c >= b.min_capital) r = b.rate;
+    return r;
   };
 
   let result;
-  if (proj === "alysa") {
-    const r = alysaRate(capital);
-    const r8 = capital * (r / 100) * (8 / 12);
-    result = {
-      rate: r + "% anual",
-      months: "8 meses",
-      gain: r8,
-      total: capital + r8,
-      pct: (r8 / capital) * 100,
-    };
-  } else if (proj === "miramar") {
-    const gain = capital * plusvalia24m;
-    result = {
-      rate: anualizado + "% anualizado",
-      months: "24 meses",
-      gain,
-      total: capital + gain,
-      pct: plusvalia24m * 100,
-    };
-  } else {
-    // Estrategia Alysa → Miramar:
-    // 1) Capital en Alysa 8m al rate escalonado.
-    // 2) Se recupera capital + rendimiento y se reinvierte a PRECIO CONGELADO de mes 0.
-    // 3) Captura la plusvalía COMPLETA de 24m — el precio anclado es el beneficio de
-    //    ser cliente aliado, así que no se prorratea. Ejemplo $1M → +78.5%.
-    const r = alysaRate(capital);
-    const r8 = capital * (r / 100) * (8 / 12);
+  if (proj === "estrategia") {
+    const r = coinvRate(firstCoinv && firstCoinv.tiers, capital);
+    const plazoA = (firstCoinv && Number(firstCoinv.ci_plazo)) || 8;
+    const r8 = capital * (r / 100) * (plazoA / 12);
     const after8 = capital + r8;
-    const miramarGain = after8 * plusvalia24m;   // plusvalía completa, sin × 16/24
-    const total = after8 + miramarGain;
+    const plus24 = ((firstPlus && firstPlus.plusvalia && firstPlus.plusvalia.plusvalia_24m_pct)
+      || legacyMir.plusvalia_24m_pct || 53) / 100;
+    const total = after8 + after8 * plus24;
     result = {
-      rate: Math.round(((total / capital - 1) * 100)) + "% acumulado",
-      months: "24 meses",
-      gain: total - capital,
-      total,
-      pct: ((total - capital) / capital) * 100,
+      rate: Math.round((total / capital - 1) * 100) + "% acumulado",
+      months: ((firstPlus && Number(firstPlus.pv_plazo)) || 24) + " meses",
+      gain: total - capital, total, pct: (total / capital - 1) * 100,
     };
+  } else if (sel && sel.modelo === "coinversion") {
+    const r = coinvRate(sel.tiers, capital);
+    const plazo = Number(sel.ci_plazo) || 8;
+    const g = capital * (r / 100) * (plazo / 12);
+    result = { rate: r + "% anual", months: plazo + " meses", gain: g, total: capital + g, pct: (g / capital) * 100 };
+  } else if (sel && sel.modelo === "plusvalia") {
+    const pct = ((sel.plusvalia && sel.plusvalia.plusvalia_24m_pct) || 0) / 100;
+    const anual = (sel.plusvalia && sel.plusvalia.anualizado_pct) || 0;
+    const g = capital * pct;
+    result = { rate: anual + "% anualizado", months: (Number(sel.pv_plazo) || 24) + " meses", gain: g, total: capital + g, pct: pct * 100 };
+  } else {
+    // Fallback legacy (modo offline sin proyectos)
+    const plusvalia24m = (legacyMir.plusvalia_24m_pct || 53) / 100;
+    const anualizado   = legacyMir.anualizado_pct || 26;
+    if (proj === "miramar") {
+      const g = capital * plusvalia24m;
+      result = { rate: anualizado + "% anualizado", months: "24 meses", gain: g, total: capital + g, pct: plusvalia24m * 100 };
+    } else if (proj === "estrategia") {
+      const r = coinvRate(null, capital); const r8 = capital * (r / 100) * (8 / 12);
+      const after8 = capital + r8; const total = after8 + after8 * plusvalia24m;
+      result = { rate: Math.round((total / capital - 1) * 100) + "% acumulado", months: "24 meses", gain: total - capital, total, pct: (total / capital - 1) * 100 };
+    } else {
+      const r = coinvRate(null, capital); const r8 = capital * (r / 100) * (8 / 12);
+      result = { rate: r + "% anual", months: "8 meses", gain: r8, total: capital + r8, pct: (r8 / capital) * 100 };
+    }
   }
 
   const quickPicks = [200000, 500000, 1000000, 2000000].filter((v) => v >= minCap && v <= maxCap);
@@ -429,20 +474,16 @@ const SecCalculadora = (props) => {
       <div className="calc">
         <div className="sec-title-row">
           <span className="kicker">Simulador interactivo</span>
-          <h1 className="display">Calculadora de inversión</h1>
-          <p className="lead">Mueve el capital, escoge vehículo, ve el resultado al instante.</p>
+          <h1 className="display">Calculadora de inversi\u00f3n</h1>
+          <p className="lead">Mueve el capital, escoge veh\u00edculo, ve el resultado al instante.</p>
         </div>
 
         <div className="calc-grid">
           <div className="calc-controls card">
             <div className="control">
-              <label>Vehículo</label>
+              <label>Veh\u00edculo</label>
               <div className="seg">
-                {[
-                  { id: "alysa", t: "Casa Alysa · 8m" },
-                  { id: "miramar", t: "Real Miramar · 24m" },
-                  { id: "estrategia", t: "Estrategia · Alysa→Miramar" },
-                ].map((o) => (
+                {opciones.map((o) => (
                   <button key={o.id} className={proj === o.id ? "on" : ""} onClick={() => setProj(o.id)}>{o.t}</button>
                 ))}
               </div>
@@ -461,8 +502,7 @@ const SecCalculadora = (props) => {
                 onChange={(e) => setCapital(+e.target.value)} />
               <div className="ticks">
                 <span>{fmt(minCap)}</span>
-                <span>$1M</span>
-                <span>$2M</span>
+                <span>{fmt(Math.round((minCap + maxCap) / 2))}</span>
                 <span>{fmt(maxCap)}</span>
               </div>
             </div>
@@ -497,7 +537,7 @@ const SecCalculadora = (props) => {
               </div>
               <span className="bar-pct mono">+{result.pct.toFixed(1)}%</span>
             </div>
-            <p className="small muted">Proyección sobre tasa preferente / plusvalía bruta. Antes de inflación e ISR. Sujeto a contrato escriturado.</p>
+            <p className="small muted">Proyecci\u00f3n sobre tasa preferente / plusval\u00eda bruta. Antes de inflaci\u00f3n e ISR. Sujeto a contrato escriturado.</p>
           </div>
         </div>
       </div>

@@ -17,6 +17,7 @@ window.STATUS_META = STATUS_META;
 const LoteSelector = (props) => {
   const { data } = window.useData();
   const tile = (props && props.tile) || {};
+  const nombreProy = tile.nombre || "Real Miramar";
   const mir = (data.miramar) || {};
   const heroData = mir.hero || {};
 
@@ -125,7 +126,7 @@ const LoteSelector = (props) => {
       <div className="lotes-head-compact">
         <div>
           <span className="kicker">Master plan · {LOTES.length} lotes</span>
-          <h2 className="block-title" style={{ marginTop: 4 }}>Real Miramar</h2>
+          <h2 className="block-title" style={{ marginTop: 4 }}>{nombreProy}</h2>
         </div>
         <div className="lotes-stats-compact">
           <div className="lsc"><span className="lsc-num mono accent">{stats.available}</span><span className="lsc-lbl mono">Disponibles</span></div>
@@ -176,7 +177,7 @@ const LoteSelector = (props) => {
             onMouseUp={endDrag}
             onMouseLeave={endDrag}
           >
-            <img src={masterPlanUrl} alt="Master plan Real Miramar" draggable={false}
+            <img src={masterPlanUrl} alt={"Master plan " + nombreProy} draggable={false}
                  onError={(e) => { e.target.src = "assets/miramar_master_plan_h.png"; }} />
 
             {filtered.map((l) => {
