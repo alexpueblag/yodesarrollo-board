@@ -424,6 +424,24 @@ const SectionView = ({ id, onHome, onNavigate }) => {
 // ============================================================================
 // APP SHELL — orquesta Cover → Dashboard → Section
 // ============================================================================
+const QRCompartible = ({ client }) => {
+  const base = location.origin + location.pathname;
+  const url = base + (client ? "?cliente=" + encodeURIComponent(client) : "");
+  const qr = "https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data=" + encodeURIComponent(url);
+  const [copied, setCopied] = React.useState(false);
+  const copy = () => {
+    try { navigator.clipboard && navigator.clipboard.writeText(url); } catch (e) {}
+    setCopied(true); setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <div className="qr-share">
+      <img src={qr} alt="Código QR del board" className="qr-img" />
+      <p className="qr-hint">El cliente lo escanea y abre el board{client ? " a su nombre" : ""} en su teléfono.</p>
+      <button className="qr-copy" onClick={copy}>{copied ? "¡Link copiado!" : "Copiar link"}</button>
+    </div>
+  );
+};
+
 const AppShell = () => {
   const { data, status, refresh } = window.useData();
 
@@ -521,6 +539,9 @@ const AppShell = () => {
         <TweakToggle label="Mostrar reloj" value={t.showClock} onChange={(v) => setTweak("showClock", v)} />
         <TweakText label="Nombre del cliente" value={t.client} placeholder="Ej. Sr. Hernández"
           onChange={(v) => setTweak("client", v)} />
+
+        <TweakSection label="Compartir con el cliente" />
+        <QRCompartible client={t.client} />
 
         <TweakSection label="Datos" />
         <button className="tweak-btn" onClick={refresh}>

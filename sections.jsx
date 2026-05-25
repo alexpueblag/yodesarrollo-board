@@ -516,6 +516,61 @@ const SecCalculadora = (props) => {
 
   const quickPicks = [200000, 500000, 1000000, 2000000].filter((v) => v >= minCap && v <= maxCap);
 
+  // ── Serie de crecimiento del capital (gráfica de proyección) ──
+  const plazoMeses = proj === "estrategia"
+    ? ((firstPlus && Number(firstPlus.pv_plazo)) || 24)
+    : (sel ? (sel.modelo === "coinversion" ? (Number(sel.ci_plazo) || 8) : (Number(sel.pv_plazo) || 24)) : 24);
+  const STEPS = 24;
+  const serie = [];
+  for (let i = 0; i <= STEPS; i++) {
+    const mes = (plazoMeses * i) / STEPS;
+    let val;
+    if (proj === "estrategia") {
+      const plazoA = (firstCoinv && Number(firstCoinv.ci_plazo)) || 8;
+      const r = coinvRate(firstCoinv && firstCoinv.tiers, capital);
+      const after8 = capital + capital * (r / 100) * (plazoA / 12);
+      const plus24 = (((firstPlus && firstPlus.plusvalia && firstPlus.plusvalia.plusvalia_24m_pct) || 53)) / 100;
+      if (mes <= plazoA) val = capital + (after8 - capital) * (plazoA ? mes / plazoA : 0);
+      else val = after8 + (after8 * plus24) * ((mes - plazoA) / Math.max(1, plazoMeses - plazoA));
+    } else {
+      val = capital + (result.total - capital) * (plazoMeses ? mes / plazoMeses : 0);
+    }
+    serie.push({ mes: mes, val: val });
+  }
+  const CW = 720, CH = 170, PAD = 10;
+  const sMin = serie[0].val, sMax = serie[serie.length - 1].val || 1;
+  const xAt = (i) => PAD + (i / STEPS) * (CW - 2 * PAD);
+  const yAt = (v) => CH - PAD - ((v - sMin) / Math.max(1, sMax - sMin)) * (CH - 2 * PAD);
+  const linePath = serie.map((p, i) => (i === 0 ? "M" : "L") + xAt(i).toFixed(1) + " " + yAt(p.val).toFixed(1)).join(" ");
+  const areaPath = linePath + " L" + xAt(STEPS).toFixed(1) + " " + (CH - PAD) + " L" + xAt(0).toFixed(1) + " " + (CH - PAD) + " Z";
+
+  // ── Ficha PDF de la simulación (para que el inversionista se la lleve) ──
+  const descargarFicha = () => {
+    const projName = proj === "estrategia" ? "Estrategia combinada" : (sel ? sel.nombre : "Inversión");
+    const row = (k, v) => '<tr><td style="padding:9px 0;border-bottom:1px solid #e5e0d6;color:#76726b;">' + k + '</td><td style="padding:9px 0;border-bottom:1px solid #e5e0d6;text-align:right;font-weight:600;color:#1a1814;">' + v + '</td></tr>';
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "font-family:Manrope,Arial,sans-serif;color:#1a1814;padding:30px;width:600px;background:#fff;";
+    wrap.innerHTML =
+      '<div style="border-bottom:2px solid #9A7B2A;padding-bottom:12px;margin-bottom:20px;">' +
+        '<div style="font-size:11px;letter-spacing:.22em;color:#9A7B2A;">YODESARROLLO &middot; SAPI</div>' +
+        '<div style="font-size:28px;font-family:Georgia,serif;margin-top:4px;">Tu simulaci&oacute;n de inversi&oacute;n</div>' +
+      '</div>' +
+      '<table style="width:100%;border-collapse:collapse;font-size:14px;">' +
+        row("Producto", projName) +
+        row("Capital invertido", fmt(capital)) +
+        row("Plazo", result.months) +
+        row("Tasa / rendimiento", result.rate) +
+        row("Ganancia bruta estimada", fmt(Math.round(result.gain))) +
+        row("Total proyectado al cierre", fmt(Math.round(result.total))) +
+      '</table>' +
+      '<p style="font-size:11px;color:#76726b;margin-top:20px;line-height:1.5;">Proyecci&oacute;n sobre tasa preferente / plusval&iacute;a bruta. Antes de inflaci&oacute;n e ISR. Sujeto a contrato escriturado. Generado el ' + new Date().toLocaleDateString("es-MX") + '.</p>';
+    if (window.html2pdf) {
+      window.html2pdf().set({ margin: 8, filename: "simulacion-yodesarrollo.pdf", image: { type: "jpeg", quality: 0.98 }, html2canvas: { scale: 2, backgroundColor: "#ffffff" }, jsPDF: { unit: "mm", format: "a4", orientation: "portrait" } }).from(wrap).save();
+    } else {
+      alert("La descarga de PDF no está disponible en este momento.");
+    }
+  };
+
   return (
     <Shell {...props} related={["casa-alysa", "real-miramar", "estrategia"]}>
       <div className="calc">
@@ -585,7 +640,25 @@ const SecCalculadora = (props) => {
               <span className="bar-pct mono">+{result.pct.toFixed(1)}%</span>
             </div>
             <p className="small muted">Proyección sobre tasa preferente / plusvalía bruta. Antes de inflación e ISR. Sujeto a contrato escriturado.</p>
+            <button className="calc-pdf-cta" onClick={descargarFicha}>↓ Descargar mi simulación (PDF)</button>
           </div>
+        </div>
+
+        <div className="calc-chart card">
+          <div className="cchart-head">
+            <span className="kicker">Proyección del capital</span>
+            <span className="cchart-range mono">{fmt(Math.round(sMin))} → {fmt(Math.round(sMax))} · {Math.round(plazoMeses)} meses</span>
+          </div>
+          <svg className="cchart-svg" viewBox={"0 0 " + CW + " " + CH} preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="cchartFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.35" />
+                <stop offset="100%" stopColor="var(--gold)" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d={areaPath} fill="url(#cchartFill)" />
+            <path d={linePath} fill="none" stroke="var(--gold-hi)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+          </svg>
         </div>
       </div>
     </Shell>

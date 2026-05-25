@@ -19,6 +19,9 @@ const LoteSelector = (props) => {
   const tile = (props && props.tile) || {};
   const nombreProy = tile.nombre || "Real Miramar";
   const asesorWa = String((data.contacto && data.contacto.asesor && data.contacto.asesor.whatsapp) || "").replace(/[^0-9]/g, "");
+  const finAnticipoPct = Number(tile.pv_anticipo_pct) || 35;
+  const finMeses = Number(tile.pv_mensualidades) || 3;
+  const finSinIntereses = !!tile.pv_mensualidades;
   const mir = (data.miramar) || {};
   const heroData = mir.hero || {};
 
@@ -221,6 +224,7 @@ const LoteSelector = (props) => {
               highlight={highlight} setHighlight={setHighlight} isComercial={isComercial}
               comercialPriceM2={COMERCIAL_PRICE_M2} comercialLabel={COMERCIAL_LABEL}
               nombreProy={nombreProy} whatsapp={asesorWa}
+              anticipoPct={finAnticipoPct} finMeses={finMeses} finSinIntereses={finSinIntereses}
             />
           ) : (
             <EmptyState fundII={fundII} />
@@ -281,7 +285,7 @@ const LoteSelector = (props) => {
 // ═══════════════════════════════════════════════════════════════════
 // LoteDetail — panel de detalle con plusvalía calculada desde F.II
 // ═══════════════════════════════════════════════════════════════════
-const LoteDetail = ({ lote, fundII, ventaEtapa, ETAPAS, highlight, setHighlight, isComercial, comercialPriceM2, comercialLabel, nombreProy, whatsapp }) => {
+const LoteDetail = ({ lote, fundII, ventaEtapa, ETAPAS, highlight, setHighlight, isComercial, comercialPriceM2, comercialLabel, nombreProy, whatsapp, anticipoPct, finMeses, finSinIntereses }) => {
   const fIIPrice = lote.m2 * (fundII.price_m2 || 0);
   const meta = STATUS_META[lote.status] || STATUS_META.available;
 
@@ -406,12 +410,12 @@ const LoteDetail = ({ lote, fundII, ventaEtapa, ETAPAS, highlight, setHighlight,
         <div className="ld-payment">
           <span className="overline mono">Esquema de pago {fundII.label}</span>
           <div className="pay-row">
-            <span>Anticipo 35%</span>
-            <span className="mono">{fmtMxLot(fIIPrice * 0.35)}</span>
+            <span>Anticipo {anticipoPct}%</span>
+            <span className="mono">{fmtMxLot(fIIPrice * anticipoPct / 100)}</span>
           </div>
           <div className="pay-row">
-            <span>3 pagos por hito</span>
-            <span className="mono">{fmtMxLot(fIIPrice * 0.65 / 3)} c/u</span>
+            <span>{finMeses} {finSinIntereses ? "mensualidades sin intereses" : "pagos por hito"}</span>
+            <span className="mono">{fmtMxLot(fIIPrice * (1 - anticipoPct / 100) / finMeses)} c/u</span>
           </div>
         </div>
       )}
