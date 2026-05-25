@@ -223,8 +223,8 @@ const Dashboard = ({ onOpen, t }) => {
             style={{ ["--c"]: alysa.color, ["--a"]: alysa.accent }}
             onClick={() => onOpen("casa-alysa")}
           >
-            {alysaHero.img_url && (
-              <img className="tile-large-bg" src={alysaHero.img_url} alt=""
+            {(alysaHero.img_tile_url || alysaHero.img_url) && (
+              <img className="tile-large-bg" src={alysaHero.img_tile_url || alysaHero.img_url} alt=""
                    onError={(e) => { e.target.style.display = 'none'; }} />
             )}
             <span className="tile-large-fade" aria-hidden></span>
@@ -252,8 +252,8 @@ const Dashboard = ({ onOpen, t }) => {
             style={{ ["--c"]: mira.color, ["--a"]: mira.accent }}
             onClick={() => onOpen("real-miramar")}
           >
-            {(miraHero.master_plan_url || miraHero.img_url) && (
-              <img className="tile-large-bg" src={miraHero.master_plan_url || miraHero.img_url} alt=""
+            {(miraHero.img_tile_url || miraHero.master_plan_url || miraHero.img_url) && (
+              <img className="tile-large-bg" src={miraHero.img_tile_url || miraHero.master_plan_url || miraHero.img_url} alt=""
                    onError={(e) => { e.target.style.display = 'none'; }} />
             )}
             <span className="tile-large-fade" aria-hidden></span>
@@ -286,8 +286,8 @@ const Dashboard = ({ onOpen, t }) => {
               style={{ ["--c"]: tile.color, ["--a"]: tile.accent }}
               onClick={() => onOpen(p.id)}
             >
-              {p.img_url && (
-                <img className="tile-large-bg" src={p.img_url} alt=""
+              {(p.img_tile_url || p.img_url) && (
+                <img className="tile-large-bg" src={p.img_tile_url || p.img_url} alt=""
                      onError={(e) => { e.target.style.display = 'none'; }} />
               )}
               <span className="tile-large-fade" aria-hidden></span>

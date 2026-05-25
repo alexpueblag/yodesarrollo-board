@@ -29,7 +29,7 @@ const LoteSelector = (props) => {
 
   const COMERCIAL_PRICE_M2 = tile.pv_lista || heroData.commercial_price_m2 || 5250;
   const COMERCIAL_LABEL    = tile.commercial_label || heroData.commercial_label || "Venta directa · Mayo 2026";
-  const masterPlanUrl      = tile.master_plan_url || tile.img_url || heroData.master_plan_url || "assets/miramar_master_plan_h.png";
+  const masterPlanUrl      = tile.img_plano_url || tile.master_plan_url || tile.img_url || heroData.master_plan_url || "assets/miramar_master_plan_h.png";
 
   // Encuentra la etapa actual (current = true). Fallback: la primera no-done.
   const fundII = ETAPAS.find((e) => e.current) || ETAPAS.find((e) => !e.done) || ETAPAS[0] || {};

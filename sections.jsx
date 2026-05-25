@@ -955,8 +955,8 @@ const SecProyecto = (props) => {
             </div>
           </div>
           <div className="hero-img">
-            {p.img_url ? (
-              <img src={p.img_url} alt={p.nombre} className="hero-img-real" />
+            {(p.img_hero_url || p.img_url) ? (
+              <img src={p.img_hero_url || p.img_url} alt={p.nombre} className="hero-img-real" />
             ) : (
               <div className="img-placeholder">
                 <span className="ph-label">{p.nombre}</span>
