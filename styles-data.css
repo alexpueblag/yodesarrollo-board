@@ -669,7 +669,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   border-radius: 14px;
   border: 1px solid rgba(212, 190, 138, 0.18);
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.015), transparent),
+    linear-gradient(180deg, rgba(var(--tint-rgb),0.015), transparent),
     color-mix(in srgb, var(--c, #2a2a2a) 30%, #15171a);
   color: var(--text, #F5F1EA);
   cursor: pointer;
@@ -732,7 +732,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
 
 /* ---- Editor ---- */
 .ap-form {
-  background: rgba(255,255,255,0.02);
+  background: rgba(var(--tint-rgb),0.02);
   border: 1px solid rgba(212,190,138,0.14);
   border-radius: 14px;
   padding: 18px;
@@ -756,14 +756,14 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
 .ap-fld input,
 .ap-row input {
   background: rgba(0,0,0,0.25);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(var(--tint-rgb),0.1);
   border-radius: 8px; padding: 8px 10px;
   color: var(--text, #F5F1EA); font-family: var(--f-body, sans-serif); font-size: 13px;
   width: 100%;
 }
 .ap-fld input:focus,
 .ap-row input:focus { outline: none; border-color: var(--gold, #D4BE8A); }
-.ap-block { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); }
+.ap-block { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(var(--tint-rgb),0.07); }
 .ap-block-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .ap-block-head span { font-family: var(--f-mono, monospace); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold, #D4BE8A); }
 .ap-block-head button { background: none; border: 1px solid rgba(212,190,138,0.3); color: var(--gold, #D4BE8A); border-radius: 999px; padding: 3px 10px; font-size: 11px; cursor: pointer; }

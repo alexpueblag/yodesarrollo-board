@@ -42,6 +42,7 @@ const TIER_CHIPS  = ["garantias", "cronograma", "decision", "contacto", "acuerdo
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "aesthetic": "carplay",
+  "theme": "oscuro",
   "showClock": true,
   "client": "",
   "presentation": false
@@ -443,8 +444,9 @@ const AppShell = () => {
 
   React.useEffect(() => {
     document.body.dataset.aesthetic = t.aesthetic;
+    document.body.dataset.theme = t.theme;
     document.body.dataset.mode = t.presentation ? "presentation" : "edit";
-  }, [t.aesthetic, t.presentation]);
+  }, [t.aesthetic, t.theme, t.presentation]);
 
   React.useEffect(() => {
     if (!data || !data.config) return;
@@ -507,6 +509,12 @@ const AppShell = () => {
           value={t.aesthetic}
           options={["carplay", "editorial", "mono"]}
           onChange={(v) => setTweak("aesthetic", v)}
+        />
+        <TweakRadio
+          label="Tema"
+          value={t.theme}
+          options={["oscuro", "claro"]}
+          onChange={(v) => setTweak("theme", v)}
         />
 
         <TweakSection label="Cabecera" />

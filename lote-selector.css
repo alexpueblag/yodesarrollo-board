@@ -41,7 +41,7 @@
   padding: 22px 24px 18px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005));
+  background: linear-gradient(180deg, rgba(var(--tint-rgb),0.025), rgba(var(--tint-rgb),0.005));
 }
 .st-track {
   position: relative;
@@ -58,7 +58,7 @@
   right: 5%;
   height: 1px;
   background: linear-gradient(90deg,
-    rgba(255,255,255,0.04) 0%,
+    rgba(var(--tint-rgb),0.04) 0%,
     rgba(201,169,110,0.5) 20%,
     rgba(201,169,110,0.4) 100%);
   z-index: 0;
@@ -127,7 +127,7 @@
   font-weight: 700;
 }
 .st-tag.done {
-  background: rgba(255,255,255,0.08);
+  background: rgba(var(--tint-rgb),0.08);
   color: var(--muted);
   font-weight: 500;
 }
@@ -249,7 +249,7 @@
 .lote-dot:hover {
   transform: translate(-50%, -50%) scale(1.4);
   z-index: 5;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.55), 0 0 0 3px rgba(255,255,255,0.18);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.55), 0 0 0 3px rgba(var(--tint-rgb),0.18);
 }
 .lote-dot.sel {
   z-index: 10;
@@ -312,7 +312,7 @@
   border-radius: 10px;
 }
 .legend-item { display: inline-flex; align-items: center; gap: 6px; }
-.legend-swatch { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); }
+.legend-swatch { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(var(--tint-rgb),0.3); }
 .legend-label { font-size: 11.5px; color: var(--muted-2); }
 
 /* ═══════════════════════════════════════════════════════════
@@ -341,7 +341,7 @@
   border-radius: 999px;
   font-size: 11px;
   letter-spacing: 0.04em;
-  background: rgba(255,255,255,0.04);
+  background: rgba(var(--tint-rgb),0.04);
   border: 1px solid var(--line);
   color: var(--text);
   white-space: nowrap;
@@ -377,12 +377,12 @@
   padding: 9px 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(255,255,255,0.015);
+  background: rgba(var(--tint-rgb),0.015);
   cursor: pointer;
   margin-bottom: 4px;
   transition: all 160ms;
 }
-.plus-row:hover { background: rgba(255,255,255,0.04); border-color: var(--line-2); }
+.plus-row:hover { background: rgba(var(--tint-rgb),0.04); border-color: var(--line-2); }
 .plus-row.fii {
   background: linear-gradient(90deg, rgba(201,169,110,0.10), transparent);
   border-color: rgba(201,169,110,0.3);
@@ -426,7 +426,7 @@
 /* Pago */
 .ld-payment {
   padding: 10px 14px;
-  background: rgba(255,255,255,0.025);
+  background: rgba(var(--tint-rgb),0.025);
   border-radius: 8px;
   border: 1px solid var(--line);
   display: flex; flex-direction: column; gap: 6px;
@@ -477,7 +477,7 @@
 .lotes-table-wrap summary {
   cursor: pointer;
   padding: 10px 14px;
-  background: rgba(255,255,255,0.025);
+  background: rgba(var(--tint-rgb),0.025);
   border: 1px solid var(--line);
   border-radius: 8px;
   font-size: 13px;
@@ -495,7 +495,7 @@
 .lotes-table th, .lotes-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); }
 .lotes-table th { font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 500; position: sticky; top: 0; background: var(--bg-2); z-index: 1; }
 .lotes-table tr { cursor: pointer; transition: background 140ms; }
-.lotes-table tr:hover td { background: rgba(255,255,255,0.025); }
+.lotes-table tr:hover td { background: rgba(var(--tint-rgb),0.025); }
 .lotes-table tr.sel td { background: rgba(201,169,110,0.08); }
 .lotes-table td.num { text-align: right; }
 .gain-pct { color: #a4be90; }
