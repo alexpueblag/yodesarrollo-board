@@ -456,6 +456,20 @@ const AppShell = () => {
     }
   }, [data]);
 
+  // Estado compartible por URL: ?cliente=Juan&proyecto=dunas-kino&monto=500000
+  const urlApplied = React.useRef(false);
+  React.useEffect(() => {
+    if (urlApplied.current) return;
+    const params = new URLSearchParams(location.search || "");
+    const cliente  = params.get("cliente");
+    const proyecto = params.get("proyecto");
+    const monto    = params.get("monto");
+    if (cliente) setTweak("client", cliente);
+    if (monto && !isNaN(+monto)) window.YDR_INITIAL_CAPITAL = +monto;
+    if (proyecto) { location.hash = proyecto; setView(proyecto); setShowCover(false); }
+    if (cliente || proyecto || monto) urlApplied.current = true;
+  }, []);
+
   const open = (id) => { location.hash = id; setView(id); setShowCover(false); };
   const home = () => { location.hash = ""; setView(null); };
   const startFromCover = () => { setShowCover(false); };

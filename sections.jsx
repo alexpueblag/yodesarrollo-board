@@ -171,44 +171,91 @@ const SecComparativo = (props) => {
   const { data } = window.useData();
   const rows = (data.comparativo || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
 
+  const proyectos = ((data.proyectos) || []).filter(
+    (p) => p.activo !== false && (p.modelo === "coinversion" || p.modelo === "plusvalia")
+  );
+  const [sideBySide, setSideBySide] = React.useState(false);
+
+  const cardData = (p) => {
+    const esCoinv = p.modelo === "coinversion";
+    const ticket = esCoinv
+      ? (p.ci_ticket_min ? fmt(p.ci_ticket_min) : "\u2014")
+      : (p.pv_calc_min ? fmt(p.pv_calc_min) : "\u2014");
+    const plazo = (esCoinv ? (Number(p.ci_plazo) || 8) : (Number(p.pv_plazo) || 24)) + " meses";
+    const tasaEstrella = Number(p.ci_tasa_base || 0) + Number(p.ci_tasa_incr || 0) * ((Number(p.ci_tramo_estrella) || 1) - 1);
+    const retorno = esCoinv
+      ? "Hasta " + tasaEstrella + "% anual"
+      : "+" + (((p.plusvalia && p.plusvalia.plusvalia_24m_pct) || 0)) + "% a " + (Number(p.pv_plazo) || 24) + "m";
+    const perfil = esCoinv ? "Tasa fija contractual" : "Plusval\u00eda de mercado";
+    return { esCoinv, ticket, plazo, retorno, perfil };
+  };
+
   return (
     <Shell {...props} related={["diagnostico", "calculadora", "casa-alysa", "real-miramar"]}>
       <div className="comp">
         <div className="sec-title-row">
-          <span className="kicker">Acto II · Análisis Comparado</span>
+          <span className="kicker">Acto II \u00b7 An\u00e1lisis Comparado</span>
           <h1 className="display">Lo que tu dinero<br/>te rinde realmente.</h1>
-          <p className="lead">Después de inflación e impuestos. Todo en una sola tabla, sin maquillaje.</p>
+          <p className="lead">Despu\u00e9s de inflaci\u00f3n e impuestos. Todo en una sola tabla, sin maquillaje.</p>
         </div>
 
-        <table className="comp-table">
-          <thead>
-            <tr>
-              <th>Instrumento</th>
-              <th className="num">Bruto</th>
-              <th className="num">− Inflación</th>
-              <th className="num">− ISR</th>
-              <th className="num">Real neto</th>
-              <th>Nota</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.instrumento} className={r.star ? "star" : ""}
-                  onClick={r.link ? () => props.navigate(r.link) : undefined}>
-                <td>{r.star && <span className="star-mark">★</span>}{r.instrumento}</td>
-                <td className="num mono">{r.bruto}</td>
-                <td className="num mono muted">{r.inflacion}</td>
-                <td className="num mono muted">{r.isr}</td>
-                <td className="num mono accent">{r.neto}</td>
-                <td className="muted small">{r.nota}{r.link && <span className="row-arrow"> →</span>}</td>
+        {proyectos.length > 0 && (
+          <div className="comp-switch">
+            <button className={!sideBySide ? "on" : ""} onClick={() => setSideBySide(false)}>Tabla comparativa</button>
+            <button className={sideBySide ? "on" : ""} onClick={() => setSideBySide(true)}>Comparar lado a lado</button>
+          </div>
+        )}
+
+        {!sideBySide ? (
+          <table className="comp-table">
+            <thead>
+              <tr>
+                <th>Instrumento</th>
+                <th className="num">Bruto</th>
+                <th className="num">\u2212 Inflaci\u00f3n</th>
+                <th className="num">\u2212 ISR</th>
+                <th className="num">Real neto</th>
+                <th>Nota</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.instrumento} className={r.star ? "star" : ""}
+                    onClick={r.link ? () => props.navigate(r.link) : undefined}>
+                  <td>{r.star && <span className="star-mark">\u2605</span>}{r.instrumento}</td>
+                  <td className="num mono">{r.bruto}</td>
+                  <td className="num mono muted">{r.inflacion}</td>
+                  <td className="num mono muted">{r.isr}</td>
+                  <td className="num mono accent">{r.neto}</td>
+                  <td className="muted small">{r.nota}{r.link && <span className="row-arrow"> \u2192</span>}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="comp-cards">
+            {proyectos.map((p) => {
+              const d = cardData(p);
+              return (
+                <div className="comp-card" key={p.id} style={{ ["--c"]: p.color, ["--a"]: p.accent }}>
+                  <span className="cc-tipo mono">{d.esCoinv ? "Coinversi\u00f3n" : "Plusval\u00eda"}</span>
+                  <h3 className="cc-nombre">{p.nombre}</h3>
+                  <dl className="cc-stats">
+                    <div><dt>Ticket m\u00ednimo</dt><dd className="mono">{d.ticket}</dd></div>
+                    <div><dt>Plazo</dt><dd className="mono">{d.plazo}</dd></div>
+                    <div><dt>Retorno esperado</dt><dd className="mono accent">{d.retorno}</dd></div>
+                    <div><dt>Perfil</dt><dd>{d.perfil}</dd></div>
+                  </dl>
+                  <button className="cc-cta" onClick={() => props.navigate(p.id)}>Ver {p.nombre} \u2192</button>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="pull-quote">
           <span className="quote-mark">"</span>
-          Si tu dinero hoy te rinde 2–4% real, ¿cuánto puedes esperar para construir patrimonio?
+          Si tu dinero hoy te rinde 2\u20134% real, \u00bfcu\u00e1nto puedes esperar para construir patrimonio?
         </div>
       </div>
     </Shell>
@@ -394,7 +441,7 @@ const SecCalculadora = (props) => {
   }
 
   const [proj, setProj] = React.useState(opciones[0].id);
-  const [capital, setCapital] = React.useState(1000000);
+  const [capital, setCapital] = React.useState(window.YDR_INITIAL_CAPITAL || 1000000);
 
   const sel = invertibles.find((p) => p.id === proj);
 
@@ -633,6 +680,8 @@ const SecCronograma = (props) => {
   const miramarHitos  = (cr.miramar_hitos || []).slice().sort((a, b) => a.mes - b.mes);
   const bulletsAlysa  = ((cr.bullets_alysa) || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
   const bulletsMir    = ((cr.bullets_miramar) || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+  const dunasHitos    = (cr.dunas_hitos || []).slice().sort((a, b) => a.mes - b.mes);
+  const bulletsDunas  = ((cr.bullets_dunas) || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
   const quote         = (cr.quote && cr.quote.quote) || "";
 
   const TOTAL = hero.total_meses || 24;
@@ -713,10 +762,32 @@ const SecCronograma = (props) => {
                 ))}
               </div>
             </div>
+
+            {dunasHitos.length > 0 && (
+              <div className="cron-row">
+                <div className="cron-row-label">
+                  <span className="crl-name">Dunas Kino</span>
+                  <span className="crl-sub mono">Plusvalía · 12m</span>
+                </div>
+                <div className="cron-row-track">
+                  <div className="cron-bar dunas" style={{ left: pct(0) + "%", width: (pct(12) - pct(0)) + "%" }}></div>
+                  {dunasHitos.map((h) => (
+                    <div key={h.mes} className={"cron-hito dunas-hito" + (h.mes === 0 ? " hi" : "")}
+                         style={{ left: pct(h.mes) + "%" }}>
+                      <span className="ht-dot"></span>
+                      <span className="ht-label">
+                        <span className="ht-title">{h.label}</span>
+                        {h.note && <span className="ht-note mono">{h.note}</span>}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
-        <section className="block two-col">
+        <section className={"block " + (bulletsDunas.length > 0 ? "cron-bullets-3" : "two-col")}>
           <div>
             <h2 className="block-title">Hitos Casa Alysa</h2>
             <ul className="bullets">
@@ -736,6 +807,16 @@ const SecCronograma = (props) => {
               ))}
             </ul>
           </div>
+          {bulletsDunas.length > 0 && (
+            <div>
+              <h2 className="block-title">Hitos Dunas Kino</h2>
+              <ul className="bullets">
+                {bulletsDunas.map((b) => (
+                  <li key={b.order}><strong>{b.mes_label}</strong> · {b.titulo}{b.descripcion ? ", " + b.descripcion : ""}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
 
         {quote && (

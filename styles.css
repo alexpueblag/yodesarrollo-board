@@ -1255,3 +1255,24 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
   .path-card, .cta-card, .lotes, .contact-card, .stage, .cron-track { break-inside: avoid; page-break-inside: avoid; }
   .board-head, .foot, .tier-medium { break-inside: avoid; }
 }
+
+/* ── Comparativo · toggle tabla / lado a lado ── */
+.comp-switch { display: inline-flex; gap: 4px; margin: 0 0 22px; padding: 4px; border: 1px solid var(--line-2); border-radius: 999px; }
+.comp-switch button { padding: 8px 18px; border-radius: 999px; background: transparent; border: 0; color: var(--muted-2); font-family: inherit; font-size: 13px; cursor: pointer; transition: all 160ms; }
+.comp-switch button.on { background: var(--gold); color: #1a1409; font-weight: 600; }
+.comp-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+.comp-card { display: flex; flex-direction: column; padding: 22px; border-radius: 16px; border: 1px solid var(--line-2); border-top: 3px solid var(--a, var(--gold)); background: rgba(255,255,255,0.04); }
+.cc-tipo { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--a, var(--gold-hi)); }
+.cc-nombre { font-family: var(--f-display); font-size: 24px; margin: 4px 0 16px; }
+.cc-stats { display: flex; flex-direction: column; margin: 0 0 18px; }
+.cc-stats > div { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--line); gap: 12px; }
+.cc-stats dt { color: var(--muted-2); font-size: 12px; }
+.cc-stats dd { margin: 0; font-size: 14px; text-align: right; }
+.cc-cta { margin-top: auto; padding: 11px 16px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--line-2); color: inherit; font-family: inherit; font-size: 13px; cursor: pointer; transition: all 160ms; }
+.cc-cta:hover { background: var(--gold); color: #1a1409 !important; border-color: var(--gold); }
+
+/* ── Cronograma · carril Dunas Kino ── */
+.cron-bar.dunas { background: linear-gradient(90deg, #7fb4c8, #5a93a8); box-shadow: 0 0 16px rgba(127,180,200,0.3); }
+.cron-hito.dunas-hito .ht-dot { border-color: #7fb4c8; }
+.cron-bullets-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; }
+@media (max-width: 900px) { .cron-bullets-3 { grid-template-columns: 1fr; gap: 18px; } }
