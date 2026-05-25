@@ -179,14 +179,14 @@ const SecComparativo = (props) => {
   const cardData = (p) => {
     const esCoinv = p.modelo === "coinversion";
     const ticket = esCoinv
-      ? (p.ci_ticket_min ? fmt(p.ci_ticket_min) : "\u2014")
-      : (p.pv_calc_min ? fmt(p.pv_calc_min) : "\u2014");
+      ? (p.ci_ticket_min ? fmt(p.ci_ticket_min) : "—")
+      : (p.pv_calc_min ? fmt(p.pv_calc_min) : "—");
     const plazo = (esCoinv ? (Number(p.ci_plazo) || 8) : (Number(p.pv_plazo) || 24)) + " meses";
     const tasaEstrella = Number(p.ci_tasa_base || 0) + Number(p.ci_tasa_incr || 0) * ((Number(p.ci_tramo_estrella) || 1) - 1);
     const retorno = esCoinv
       ? "Hasta " + tasaEstrella + "% anual"
       : "+" + (((p.plusvalia && p.plusvalia.plusvalia_24m_pct) || 0)) + "% a " + (Number(p.pv_plazo) || 24) + "m";
-    const perfil = esCoinv ? "Tasa fija contractual" : "Plusval\u00eda de mercado";
+    const perfil = esCoinv ? "Tasa fija contractual" : "Plusvalía de mercado";
     return { esCoinv, ticket, plazo, retorno, perfil };
   };
 
@@ -194,9 +194,9 @@ const SecComparativo = (props) => {
     <Shell {...props} related={["diagnostico", "calculadora", "casa-alysa", "real-miramar"]}>
       <div className="comp">
         <div className="sec-title-row">
-          <span className="kicker">Acto II \u00b7 An\u00e1lisis Comparado</span>
+          <span className="kicker">Acto II · Análisis Comparado</span>
           <h1 className="display">Lo que tu dinero<br/>te rinde realmente.</h1>
-          <p className="lead">Despu\u00e9s de inflaci\u00f3n e impuestos. Todo en una sola tabla, sin maquillaje.</p>
+          <p className="lead">Después de inflación e impuestos. Todo en una sola tabla, sin maquillaje.</p>
         </div>
 
         {proyectos.length > 0 && (
@@ -212,8 +212,8 @@ const SecComparativo = (props) => {
               <tr>
                 <th>Instrumento</th>
                 <th className="num">Bruto</th>
-                <th className="num">\u2212 Inflaci\u00f3n</th>
-                <th className="num">\u2212 ISR</th>
+                <th className="num">− Inflación</th>
+                <th className="num">− ISR</th>
                 <th className="num">Real neto</th>
                 <th>Nota</th>
               </tr>
@@ -222,12 +222,12 @@ const SecComparativo = (props) => {
               {rows.map((r) => (
                 <tr key={r.instrumento} className={r.star ? "star" : ""}
                     onClick={r.link ? () => props.navigate(r.link) : undefined}>
-                  <td>{r.star && <span className="star-mark">\u2605</span>}{r.instrumento}</td>
+                  <td>{r.star && <span className="star-mark">★</span>}{r.instrumento}</td>
                   <td className="num mono">{r.bruto}</td>
                   <td className="num mono muted">{r.inflacion}</td>
                   <td className="num mono muted">{r.isr}</td>
                   <td className="num mono accent">{r.neto}</td>
-                  <td className="muted small">{r.nota}{r.link && <span className="row-arrow"> \u2192</span>}</td>
+                  <td className="muted small">{r.nota}{r.link && <span className="row-arrow"> →</span>}</td>
                 </tr>
               ))}
             </tbody>
@@ -238,15 +238,15 @@ const SecComparativo = (props) => {
               const d = cardData(p);
               return (
                 <div className="comp-card" key={p.id} style={{ ["--c"]: p.color, ["--a"]: p.accent }}>
-                  <span className="cc-tipo mono">{d.esCoinv ? "Coinversi\u00f3n" : "Plusval\u00eda"}</span>
+                  <span className="cc-tipo mono">{d.esCoinv ? "Coinversión" : "Plusvalía"}</span>
                   <h3 className="cc-nombre">{p.nombre}</h3>
                   <dl className="cc-stats">
-                    <div><dt>Ticket m\u00ednimo</dt><dd className="mono">{d.ticket}</dd></div>
+                    <div><dt>Ticket mínimo</dt><dd className="mono">{d.ticket}</dd></div>
                     <div><dt>Plazo</dt><dd className="mono">{d.plazo}</dd></div>
                     <div><dt>Retorno esperado</dt><dd className="mono accent">{d.retorno}</dd></div>
                     <div><dt>Perfil</dt><dd>{d.perfil}</dd></div>
                   </dl>
-                  <button className="cc-cta" onClick={() => props.navigate(p.id)}>Ver {p.nombre} \u2192</button>
+                  <button className="cc-cta" onClick={() => props.navigate(p.id)}>Ver {p.nombre} →</button>
                 </div>
               );
             })}
@@ -255,7 +255,7 @@ const SecComparativo = (props) => {
 
         <div className="pull-quote">
           <span className="quote-mark">"</span>
-          Si tu dinero hoy te rinde 2\u20134% real, \u00bfcu\u00e1nto puedes esperar para construir patrimonio?
+          Si tu dinero hoy te rinde 2–4% real, ¿cuánto puedes esperar para construir patrimonio?
         </div>
       </div>
     </Shell>
@@ -431,13 +431,13 @@ const SecCalculadora = (props) => {
       : (Number(p.pv_plazo) || 24) + "m"),
   }));
   if (firstCoinv && firstPlus) {
-    opciones.push({ id: "estrategia", t: "Estrategia · " + firstCoinv.nombre + "\u2192" + firstPlus.nombre });
+    opciones.push({ id: "estrategia", t: "Estrategia · " + firstCoinv.nombre + "→" + firstPlus.nombre });
   }
   if (!opciones.length) {
     // Fallback legacy
-    opciones.push({ id: "alysa", t: "Casa Alysa \u00b7 8m" });
-    opciones.push({ id: "miramar", t: "Real Miramar \u00b7 24m" });
-    opciones.push({ id: "estrategia", t: "Estrategia \u00b7 Alysa\u2192Miramar" });
+    opciones.push({ id: "alysa", t: "Casa Alysa · 8m" });
+    opciones.push({ id: "miramar", t: "Real Miramar · 24m" });
+    opciones.push({ id: "estrategia", t: "Estrategia · Alysa→Miramar" });
   }
 
   const [proj, setProj] = React.useState(opciones[0].id);
@@ -521,14 +521,14 @@ const SecCalculadora = (props) => {
       <div className="calc">
         <div className="sec-title-row">
           <span className="kicker">Simulador interactivo</span>
-          <h1 className="display">Calculadora de inversi\u00f3n</h1>
-          <p className="lead">Mueve el capital, escoge veh\u00edculo, ve el resultado al instante.</p>
+          <h1 className="display">Calculadora de inversión</h1>
+          <p className="lead">Mueve el capital, escoge vehículo, ve el resultado al instante.</p>
         </div>
 
         <div className="calc-grid">
           <div className="calc-controls card">
             <div className="control">
-              <label>Veh\u00edculo</label>
+              <label>Vehículo</label>
               <div className="seg">
                 {opciones.map((o) => (
                   <button key={o.id} className={proj === o.id ? "on" : ""} onClick={() => setProj(o.id)}>{o.t}</button>
@@ -584,7 +584,7 @@ const SecCalculadora = (props) => {
               </div>
               <span className="bar-pct mono">+{result.pct.toFixed(1)}%</span>
             </div>
-            <p className="small muted">Proyecci\u00f3n sobre tasa preferente / plusval\u00eda bruta. Antes de inflaci\u00f3n e ISR. Sujeto a contrato escriturado.</p>
+            <p className="small muted">Proyección sobre tasa preferente / plusvalía bruta. Antes de inflación e ISR. Sujeto a contrato escriturado.</p>
           </div>
         </div>
       </div>
