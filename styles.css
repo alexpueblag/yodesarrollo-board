@@ -5,6 +5,7 @@
 
 :root {
   --tint-rgb: 255,255,255;
+  --text-rgb: 245,241,234;
   --bg: #0a0a0c;
   --bg-2: #121215;
   --surface: rgba(var(--tint-rgb),0.035);
@@ -126,7 +127,7 @@ body::before {
   flex-shrink: 0;
 }
 .brand { display: flex; align-items: center; gap: 16px; }
-.brand-logo { height: 28px; width: auto; opacity: 0.95; }
+.brand-logo { height: 56px; width: auto; opacity: 0.95; filter: brightness(0) invert(1); }
 .brand-meta { display: flex; flex-direction: column; gap: 2px; padding-left: 16px; border-left: 1px solid var(--line-2); }
 .brand-name { font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; }
 .brand-sub { font-family: var(--f-display); font-style: italic; font-size: 13px; color: var(--muted-2); }
@@ -1238,7 +1239,6 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
   .stage-rail, .timeline { grid-template-columns: 1fr 1fr; }
   .rm-hero { grid-template-columns: 1fr; gap: 24px; padding: 22px; }
   .rm-extras-grid { grid-template-columns: 1fr; gap: 24px; padding: 6px 18px 22px; }
-}
   .proj-hero { grid-template-columns: 1fr; }
   .gantt-row, .gantt-axis { grid-template-columns: 120px 1fr; }
 }
@@ -1285,7 +1285,8 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
    ═══════════════════════════════════════════════════════════ */
 html[data-theme="claro"],
 body[data-theme="claro"] {
-  --tint-rgb: 26,22,16;        /* superficies y bordes pasan a tinte oscuro */
+  --tint-rgb: 26,22,16;
+  --text-rgb: 28,24,19;        /* superficies y bordes pasan a tinte oscuro */
   --bg: #efe9de;               /* arena clara */
   --bg-2: #ffffff;
   --text: #1c1813;             /* texto oscuro */
@@ -1294,6 +1295,7 @@ body[data-theme="claro"] {
   --gold: #8f7224;             /* dorado más oscuro para contraste sobre claro */
   --gold-hi: #6f561a;
 }
+body[data-theme="claro"] .brand-logo { filter: brightness(0); }
 /* En claro, las sombras negras intensas se suavizan */
 body[data-theme="claro"] .card,
 body[data-theme="claro"] .tile-large,
