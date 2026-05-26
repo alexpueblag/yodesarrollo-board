@@ -1349,3 +1349,14 @@ body[data-theme="claro"] .calc-result { box-shadow: 0 2px 14px rgba(0,0,0,0.06);
 .cmp-name { flex: 1; font-size: 13px; color: var(--text); }
 .cmp-total { font-size: 15px; }
 .cmp-card-sub { font-size: 11.5px; margin-top: 5px; padding-left: 19px; letter-spacing: -0.01em; }
+
+/* ── Tarjetas de fondo oscuro fijo (grandes con imagen + ecosistema):
+   el texto va sobre fondo oscuro SIEMPRE, así que se mantiene claro sin importar el tema ── */
+.tile-large, .tile-eco {
+  --text-rgb: 245,241,234;
+  --text: #f5f1ea;
+  --muted: rgba(245,241,234,0.72);
+  --muted-2: rgba(245,241,234,0.58);
+  --gold: #c9a96e;
+  --gold-hi: #d4be8a;
+}
