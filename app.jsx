@@ -158,7 +158,7 @@ const CoverScreen = ({ onStart, t }) => {
 // ============================================================================
 // DASHBOARD — jerárquico en 3 filas
 // ============================================================================
-const Dashboard = ({ onOpen, t }) => {
+const Dashboard = ({ onOpen, t, setTweak }) => {
   const clock = useClock();
   const { data } = window.useData();
   const cfg = data.config || {};
@@ -217,7 +217,11 @@ const Dashboard = ({ onOpen, t }) => {
           )}
           <button
             className="theme-toggle"
-            onClick={() => setTweak("theme", t.theme === "claro" ? "oscuro" : "claro")}
+            onClick={() => {
+              const next = t.theme === "claro" ? "oscuro" : "claro";
+              setTweak("theme", next);
+              try { document.body.dataset.theme = next; document.documentElement.dataset.theme = next; } catch (e) {}
+            }}
             title="Cambiar tema claro / oscuro"
             aria-label="Cambiar tema">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -477,6 +481,7 @@ const AppShell = () => {
   React.useEffect(() => {
     document.body.dataset.aesthetic = t.aesthetic;
     document.body.dataset.theme = t.theme;
+    document.documentElement.dataset.theme = t.theme;
     document.body.dataset.mode = t.presentation ? "presentation" : "edit";
   }, [t.aesthetic, t.theme, t.presentation]);
 
@@ -519,7 +524,7 @@ const AppShell = () => {
       ) : view ? (
         <SectionView id={view} onHome={home} onNavigate={open} />
       ) : (
-        <Dashboard onOpen={open} t={t} />
+        <Dashboard onOpen={open} t={t} setTweak={setTweak} />
       )}
 
       <DataSourceBadge />

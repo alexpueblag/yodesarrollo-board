@@ -440,7 +440,8 @@ const SecCalculadora = (props) => {
     opciones.push({ id: "estrategia", t: "Estrategia · Alysa→Miramar" });
   }
 
-  const [proj, setProj] = React.useState(opciones[0].id);
+  const [compareSet, setCompareSet] = React.useState([opciones[0].id]);
+  const proj = compareSet[0] || opciones[0].id; // foco: alimenta el panel de detalle y el slider
   const [capital, setCapital] = React.useState(window.YDR_INITIAL_CAPITAL || 1000000);
 
   const sel = invertibles.find((p) => p.id === proj);
@@ -516,52 +517,56 @@ const SecCalculadora = (props) => {
 
   const quickPicks = [200000, 500000, 1000000, 2000000].filter((v) => v >= minCap && v <= maxCap);
 
-  // ── Serie de crecimiento del capital (gráfica de proyección) ──
-  const plazoMeses = proj === "estrategia"
-    ? ((firstPlus && Number(firstPlus.pv_plazo)) || 24)
-    : (sel ? (sel.modelo === "coinversion" ? (Number(sel.ci_plazo) || 8) : (Number(sel.pv_plazo) || 24)) : 24);
-  const STEPS = 24;
-  const serie = [];
-  for (let i = 0; i <= STEPS; i++) {
-    const mes = (plazoMeses * i) / STEPS;
-    let val;
-    if (proj === "estrategia") {
-      const plazoA = (firstCoinv && Number(firstCoinv.ci_plazo)) || 8;
+  // ── Comparación de vehículos en una sola línea de tiempo ──
+  const PAL = ["var(--gold-hi)", "#7aa6d6", "#5dcaa5", "#c98aa6", "#b8a0d8"];
+  const colorDe = (id) => { const i = opciones.findIndex((o) => o.id === id); return PAL[(i < 0 ? 0 : i) % PAL.length]; };
+  const calcVehiculo = (id) => {
+    const p = invertibles.find((x) => x.id === id);
+    let total, plazoM, nombre, cambio = null;
+    if (id === "estrategia") {
       const r = coinvRate(firstCoinv && firstCoinv.tiers, capital);
+      const plazoA = (firstCoinv && Number(firstCoinv.ci_plazo)) || 8;
       const after8 = capital + capital * (r / 100) * (plazoA / 12);
-      const plus24 = (((firstPlus && firstPlus.plusvalia && firstPlus.plusvalia.plusvalia_24m_pct) || 53)) / 100;
-      if (mes <= plazoA) val = capital + (after8 - capital) * (plazoA ? mes / plazoA : 0);
-      else val = after8 + (after8 * plus24) * ((mes - plazoA) / Math.max(1, plazoMeses - plazoA));
+      const plus24 = (((firstPlus && firstPlus.plusvalia && firstPlus.plusvalia.plusvalia_24m_pct) || legacyMir.plusvalia_24m_pct || 53)) / 100;
+      total = after8 + after8 * plus24; plazoM = (firstPlus && Number(firstPlus.pv_plazo)) || 24;
+      nombre = "Estrategia"; cambio = { mes: plazoA, val: after8 };
+    } else if (p && p.modelo === "coinversion") {
+      const r = coinvRate(p.tiers, capital); plazoM = Number(p.ci_plazo) || 8;
+      total = capital + capital * (r / 100) * (plazoM / 12); nombre = p.nombre;
+    } else if (p && p.modelo === "plusvalia") {
+      const pct = ((p.plusvalia && p.plusvalia.plusvalia_24m_pct) || 0) / 100;
+      plazoM = Number(p.pv_plazo) || 24; total = capital + capital * pct; nombre = p.nombre;
     } else {
-      val = capital + (result.total - capital) * (plazoMeses ? mes / plazoMeses : 0);
+      const pv = (legacyMir.plusvalia_24m_pct || 53) / 100;
+      if (id === "miramar") { plazoM = 24; total = capital + capital * pv; nombre = "Real Miramar"; }
+      else if (id === "estrategia") { const r = coinvRate(null, capital); const a8 = capital + capital * (r / 100) * (8 / 12); plazoM = 24; total = a8 + a8 * pv; nombre = "Estrategia"; cambio = { mes: 8, val: a8 }; }
+      else { const r = coinvRate(null, capital); plazoM = 8; total = capital + capital * (r / 100) * (8 / 12); nombre = "Casa Alysa"; }
     }
-    serie.push({ mes: mes, val: val });
-  }
+    const N = 24, serie = [];
+    for (let i = 0; i <= N; i++) {
+      const mes = (plazoM * i) / N; let val;
+      if (cambio && mes > cambio.mes) val = cambio.val + (total - cambio.val) * ((mes - cambio.mes) / Math.max(1, plazoM - cambio.mes));
+      else if (cambio) val = capital + (cambio.val - capital) * (cambio.mes ? mes / cambio.mes : 0);
+      else val = capital + (total - capital) * (plazoM ? mes / plazoM : 0);
+      serie.push({ mes: mes, val: val });
+    }
+    return { id: id, nombre: nombre, total: total, plazoMeses: plazoM, gain: total - capital, serie: serie, color: colorDe(id) };
+  };
+  const activeIds = (compareSet.length ? compareSet : [proj]);
+  const compareList = activeIds.map(calcVehiculo).filter(Boolean);
+  const toggleCompare = (id) => setCompareSet((s) => {
+    const base = s.length ? s : [proj];
+    return base.includes(id) ? (base.length > 1 ? base.filter((x) => x !== id) : base) : base.concat([id]);
+  });
+
   const CW = 760, CH = 250, mL = 76, mR = 18, mT = 34, mB = 30;
   const plotW = CW - mL - mR, plotH = CH - mT - mB;
+  const plazoMax = Math.max.apply(null, compareList.map((v) => v.plazoMeses).concat([1]));
   const vMin = capital;
-  const vMax = Math.max(result.total, capital * 1.04);
-  const xAt = (mes) => mL + (plazoMeses ? mes / plazoMeses : 0) * plotW;
+  const vMax = Math.max.apply(null, compareList.map((v) => v.total).concat([capital * 1.04]));
+  const xAt = (mes) => mL + (plazoMax ? mes / plazoMax : 0) * plotW;
   const yAt = (v) => mT + (1 - (v - vMin) / Math.max(1, vMax - vMin)) * plotH;
-  const linePath = serie.map((p, i) => (i === 0 ? "M" : "L") + xAt(p.mes).toFixed(1) + " " + yAt(p.val).toFixed(1)).join(" ");
-  const areaPath = linePath + " L" + xAt(plazoMeses).toFixed(1) + " " + (mT + plotH) + " L" + xAt(0).toFixed(1) + " " + (mT + plotH) + " Z";
-
-  let hitos;
-  if (proj === "estrategia") {
-    const plazoA = (firstCoinv && Number(firstCoinv.ci_plazo)) || 8;
-    const rr = coinvRate(firstCoinv && firstCoinv.tiers, capital);
-    const after8 = capital + capital * (rr / 100) * (plazoA / 12);
-    hitos = [
-      { mes: 0, val: capital, label: "Hoy" },
-      { mes: plazoA, val: after8, label: "Fin Alysa" },
-      { mes: plazoMeses, val: result.total, label: "Mes " + Math.round(plazoMeses) },
-    ];
-  } else {
-    hitos = [
-      { mes: 0, val: capital, label: "Hoy" },
-      { mes: plazoMeses, val: result.total, label: "Mes " + Math.round(plazoMeses) },
-    ];
-  }
+  const pathDe = (serie) => serie.map((p, i) => (i === 0 ? "M" : "L") + xAt(p.mes).toFixed(1) + " " + yAt(p.val).toFixed(1)).join(" ");
   const yTicks = [vMin, (vMin + vMax) / 2, vMax];
 
   // ── Ficha PDF de la simulación (para que el inversionista se la lleve) ──
@@ -603,10 +608,13 @@ const SecCalculadora = (props) => {
         <div className="calc-grid">
           <div className="calc-controls card">
             <div className="control">
-              <label>Vehículo</label>
-              <div className="seg">
+              <label>Vehículo · marca los que quieras comparar</label>
+              <div className="seg seg-multi">
                 {opciones.map((o) => (
-                  <button key={o.id} className={proj === o.id ? "on" : ""} onClick={() => setProj(o.id)}>{o.t}</button>
+                  <button key={o.id} className={compareSet.includes(o.id) ? "on" : ""} onClick={() => toggleCompare(o.id)}>
+                    <span className="seg-dot" style={{ background: compareSet.includes(o.id) ? colorDe(o.id) : "transparent", borderColor: colorDe(o.id) }}></span>
+                    {o.t}
+                  </button>
                 ))}
               </div>
             </div>
@@ -637,6 +645,7 @@ const SecCalculadora = (props) => {
           </div>
 
           <div className="calc-result card">
+            {compareList.length <= 1 ? (<>
             <div className="result-row">
               <span className="r-label">Tasa / rendimiento</span>
               <span className="r-value mono accent">{result.rate}</span>
@@ -661,19 +670,39 @@ const SecCalculadora = (props) => {
             </div>
             <p className="small muted">Proyección sobre tasa preferente / plusvalía bruta. Antes de inflación e ISR. Sujeto a contrato escriturado.</p>
             <button className="calc-pdf-cta" onClick={descargarFicha}>↓ Descargar mi simulación (PDF)</button>
+            </>) : (<>
+            <div className="result-row">
+              <span className="r-label">Comparando</span>
+              <span className="r-value mono accent">{compareList.length} vehículos</span>
+            </div>
+            <div className="cmp-cards">
+              {compareList.map((v) => (
+                <div className="cmp-card" key={v.id}>
+                  <div className="cmp-card-top">
+                    <span className="cmp-dot" style={{ background: v.color }}></span>
+                    <span className="cmp-name mono">{v.nombre}</span>
+                    <span className="cmp-total mono accent">{fmt(Math.round(v.total))}</span>
+                  </div>
+                  <div className="cmp-card-sub mono muted">+{fmt(Math.round(v.gain))} · {Math.round(v.plazoMeses)}m · +{Math.round((v.total / capital - 1) * 100)}%</div>
+                </div>
+              ))}
+            </div>
+            <p className="small muted">Proyección bruta antes de inflación e ISR. Mismo capital para todos: {fmt(capital)}.</p>
+            <button className="calc-pdf-cta" onClick={descargarFicha}>↓ Descargar simulación de {compareList[0] ? compareList[0].nombre : ""} (PDF)</button>
+            </>)}
           </div>
         </div>
 
         <div className="calc-chart card">
           <div className="cchart-head">
-            <span className="kicker">Proyección de tu capital</span>
-            <span className="cchart-range mono accent">{fmt(Math.round(capital))} → {fmt(Math.round(result.total))}</span>
+            <span className="kicker">{compareList.length > 1 ? "Proyección comparada" : "Proyección de tu capital"}</span>
+            <span className="cchart-range mono muted">{compareList.length > 1 ? compareList.length + " vehículos · " : ""}hasta {Math.round(plazoMax)} meses</span>
           </div>
           <svg className="cchart-svg" viewBox={"0 0 " + CW + " " + CH}>
             <defs>
               <linearGradient id="cchartFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.30" />
-                <stop offset="100%" stopColor="var(--gold)" stopOpacity="0.02" />
+                <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.22" />
+                <stop offset="100%" stopColor="var(--gold)" stopOpacity="0.01" />
               </linearGradient>
             </defs>
             {yTicks.map((v, i) => (
@@ -682,23 +711,31 @@ const SecCalculadora = (props) => {
                 <text x={mL - 8} y={yAt(v) + 3} textAnchor="end" className="cchart-axis">{fmt(Math.round(v))}</text>
               </g>
             ))}
-            <path d={areaPath} fill="url(#cchartFill)" />
-            <path d={linePath} fill="none" stroke="var(--gold-hi)" strokeWidth="2.5" />
-            {hitos.map((h, i) => {
-              const anchor = i === 0 ? "start" : (i === hitos.length - 1 ? "end" : "middle");
+            {compareList.length === 1 && (
+              <path d={pathDe(compareList[0].serie) + " L" + xAt(compareList[0].plazoMeses).toFixed(1) + " " + (mT + plotH) + " L" + xAt(0).toFixed(1) + " " + (mT + plotH) + " Z"} fill="url(#cchartFill)" />
+            )}
+            {compareList.map((v, vi) => {
+              const anchor = xAt(v.plazoMeses) > CW - 70 ? "end" : "middle";
               return (
-                <g key={"h" + i}>
-                  <line x1={xAt(h.mes)} y1={yAt(h.val)} x2={xAt(h.mes)} y2={mT + plotH} stroke="var(--line-2)" strokeWidth="1" strokeDasharray="3 3" />
-                  <circle cx={xAt(h.mes)} cy={yAt(h.val)} r="4.5" fill="var(--gold-hi)" stroke="var(--bg)" strokeWidth="2" />
-                  <text x={xAt(h.mes)} y={yAt(h.val) - 11} textAnchor={anchor} className="cchart-pt">{fmt(Math.round(h.val))}</text>
-                  <text x={xAt(h.mes)} y={mT + plotH + 18} textAnchor={anchor} className="cchart-axis">{h.label}</text>
+                <g key={"c" + vi}>
+                  <path d={pathDe(v.serie)} fill="none" stroke={v.color} strokeWidth="2.5" />
+                  <circle cx={xAt(v.plazoMeses)} cy={yAt(v.total)} r="4" fill={v.color} stroke="var(--bg)" strokeWidth="2" />
+                  <text x={xAt(v.plazoMeses)} y={yAt(v.total) - 9} textAnchor={anchor} className="cchart-pt">{fmt(Math.round(v.total))}</text>
                 </g>
               );
             })}
+            <text x={mL} y={mT + plotH + 18} textAnchor="start" className="cchart-axis">Hoy</text>
+            <text x={CW - mR} y={mT + plotH + 18} textAnchor="end" className="cchart-axis">Mes {Math.round(plazoMax)}</text>
           </svg>
-          <div className="cchart-foot">
-            <span className="mono"><strong className="accent">+{fmt(Math.round(result.gain))}</strong> de ganancia proyectada</span>
-            <span className="mono muted">{result.rate} · {result.months}</span>
+          <div className="cchart-legend">
+            {compareList.map((v, vi) => (
+              <span className="cleg" key={"l" + vi}>
+                <span className="cleg-dot" style={{ background: v.color }}></span>
+                <span className="mono">{v.nombre}</span>
+                <span className="mono accent">+{fmt(Math.round(v.gain))}</span>
+                <span className="mono muted">· {Math.round(v.plazoMeses)}m</span>
+              </span>
+            ))}
           </div>
         </div>
       </div>

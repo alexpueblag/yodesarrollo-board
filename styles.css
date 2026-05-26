@@ -1027,7 +1027,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
   padding: 50px 0 40px;
   border-bottom: 1px dashed var(--line);
 }
-.cron-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.cron-row:last-child { border-bottom: 0; padding-bottom: 56px; }
 
 .cron-row-label {
   position: absolute;
@@ -1117,6 +1117,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
 /* Alysa labels above, Miramar labels below */
 .cron-row:nth-child(2) .ht-label { bottom: 18px; }
 .cron-row:nth-child(3) .ht-label { top: 18px; }
+.cron-hito.dunas-hito .ht-label { top: 18px; }
 
 .ht-title {
   font-family: var(--f-display);
@@ -1282,6 +1283,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
    TEMA CLARO (fondo blanco) · se activa desde Preferencias
    Solo redefine variables; todo el board las hereda.
    ═══════════════════════════════════════════════════════════ */
+html[data-theme="claro"],
 body[data-theme="claro"] {
   --tint-rgb: 26,22,16;        /* superficies y bordes pasan a tinte oscuro */
   --bg: #efe9de;               /* arena clara */
@@ -1321,3 +1323,27 @@ body[data-theme="claro"] .calc-result { box-shadow: 0 2px 14px rgba(0,0,0,0.06);
 .theme-toggle { display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--surface); color: var(--text); cursor: pointer; transition: all 160ms; }
 .theme-toggle:hover { background: var(--surface-2); border-color: var(--gold); }
 .theme-toggle .tt-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* ── Calculadora · chips de comparación + leyenda ── */
+.cchart-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+.cchart-chip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-family: var(--f-sans); font-size: 12.5px; cursor: pointer; transition: all 140ms; }
+.cchart-chip.on { border-color: var(--line-2); color: var(--text); background: var(--surface); }
+.cchart-chip:hover { color: var(--text); }
+.chip-dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid; box-sizing: border-box; flex-shrink: 0; }
+.cchart-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; }
+.cleg { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; }
+.cleg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* ── Selector multi-vehículo (puntos de color por curva) ── */
+.seg-multi { flex-wrap: wrap; }
+.seg-multi button { display: inline-flex; align-items: center; gap: 7px; }
+.seg-dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid; flex-shrink: 0; transition: background 140ms; }
+
+/* ── Tarjetas comparativas (panel con 2+ vehículos) ── */
+.cmp-cards { display: flex; flex-direction: column; gap: 10px; margin: 6px 0 4px; }
+.cmp-card { padding: 11px 13px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+.cmp-card-top { display: flex; align-items: center; gap: 9px; }
+.cmp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.cmp-name { flex: 1; font-size: 13px; color: var(--text); }
+.cmp-total { font-size: 15px; }
+.cmp-card-sub { font-size: 11.5px; margin-top: 5px; padding-left: 19px; letter-spacing: -0.01em; }
