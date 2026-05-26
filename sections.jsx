@@ -537,12 +537,32 @@ const SecCalculadora = (props) => {
     }
     serie.push({ mes: mes, val: val });
   }
-  const CW = 720, CH = 170, PAD = 10;
-  const sMin = serie[0].val, sMax = serie[serie.length - 1].val || 1;
-  const xAt = (i) => PAD + (i / STEPS) * (CW - 2 * PAD);
-  const yAt = (v) => CH - PAD - ((v - sMin) / Math.max(1, sMax - sMin)) * (CH - 2 * PAD);
-  const linePath = serie.map((p, i) => (i === 0 ? "M" : "L") + xAt(i).toFixed(1) + " " + yAt(p.val).toFixed(1)).join(" ");
-  const areaPath = linePath + " L" + xAt(STEPS).toFixed(1) + " " + (CH - PAD) + " L" + xAt(0).toFixed(1) + " " + (CH - PAD) + " Z";
+  const CW = 760, CH = 250, mL = 76, mR = 18, mT = 34, mB = 30;
+  const plotW = CW - mL - mR, plotH = CH - mT - mB;
+  const vMin = capital;
+  const vMax = Math.max(result.total, capital * 1.04);
+  const xAt = (mes) => mL + (plazoMeses ? mes / plazoMeses : 0) * plotW;
+  const yAt = (v) => mT + (1 - (v - vMin) / Math.max(1, vMax - vMin)) * plotH;
+  const linePath = serie.map((p, i) => (i === 0 ? "M" : "L") + xAt(p.mes).toFixed(1) + " " + yAt(p.val).toFixed(1)).join(" ");
+  const areaPath = linePath + " L" + xAt(plazoMeses).toFixed(1) + " " + (mT + plotH) + " L" + xAt(0).toFixed(1) + " " + (mT + plotH) + " Z";
+
+  let hitos;
+  if (proj === "estrategia") {
+    const plazoA = (firstCoinv && Number(firstCoinv.ci_plazo)) || 8;
+    const rr = coinvRate(firstCoinv && firstCoinv.tiers, capital);
+    const after8 = capital + capital * (rr / 100) * (plazoA / 12);
+    hitos = [
+      { mes: 0, val: capital, label: "Hoy" },
+      { mes: plazoA, val: after8, label: "Fin Alysa" },
+      { mes: plazoMeses, val: result.total, label: "Mes " + Math.round(plazoMeses) },
+    ];
+  } else {
+    hitos = [
+      { mes: 0, val: capital, label: "Hoy" },
+      { mes: plazoMeses, val: result.total, label: "Mes " + Math.round(plazoMeses) },
+    ];
+  }
+  const yTicks = [vMin, (vMin + vMax) / 2, vMax];
 
   // ── Ficha PDF de la simulación (para que el inversionista se la lleve) ──
   const descargarFicha = () => {
@@ -646,19 +666,40 @@ const SecCalculadora = (props) => {
 
         <div className="calc-chart card">
           <div className="cchart-head">
-            <span className="kicker">Proyección del capital</span>
-            <span className="cchart-range mono">{fmt(Math.round(sMin))} → {fmt(Math.round(sMax))} · {Math.round(plazoMeses)} meses</span>
+            <span className="kicker">Proyección de tu capital</span>
+            <span className="cchart-range mono accent">{fmt(Math.round(capital))} → {fmt(Math.round(result.total))}</span>
           </div>
-          <svg className="cchart-svg" viewBox={"0 0 " + CW + " " + CH} preserveAspectRatio="none">
+          <svg className="cchart-svg" viewBox={"0 0 " + CW + " " + CH}>
             <defs>
               <linearGradient id="cchartFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.35" />
-                <stop offset="100%" stopColor="var(--gold)" stopOpacity="0" />
+                <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.30" />
+                <stop offset="100%" stopColor="var(--gold)" stopOpacity="0.02" />
               </linearGradient>
             </defs>
+            {yTicks.map((v, i) => (
+              <g key={"y" + i}>
+                <line x1={mL} y1={yAt(v)} x2={CW - mR} y2={yAt(v)} stroke="var(--line)" strokeWidth="1" />
+                <text x={mL - 8} y={yAt(v) + 3} textAnchor="end" className="cchart-axis">{fmt(Math.round(v))}</text>
+              </g>
+            ))}
             <path d={areaPath} fill="url(#cchartFill)" />
-            <path d={linePath} fill="none" stroke="var(--gold-hi)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+            <path d={linePath} fill="none" stroke="var(--gold-hi)" strokeWidth="2.5" />
+            {hitos.map((h, i) => {
+              const anchor = i === 0 ? "start" : (i === hitos.length - 1 ? "end" : "middle");
+              return (
+                <g key={"h" + i}>
+                  <line x1={xAt(h.mes)} y1={yAt(h.val)} x2={xAt(h.mes)} y2={mT + plotH} stroke="var(--line-2)" strokeWidth="1" strokeDasharray="3 3" />
+                  <circle cx={xAt(h.mes)} cy={yAt(h.val)} r="4.5" fill="var(--gold-hi)" stroke="var(--bg)" strokeWidth="2" />
+                  <text x={xAt(h.mes)} y={yAt(h.val) - 11} textAnchor={anchor} className="cchart-pt">{fmt(Math.round(h.val))}</text>
+                  <text x={xAt(h.mes)} y={mT + plotH + 18} textAnchor={anchor} className="cchart-axis">{h.label}</text>
+                </g>
+              );
+            })}
           </svg>
+          <div className="cchart-foot">
+            <span className="mono"><strong className="accent">+{fmt(Math.round(result.gain))}</strong> de ganancia proyectada</span>
+            <span className="mono muted">{result.rate} · {result.months}</span>
+          </div>
         </div>
       </div>
     </Shell>

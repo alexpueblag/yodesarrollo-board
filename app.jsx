@@ -208,12 +208,26 @@ const Dashboard = ({ onOpen, t }) => {
             ))}
           </div>
         )}
-        {t.showClock && (
-          <div className="board-status">
-            <span className="status-time mono">{fmtTime(clock)}</span>
-            <span className="status-date">{fmtDate(clock)}</span>
-          </div>
-        )}
+        <div className="board-head-tail">
+          {t.showClock && (
+            <div className="board-status">
+              <span className="status-time mono">{fmtTime(clock)}</span>
+              <span className="status-date">{fmtDate(clock)}</span>
+            </div>
+          )}
+          <button
+            className="theme-toggle"
+            onClick={() => setTweak("theme", t.theme === "claro" ? "oscuro" : "claro")}
+            title="Cambiar tema claro / oscuro"
+            aria-label="Cambiar tema">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {t.theme === "claro"
+                ? <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                : <g><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></g>}
+            </svg>
+            <span className="tt-label mono">{t.theme === "claro" ? "Oscuro" : "Claro"}</span>
+          </button>
+        </div>
       </header>
 
       {/* ━━━━━━━━━ FILA 1: Productos (tiles grandes con foto) ━━━━━━━━━ */}
