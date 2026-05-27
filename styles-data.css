@@ -739,8 +739,17 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   max-height: calc(100svh - 160px);
   overflow-y: auto;
 }
-.ap-form-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ap-form-head { display: flex; align-items: center; justify-content: flex-start; gap: 10px; }
 .ap-form-head h2 { font-family: var(--f-display, serif); font-style: italic; font-weight: 400; font-size: 22px; color: var(--text, #F5F1EA); margin: 0; }
+.ap-clear {
+  margin-left: auto;
+  display: inline-flex; align-items: center;
+  background: transparent; color: var(--muted-2, #8a857b);
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 9px 16px;
+  font-family: var(--f-mono, monospace); font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+  cursor: pointer; transition: all 0.15s ease;
+}
+.ap-clear:hover { color: var(--text); border-color: var(--gold); }
 .ap-download {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--gold, #D4BE8A); color: #15171a;

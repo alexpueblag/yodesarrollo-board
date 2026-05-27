@@ -1252,7 +1252,8 @@ const SecAcuerdoPagos = (props) => {
   const { data } = window.useData();
   const cfg = (data && data.config) || {};
 
-  const [d, setD] = React.useState({
+  const AP_DRAFT_KEY = "ydr_acuerdo_draft_v1";
+  const freshDoc = () => ({
     inversionista: "", lugar: "Hermosillo, Sonora, México", emitido: "",
     folio_prefijo: "CA", folio_num: "01", subtitulo: "Coinversión escriturada en Casa Alysa",
     intro_aportacion: "Cuenta exclusiva del proyecto. Cada peso trazable.",
@@ -1279,6 +1280,21 @@ const SecAcuerdoPagos = (props) => {
     texto_conformidad: "Las partes manifiestan su conformidad con el calendario de aportaciones, la estructura de rendimiento y las garantías arriba descritas. Este documento se complementará con el contrato definitivo escriturado ante notario, mismo que prevalecerá en caso de discrepancia.",
     firma_rep: cfg.firma_rep || "Alejandro Puebla Gayón",
   });
+
+  // Borrador persistente: sobrevive recargas del navegador (móvil sobre todo)
+  const [d, setD] = React.useState(() => {
+    try { const s = localStorage.getItem(AP_DRAFT_KEY); if (s) return Object.assign(freshDoc(), JSON.parse(s)); } catch (e) {}
+    return freshDoc();
+  });
+  React.useEffect(() => {
+    try { localStorage.setItem(AP_DRAFT_KEY, JSON.stringify(d)); } catch (e) {}
+  }, [d]);
+  const limpiarBorrador = () => {
+    if (window.confirm("¿Vaciar todos los campos y empezar un acuerdo nuevo?")) {
+      try { localStorage.removeItem(AP_DRAFT_KEY); } catch (e) {}
+      setD(freshDoc());
+    }
+  };
 
   const set = (k, v) => setD((p) => ({ ...p, [k]: v }));
   const setRow = (arr, i, k, v) => setD((p) => ({ ...p, [arr]: p[arr].map((r, j) => (j === i ? { ...r, [k]: v } : r)) }));
@@ -1342,6 +1358,7 @@ const SecAcuerdoPagos = (props) => {
         <div className="ap-form">
           <div className="ap-form-head">
             <h2>Datos del acuerdo</h2>
+            <button className="ap-clear" onClick={limpiarBorrador}>Nuevo</button>
             <button className="ap-download" onClick={descargar}>Descargar PDF <IconArrow size={14} sw={2} /></button>
           </div>
           <p className="ap-hint">Llena los campos; el documento se arma solo. Al dar <strong>Descargar PDF</strong> se abre el diálogo de impresión: elige <strong>“Guardar como PDF”</strong> y activa <strong>Gráficos de fondo</strong>.</p>
