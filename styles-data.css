@@ -818,7 +818,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
 .ap-fineprint strong, .ap-concepto strong { color: #1f2326; }
 .ap-concepto { font-size: 13px; color: #4a4a45; margin: 14px 0 8px; }
 
-.ap-signs { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin: 34px 0 0; }
+.ap-signs { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin: 64px 0 0; }
 .ap-sign { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .ap-sign-line { width: 100%; border-top: 1px solid #1f2326; margin-bottom: 8px; }
 .ap-sign-name { font-size: 14px; font-weight: 700; color: #1f2326; }
