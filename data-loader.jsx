@@ -1,13 +1,14 @@
 // Yodesarrollo-Board · Data Loader
 //
 // Carga "instantánea" (pinta-ya, revalida-después / stale-while-revalidate):
-//   1. Al abrir, pinta AL INSTANTE lo último disponible: caché local (de cualquier edad),
-//      o data.json local si no hay caché. El cliente nunca espera.
+//   1. Al abrir, pinta AL INSTANTE lo último disponible en caché local del dispositivo.
 //   2. EN SEGUNDO PLANO busca lo más fresco del Apps Script (sin bloquear la pantalla ya pintada).
 //   3. Cuando llega lo fresco, actualiza la vista solo y lo guarda en caché.
 //   4. Si el Apps Script no responde, se queda con lo que ya mostró. Sin loader largo.
 //
-// Pensado para presentaciones en vivo: arranque inmediato + datos frescos cuando lleguen.
+// Acceso: toda petición viaja con la credencial del Portero (localStorage pyod_clave_v1:
+// liga mágica, clave de equipo o sesión de Google). El backend la valida en el servidor
+// y sin ella no entrega datos. Ya no existe data.json público.
 //
 // Expone:
 //   - DataContext (React.createContext)
@@ -19,7 +20,7 @@
 const CACHE_KEY      = "ydr_board_data_v1";
 const CACHE_TTL_MS   = 5 * 60 * 1000;     // 5 minutos (solo informativo; ya no bloquea el arranque)
 const FETCH_TIMEOUT  = 15000;             // 15 s para la revalidación en segundo plano (no bloquea la pantalla)
-const FALLBACK_URL   = "data.json";
+const PORTERO_LSK    = "pyod_clave_v1";   // misma llave que usa portero.js
 
 const DataContext = React.createContext(null);
 window.useData = () => React.useContext(DataContext);
@@ -67,20 +68,31 @@ const fetchWithTimeout = (url, ms) => {
     .catch((e) => { clearTimeout(tid); throw e; });
 };
 
+// Credencial del Portero (la escribe portero.js al canjear la liga / clave / Google)
+const credencial = () => {
+  try { return localStorage.getItem(PORTERO_LSK) || ""; } catch (e) { return ""; }
+};
+
+// Credencial rechazada por el servidor: limpiar todo y dejar que el Portero pida acceso de nuevo.
+const credencialRechazada = () => {
+  cacheClear();
+  try { localStorage.removeItem(PORTERO_LSK); sessionStorage.removeItem("pyod_rol"); } catch (e) {}
+  location.reload();
+};
+
 const fetchLive = async () => {
   const url = (window.YDR_CONFIG && window.YDR_CONFIG.appsScriptUrl) || "";
   if (!url) throw new Error("no_apps_script_url");
-  const res = await fetchWithTimeout(url, FETCH_TIMEOUT);
+  const k = credencial();
+  if (!k) throw new Error("sin_credencial");
+  const res = await fetchWithTimeout(url + (url.indexOf("?") === -1 ? "?" : "&") + "k=" + encodeURIComponent(k), FETCH_TIMEOUT);
   if (!res.ok) throw new Error("http_" + res.status);
   const json = await res.json();
-  if (!json.ok) throw new Error("api_error:" + (json.error || "unknown"));
+  if (!json.ok) {
+    if (json.error === "liga") credencialRechazada();
+    throw new Error("api_error:" + (json.error || "unknown"));
+  }
   return json.data;
-};
-
-const fetchFallback = async () => {
-  const res = await fetch(FALLBACK_URL);
-  if (!res.ok) throw new Error("fallback_http_" + res.status);
-  return await res.json();
 };
 
 // ---------------------------------------------------------------------------
@@ -89,7 +101,7 @@ const fetchFallback = async () => {
 const DataProvider = ({ children }) => {
   const [data, setData]     = React.useState(null);
   const [status, setStatus] = React.useState("loading");   // loading | ready | error
-  const [source, setSource] = React.useState(null);        // cache | live | fallback
+  const [source, setSource] = React.useState(null);        // cache | live
 
   const load = React.useCallback(async () => {
     // 1. PINTA YA — muestra al instante lo último disponible para que el cliente nunca espere.
@@ -100,15 +112,6 @@ const DataProvider = ({ children }) => {
       setStatus("ready");
       setSource("cache");
       shown = true;
-    } else {
-      // Sin caché todavía: data.json local (mismo origen, carga en <1s) para no dejar pantalla vacía.
-      try {
-        const fb = await fetchFallback();
-        setData(fb);
-        setStatus("ready");
-        setSource("fallback");
-        shown = true;
-      } catch (e) { /* aún no hay nada; el loader sigue hasta que llegue lo live */ }
     }
 
     // 2. REVALIDA EN SEGUNDO PLANO — trae lo más fresco sin bloquear lo ya pintado.
@@ -133,10 +136,13 @@ const DataProvider = ({ children }) => {
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action, data: payload }),
+      body: JSON.stringify({ action, data: payload, k: credencial() }),
     });
     const json = await res.json();
-    if (!json.ok) throw new Error(json.error || "save_failed");
+    if (!json.ok) {
+      if (json.error === "liga") credencialRechazada();
+      throw new Error(json.error || "save_failed");
+    }
     return json;
   }, []);
 
@@ -178,7 +184,7 @@ const DataErrorView = ({ onRetry }) => (
 const DataSourceBadge = () => {
   const { source, refresh } = window.useData();
   if (source === "live") return null;
-  const label = source === "cache" ? "caché local" : source === "fallback" ? "offline · data.json" : "—";
+  const label = source === "cache" ? "caché local" : "—";
   return (
     <button className="data-source-badge" onClick={refresh} title="Recargar desde Sheets">
       <span className="dsb-dot" data-src={source}></span>

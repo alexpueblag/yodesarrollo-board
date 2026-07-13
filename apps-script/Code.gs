@@ -1,30 +1,83 @@
 /**
  * Yodesarrollo-Board · Backend
  *
- * CONTENCIÓN 2026-07-12
- * Los endpoints HTTP permanecen fail-closed hasta que exista identidad y ACL
- * del lado del servidor. No desplegar como "cualquier persona".
+ * REAPERTURA SEGURA 2026-07-13 (v2.1)
+ * doGet/doPost exigen una credencial del Portero YOD (liga mágica de 90 días,
+ * clave de equipo o sesión de Google) y la validan del lado del servidor
+ * contra el endpoint de canje del Portero. Sin credencial válida el backend
+ * responde { ok:false, error:'liga' } y no entrega ni un dato (fail-closed).
+ * El front (portero.js) captura ese error y vuelve a pedir acceso.
  *
  * Despliegue:
  *   1. Run → seedAll() una vez (desde seed-sheet.gs)
- *   2. Implementar → Nueva implementación → Tipo: Aplicación web
- *      · Ejecutar como: yo
- *      · Quién tiene acceso: cualquier persona
- *   3. Copia la URL /exec — esa va en data-loader.jsx
+ *   2. Implementar → Administrar implementaciones → lápiz → Nueva versión
+ *      sobre la implementación EXISTENTE (NUNCA crear una nueva: cambia la
+ *      URL /exec y rompe el board).
+ *      · Ejecutar como: yo · Quién tiene acceso: cualquier persona
+ *   3. La URL /exec vive en window.YDR_CONFIG (index.html)
  */
 
 const CACHE_KEY = 'yodesarrollo_board_data_v1';
 const CACHE_TTL = 300;  // 5 min
 
+// Endpoint del Portero YOD (potenciales-yod) — valida ligas, claves y sesiones.
+const PORTERO_EXEC = 'https://script.google.com/macros/s/AKfycbwlDDCWWzOWYZsUpBU9uqsQ7aenQ469PF6s6FkNlBFS1_cJSU5njG9oQmuyELy5zlqzFg/exec';
+const AUTH_TTL_OK  = 600;  // 10 min de caché para credenciales válidas
+const AUTH_TTL_BAD = 60;   // 1 min para rechazadas (permite reintentos rápidos tras dar de alta)
+
 // =============================================================================
 // HTTP ENDPOINTS
 // =============================================================================
 function doGet(e) {
-  return jsonOut_({ ok: false, error: 'MAINTENANCE', version: '2.0.0' });
+  try {
+    const k = (e && e.parameter && e.parameter.k) || '';
+    if (!credencialValida_(k)) return jsonOut_({ ok: false, error: 'liga', version: '2.1.0' });
+    const refresh = e && e.parameter && e.parameter.refresh === '1';
+    const data = refresh ? rebuildAndCache_() : getCachedOrRebuild_();
+    return jsonOut_({ ok: true, data: data, generated_at: new Date().toISOString() });
+  } catch (err) {
+    return jsonOut_({ ok: false, error: String(err) });
+  }
 }
 
 function doPost(e) {
-  return jsonOut_({ ok: false, error: 'MAINTENANCE', version: '2.0.0' });
+  try {
+    const payload = JSON.parse(e.postData.contents);
+    if (!credencialValida_(payload.k || '')) return jsonOut_({ ok: false, error: 'liga', version: '2.1.0' });
+    if (payload.action === 'save_diagnostico') {
+      return jsonOut_(saveDiagnostico_(payload.data));
+    }
+    return jsonOut_({ ok: false, error: 'unknown_action' });
+  } catch (err) {
+    return jsonOut_({ ok: false, error: String(err) });
+  }
+}
+
+// =============================================================================
+// AUTORIZACIÓN — valida la credencial contra el Portero (server-to-server)
+// =============================================================================
+function credencialValida_(k) {
+  k = String(k || '').trim();
+  if (k.length < 4) return false;
+
+  // Caché por hash de la credencial: no golpear al Portero en cada request.
+  const cache = CacheService.getScriptCache();
+  const ck = 'auth_' + Utilities.base64EncodeWebSafe(
+    Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, k)).slice(0, 24);
+  const hit = cache.get(ck);
+  if (hit) return hit === '1';
+
+  let ok = false;
+  try {
+    const r = UrlFetchApp.fetch(PORTERO_EXEC + '?recurso=canje&t=' + encodeURIComponent(k),
+      { muteHttpExceptions: true, followRedirects: true });
+    const j = JSON.parse(r.getContentText());
+    ok = !!(j && j.ok);
+  } catch (err) {
+    ok = false;  // Portero inaccesible → fail-closed
+  }
+  cache.put(ck, ok ? '1' : '0', ok ? AUTH_TTL_OK : AUTH_TTL_BAD);
+  return ok;
 }
 
 function jsonOut_(obj) {
