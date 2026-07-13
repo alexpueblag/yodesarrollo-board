@@ -34,9 +34,9 @@ Tablero de presentación 1-a-1 para reuniones con inversionistas de **Yodesarrol
 └──────────┬───────────┘
            │ fetch (3s timeout)
            ▼
-┌──────────────────────┐    fallback   ┌──────────────┐
-│ React + Babel inline │ ─────────────▶│ data.json    │
-│ (HTML, sin build)    │               │ (commiteado) │
+┌──────────────────────┐    caché      ┌──────────────┐
+│ React + Babel inline │ ─────────────▶│ localStorage │
+│ (HTML, sin build)    │               │ (dispositivo)│
 └──────────┬───────────┘               └──────────────┘
            │
            ▼
@@ -46,7 +46,7 @@ Tablero de presentación 1-a-1 para reuniones con inversionistas de **Yodesarrol
 └──────────────────────┘
 ```
 
-**Estrategia híbrida:** el board intenta cargar datos en vivo del Apps Script (con timeout de 3 seg). Si falla, cae al `data.json` commiteado. Esto garantiza que **el board nunca está roto**, incluso si Google está caído o sin internet — solo deja de ver los cambios recientes.
+**Acceso y datos:** toda la data sale del Apps Script y solo con una credencial válida del **Portero YOD** (liga mágica de 90 días, clave de equipo o Google), que el backend valida del lado del servidor. El repo no contiene datos ni secretos: el antiguo `data.json` público se retiró. Para arranque instantáneo el board pinta la caché local del dispositivo y revalida en segundo plano.
 
 ---
 
@@ -61,8 +61,6 @@ yodesarrollo-board/
 ├── data-loader.jsx         ← useData() hook + fetch híbrido + cache
 ├── icons.jsx               ← SVG icons (sin cambios desde upload original)
 ├── tweaks-panel.jsx        ← Panel de ajustes (sin cambios)
-│
-├── data.json               ← Snapshot offline (fallback automático)
 │
 ├── styles.css              ← Estilos del board (sin cambios)
 ├── lote-selector.css       ← Estilos del selector (sin cambios)

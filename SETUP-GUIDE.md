@@ -106,7 +106,6 @@ apps-script/
    Code.gs
    seed-sheet.gs
 assets/
-data.json
 data-loader.jsx
 icons.jsx            ← copia desde el upload original (no cambió)
 index.html
@@ -217,7 +216,7 @@ En GitHub, ve a tu repo `yodesarrollo-board`:
 
 Ábrela. Si todo está bien, **el board carga datos en vivo desde tu Sheet**.
 
-En la esquina inferior derecha NO debe aparecer el badge (señal de que está usando la fuente "live"). Si aparece "caché local" u "offline · data.json", clic ahí para forzar recarga.
+En la esquina inferior derecha NO debe aparecer el badge (señal de que está usando la fuente "live"). Si aparece "caché local", clic ahí para forzar recarga.
 
 ---
 
@@ -276,7 +275,7 @@ GitHub Pages re-despliega en ~30 segundos. Refresca el board y listo.
 | Problema | Causa probable | Solución |
 |---|---|---|
 | El board queda en "Cargando board…" eterno | URL del Apps Script mal pegada o el script no está desplegado | Verifica `YDR_CONFIG.appsScriptUrl`. Pruébala en una pestaña nueva — debe devolver JSON con `"ok": true` |
-| Aparece "offline · data.json" en el badge | El Apps Script no respondió en 3 seg o falló | Verifica el deployment. A veces Google tarda en propagar la URL los primeros minutos |
+| El Portero vuelve a pedir acceso al abrir | La liga/clave expiró o fue revocada (el backend respondió `error: "liga"`) | Pide una liga nueva con tu correo, o revisa la hoja ACCESOS en el Sheet YOD - POTENCIALES |
 | Cambios al Sheet no aparecen | Caché de 5 min | Menú **Yodesarrollo Board → Limpiar caché** en el Sheet. O clic en el badge inferior derecho del board |
 | Las imágenes no cargan | El link de Drive no está como "cualquiera con el enlace" | Cambia el permiso a público. El Apps Script no puede leer archivos privados |
 | Error CORS al guardar diagnóstico | Apps Script desplegado con acceso restringido | En Implementar → Administrar implementaciones → editar → "Quién tiene acceso" = Cualquier persona |
