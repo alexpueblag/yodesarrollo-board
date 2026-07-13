@@ -1,8 +1,9 @@
 /**
  * Yodesarrollo-Board · Backend
  *
- * doGet  → entrega TODO el JSON del board (cacheado 5 min)
- * doPost → recibe respuestas de Diagnóstico y las apendea a la hoja
+ * CONTENCIÓN 2026-07-12
+ * Los endpoints HTTP permanecen fail-closed hasta que exista identidad y ACL
+ * del lado del servidor. No desplegar como "cualquier persona".
  *
  * Despliegue:
  *   1. Run → seedAll() una vez (desde seed-sheet.gs)
@@ -19,25 +20,11 @@ const CACHE_TTL = 300;  // 5 min
 // HTTP ENDPOINTS
 // =============================================================================
 function doGet(e) {
-  try {
-    const refresh = e && e.parameter && e.parameter.refresh === '1';
-    const data = refresh ? rebuildAndCache_() : getCachedOrRebuild_();
-    return jsonOut_({ ok: true, data: data, generated_at: new Date().toISOString() });
-  } catch (err) {
-    return jsonOut_({ ok: false, error: String(err) });
-  }
+  return jsonOut_({ ok: false, error: 'MAINTENANCE', version: '2.0.0' });
 }
 
 function doPost(e) {
-  try {
-    const payload = JSON.parse(e.postData.contents);
-    if (payload.action === 'save_diagnostico') {
-      return jsonOut_(saveDiagnostico_(payload.data));
-    }
-    return jsonOut_({ ok: false, error: 'unknown_action' });
-  } catch (err) {
-    return jsonOut_({ ok: false, error: String(err) });
-  }
+  return jsonOut_({ ok: false, error: 'MAINTENANCE', version: '2.0.0' });
 }
 
 function jsonOut_(obj) {

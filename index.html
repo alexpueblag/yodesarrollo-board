@@ -1,106 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Board · Yodesarrollo Inversión Patrimonial</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="lote-selector.css" />
-  <link rel="stylesheet" href="styles-data.css" />
-
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-
-  <!-- Generación de PDF en 1 clic (Acuerdo de pago) -->
-  <script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script>
-
-  <!--
-    ⚠ CONFIG · pega aquí la URL /exec de tu Apps Script desplegado.
-    Si está vacío, el board funciona solo con data.json (offline mode).
-  -->
-  <script>
-    window.YDR_CONFIG = {
-      appsScriptUrl: "https://script.google.com/macros/s/AKfycbydELrGzjtZqRZfk3S_ccaapovgdW0j5geqoW2eT8O5AR87ZN4DL5tEwwIXOEyQKYEF-w/exec"
-    };
-  </script>
-
-  <style id="ydr-gate-style">
-    #ydr-gate { position: fixed; inset: 0; z-index: 99999; background: #0E1013; color: #F5F1EA;
-      display: flex; align-items: center; justify-content: center; font-family: 'Manrope', sans-serif; }
-    #ydr-gate.hidden { display: none; }
-    .ydr-gate-card { width: min(92vw, 380px); text-align: center; padding: 0 24px; }
-    .ydr-gate-brand { font-family: 'Instrument Serif', serif; font-size: 40px; line-height: 1.05; margin: 0 0 8px; font-weight: 400; }
-    .ydr-gate-brand em { font-style: italic; color: #D4BE8A; }
-    .ydr-gate-sub { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: #8a857b; margin: 0 0 34px; }
-    .ydr-gate-input { width: 100%; box-sizing: border-box; background: #15171a; border: 1px solid #2a2d31;
-      color: #F5F1EA; font-size: 16px; padding: 14px 16px; border-radius: 10px; text-align: center;
-      letter-spacing: 1px; outline: none; font-family: 'Manrope', sans-serif; }
-    .ydr-gate-input:focus { border-color: #D4BE8A; }
-    .ydr-gate-btn { width: 100%; margin-top: 12px; background: #D4BE8A; color: #15171a; border: 0;
-      font-size: 13px; font-weight: 600; letter-spacing: 1.5px; padding: 14px; border-radius: 10px;
-      cursor: pointer; font-family: 'Manrope', sans-serif; text-transform: uppercase; }
-    .ydr-gate-btn:hover { background: #e0cda0; }
-    .ydr-gate-err { color: #d98a8a; font-size: 13px; margin-top: 16px; min-height: 18px; opacity: 0; transition: opacity .2s; }
-    .ydr-gate-err.show { opacity: 1; }
-    @keyframes ydrShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
-    .ydr-shake { animation: ydrShake .3s; }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Inversionistas · mantenimiento seguro</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0a0a0c;--card:#16161a;--text:#f4f1ea;--muted:#b6b3aa;--gold:#c9a96e;--line:rgba(255,255,255,.12)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif;padding:24px}
+    main{width:min(580px,100%);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:clamp(24px,6vw,40px);box-shadow:0 24px 70px rgba(0,0,0,.35)}
+    .eyebrow{color:var(--gold);font-size:12px;letter-spacing:.13em;text-transform:uppercase}h1{font:400 clamp(34px,8vw,48px)/1.02 Georgia,serif;margin:12px 0 18px}
+    p{color:var(--muted);line-height:1.65;margin:0 0 14px}a{display:inline-flex;margin-top:12px;color:#e0c590;text-underline-offset:4px;min-height:44px;align-items:center}
   </style>
 </head>
 <body>
-  <div id="ydr-gate">
-    <div class="ydr-gate-card">
-      <h1 class="ydr-gate-brand">Yo<em>desarrollo</em></h1>
-      <p class="ydr-gate-sub">Acceso privado</p>
-      <input id="ydr-gate-input" class="ydr-gate-input" type="password" placeholder="Palabra clave" autocomplete="off" autocapitalize="off" />
-      <button id="ydr-gate-btn" class="ydr-gate-btn">Entrar</button>
-      <div id="ydr-gate-err" class="ydr-gate-err">Palabra clave incorrecta</div>
-    </div>
-  </div>
-  <script>
-    (function () {
-      var KEY = atob("TWFzdGVyMjAyNg==");
-      var SS = "ydr_gate_ok";
-      var gate = document.getElementById("ydr-gate");
-      if (sessionStorage.getItem(SS) === "1") { gate.classList.add("hidden"); return; }
-      var input = document.getElementById("ydr-gate-input");
-      var btn = document.getElementById("ydr-gate-btn");
-      var err = document.getElementById("ydr-gate-err");
-      var card = gate.querySelector(".ydr-gate-card");
-      function tryEnter() {
-        if (input.value === KEY) {
-          try { sessionStorage.setItem(SS, "1"); } catch (e) {}
-          gate.classList.add("hidden");
-        } else {
-          err.classList.add("show");
-          card.classList.add("ydr-shake");
-          setTimeout(function () { card.classList.remove("ydr-shake"); }, 300);
-          input.select();
-        }
-      }
-      btn.addEventListener("click", tryEnter);
-      input.addEventListener("keydown", function (e) { if (e.key === "Enter") tryEnter(); });
-      setTimeout(function () { input.focus(); }, 100);
-    })();
-  </script>
-
-  <div id="root"></div>
-
-  <!-- Iconos + UI helpers (sin dependencias de data) -->
-  <script type="text/babel" src="icons.jsx"></script>
-  <script type="text/babel" src="tweaks-panel.jsx"></script>
-
-  <!-- Data layer: useData, DataProvider, loading/error views -->
-  <script type="text/babel" src="data-loader.jsx"></script>
-
-  <!-- Componentes que dependen de useData -->
-  <script type="text/babel" src="lote-selector.jsx"></script>
-  <script type="text/babel" src="sections.jsx"></script>
-  <script type="text/babel" src="app.jsx"></script>
+  <main>
+    <div class="eyebrow">YoDesarrollo · protección de información</div>
+    <h1>Presentación para inversionistas</h1>
+    <p>Este módulo está temporalmente fuera de servicio mientras sustituimos el acceso por contraseña por identidad y autorización del lado del servidor.</p>
+    <p>La información no se perdió. Volverá a estar disponible únicamente para usuarios autorizados cuando termine la revisión de seguridad.</p>
+    <a href="https://alexpueblag.github.io/yod-portal/">← Volver al Portal YOD</a>
+  </main>
 </body>
 </html>
