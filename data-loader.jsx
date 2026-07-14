@@ -63,7 +63,7 @@ const cacheClear = () => {
 const fetchWithTimeout = (url, ms) => {
   const ctrl = new AbortController();
   const tid = setTimeout(() => ctrl.abort(), ms);
-  return fetch(url, { signal: ctrl.signal })
+  return fetch(url, { signal: ctrl.signal, credentials: "omit" })
     .then((r) => { clearTimeout(tid); return r; })
     .catch((e) => { clearTimeout(tid); throw e; });
 };
@@ -137,6 +137,7 @@ const DataProvider = ({ children }) => {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ action, data: payload, k: credencial() }),
+      credentials: "omit",
     });
     const json = await res.json();
     if (!json.ok) {
