@@ -5,22 +5,22 @@
 
 :root {
   --tint-rgb: 255,255,255;
-  --text-rgb: 245,241,234;
-  --bg: #0a0a0c;
-  --bg-2: #121215;
+  --text-rgb: 241,237,227;
+  --bg: #17140F;
+  --bg-2: #221E17;
   --surface: rgba(var(--tint-rgb),0.035);
   --surface-2: rgba(var(--tint-rgb),0.06);
   --line: rgba(var(--tint-rgb),0.09);
   --line-2: rgba(var(--tint-rgb),0.16);
-  --text: #f4f1ea;
-  --muted: #8a8780;
-  --muted-2: #b6b3aa;
-  --gold: #c9a96e;
-  --gold-hi: #e0c590;
+  --text: #F1EDE3;
+  --muted: #8A8272;
+  --muted-2: #B5AC99;
+  --gold: #B98B3C;
+  --gold-hi: #D8AE5E;
   --maxw: 1480px;
 
   --f-display: "Instrument Serif", "Cormorant Garamond", Georgia, serif;
-  --f-sans: "Manrope", "Outfit", -apple-system, sans-serif;
+  --f-sans: "Instrument Sans", "Manrope", -apple-system, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -1357,6 +1357,6 @@ body[data-theme="claro"] .calc-result { box-shadow: 0 2px 14px rgba(0,0,0,0.06);
   --text: #f5f1ea;
   --muted: rgba(245,241,234,0.72);
   --muted-2: rgba(245,241,234,0.58);
-  --gold: #c9a96e;
-  --gold-hi: #d4be8a;
+  --gold: #C9A24E;
+  --gold-hi: #D8AE5E;
 }
