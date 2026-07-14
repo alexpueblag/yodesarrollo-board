@@ -151,18 +151,32 @@ const DataProvider = ({ children }) => {
 
   const save = React.useCallback(async (action, payload) => {
     const url = (window.YDR_CONFIG && window.YDR_CONFIG.appsScriptUrl) || "";
-    if (!url) throw new Error("no_apps_script_url");
+    if (!url) throw new Error("Backend en reconexión: falta la URL /exec del Apps Script.");
     // text/plain evita preflight CORS de Apps Script
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action, data: payload, k: credencial() }),
-      credentials: "omit",
-    });
-    const json = await res.json();
+    let res;
+    try {
+      res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action, data: payload, k: credencial() }),
+        credentials: "omit",
+      });
+    } catch (netErr) {
+      throw new Error("Sin conexión con el servidor. Revisa tu internet e intenta de nuevo.");
+    }
+    // Detecta respuestas que NO son JSON (sesión caducada, página de error de
+    // Apps Script) para no lanzar un error críptico y sin sentido.
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); }
+    catch (_) {
+      throw new Error(/sign in|accounts\.google/i.test(text)
+        ? "Tu sesión de Google caducó — recarga la página y vuelve a entrar."
+        : (res.status >= 400 ? ("El servidor respondió con error " + res.status + ".") : "Respuesta inesperada del servidor."));
+    }
     if (!json.ok) {
       if (json.error === "liga") credencialRechazada();
-      throw new Error(json.error || "save_failed");
+      throw new Error(json.error === "admin" ? "Necesitas permiso de administrador para esta acción." : (json.error || "No se pudo guardar."));
     }
     return json;
   }, []);
