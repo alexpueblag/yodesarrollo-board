@@ -143,13 +143,13 @@ const LoteSelector = (props) => {
 
       <div className="filters-compact">
         {[
-          { id: "all", t: "Todos" },
-          { id: "habitacional", t: "Habitacional" },
-          { id: "comercial", t: "Comercial" },
-          { id: "available", t: "Disponibles" },
-          { id: "reserved", t: "Reservados" },
+          { id: "all", t: "Todos", ic: "ti-layout-grid" },
+          { id: "habitacional", t: "Habitacional", ic: "ti-home" },
+          { id: "comercial", t: "Comercial", ic: "ti-building-store" },
+          { id: "available", t: "Disponibles", ic: "ti-check" },
+          { id: "reserved", t: "Reservados", ic: "ti-clock" },
         ].map((o) => (
-          <button key={o.id} className={"chip" + (filter === o.id ? " on" : "")} onClick={() => setFilter(o.id)}>{o.t}</button>
+          <button key={o.id} className={"chip" + (filter === o.id ? " on" : "")} onClick={() => setFilter(o.id)}><i className={"ti " + o.ic}></i>{o.t}</button>
         ))}
       </div>
 

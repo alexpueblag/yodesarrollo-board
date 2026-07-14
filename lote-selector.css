@@ -193,7 +193,7 @@
   gap: 8px;
 }
 .lotes .chip:hover { border-color: var(--line-2); color: var(--text); }
-.lotes .chip.on { background: var(--gold); color: #1a1409; border-color: var(--gold); font-weight: 600; }
+.lotes .chip.on { background: rgba(154,123,63,.2); color: var(--text); border-color: var(--gold); font-weight: 600; }
 
 /* ═══════════════════════════════════════════════════════════
    MAP + DETAIL grid

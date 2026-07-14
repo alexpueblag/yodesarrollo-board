@@ -201,8 +201,8 @@ const SecComparativo = (props) => {
 
         {proyectos.length > 0 && (
           <div className="comp-switch">
-            <button className={!sideBySide ? "on" : ""} onClick={() => setSideBySide(false)}>Tabla comparativa</button>
-            <button className={sideBySide ? "on" : ""} onClick={() => setSideBySide(true)}>Comparar lado a lado</button>
+            <button className={!sideBySide ? "on" : ""} onClick={() => setSideBySide(false)}><i className="ti ti-layout-grid"></i>Tabla comparativa</button>
+            <button className={sideBySide ? "on" : ""} onClick={() => setSideBySide(true)}><i className="ti ti-columns"></i>Comparar lado a lado</button>
           </div>
         )}
 
