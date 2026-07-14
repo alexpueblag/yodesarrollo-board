@@ -4,19 +4,19 @@
    ========================================================= */
 
 :root {
-  --tint-rgb: 255,255,255;
-  --text-rgb: 241,237,227;
-  --bg: #17140F;
-  --bg-2: #221E17;
+  --tint-rgb: 35,29,20;
+  --text-rgb: 35,29,20;
+  --bg: #f6f3ed;
+  --bg-2: #ffffff;
   --surface: rgba(var(--tint-rgb),0.035);
   --surface-2: rgba(var(--tint-rgb),0.06);
-  --line: rgba(var(--tint-rgb),0.09);
+  --line: rgba(var(--tint-rgb),0.10);
   --line-2: rgba(var(--tint-rgb),0.16);
-  --text: #F1EDE3;
-  --muted: #8A8272;
-  --muted-2: #B5AC99;
-  --gold: #B98B3C;
-  --gold-hi: #D8AE5E;
+  --text: #231d14;
+  --muted: #766f62;
+  --muted-2: #8a8272;
+  --gold: #9a7b3f;
+  --gold-hi: #b98b3c;
   --maxw: 1480px;
 
   --f-display: "Instrument Serif", "Cormorant Garamond", Georgia, serif;
@@ -324,7 +324,7 @@ body::before {
   border-radius: 14px;
   background:
     linear-gradient(180deg, rgba(var(--tint-rgb),0.025) 0%, rgba(var(--tint-rgb),0.005) 100%),
-    linear-gradient(180deg, #1a1612 0%, #110e0b 100%);
+    linear-gradient(180deg, #ffffff 0%, #f6f3ed 100%);
   border: 1px solid var(--line);
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -408,7 +408,7 @@ body::before {
   height: auto;
   aspect-ratio: auto;
   border-radius: 14px;
-  background: linear-gradient(180deg, #18140f 0%, #0f0c08 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f6f3ed 100%);
   border: 1px solid var(--line);
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -1375,3 +1375,10 @@ body[data-theme="claro"] .calc-result { box-shadow: 0 2px 14px rgba(0,0,0,0.06);
   outline: 2px solid #9A7B2A;
   outline-offset: 2px;
 }
+
+/* =========================================================
+   CARA YOD OS · ajustes de metamorfosis (logos oscuros en claro)
+   ========================================================= */
+.brand-logo { filter: brightness(0) opacity(0.9); }
+.dl-logo { filter: brightness(0) opacity(0.85); }
+.data-loading { color: var(--text); }

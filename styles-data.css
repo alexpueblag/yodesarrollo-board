@@ -12,7 +12,7 @@
   inset: 0;
   display: grid;
   place-items: center;
-  background: #15171a;
+  background: #ffffff;
   color: rgb(var(--text-rgb));
   z-index: 9999;
 }
@@ -122,7 +122,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   display: grid;
   grid-template-rows: auto 1fr auto;
   padding: clamp(24px, 4vw, 48px) clamp(20px, 4vw, 56px);
-  background: radial-gradient(ellipse at top left, #1c1f24 0%, #15171a 50%, #0e1013 100%);
+  background: radial-gradient(ellipse at top left, #ffffff 0%, #ffffff 50%, #f6f3ed 100%);
   color: rgb(var(--text-rgb));
   position: relative;
   overflow-x: hidden;
@@ -291,7 +291,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   border: 1px solid rgba(var(--text-rgb),0.08);
   border-radius: 16px;
   background:
-    linear-gradient(135deg, var(--c, #2a2a2a) 0%, color-mix(in srgb, var(--c, #2a2a2a) 60%, #15171a) 100%);
+    linear-gradient(135deg, var(--c, #2a2a2a) 0%, color-mix(in srgb, var(--c, #2a2a2a) 60%, #ffffff) 100%);
   cursor: pointer;
   overflow: hidden;
   text-align: left;
@@ -402,7 +402,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   border: 1px solid rgba(var(--text-rgb),0.08);
   border-radius: 14px;
   background:
-    linear-gradient(140deg, var(--c, #2a2a2a) 0%, color-mix(in srgb, var(--c, #2a2a2a) 50%, #15171a) 100%);
+    linear-gradient(140deg, var(--c, #2a2a2a) 0%, color-mix(in srgb, var(--c, #2a2a2a) 50%, #ffffff) 100%);
   cursor: pointer;
   text-align: left;
   padding: 20px 22px;
@@ -670,7 +670,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   border: 1px solid rgba(212, 190, 138, 0.18);
   background:
     linear-gradient(180deg, rgba(var(--tint-rgb),0.015), transparent),
-    color-mix(in srgb, var(--c, #2a2a2a) 30%, #15171a);
+    color-mix(in srgb, var(--c, #2a2a2a) 30%, #ffffff);
   color: var(--text, #F5F1EA);
   cursor: pointer;
   overflow: hidden;
