@@ -76,6 +76,38 @@ table { border-collapse: collapse; width: 100%; }
 .display-xl { font-family: var(--f-display); font-weight: 400; font-size: clamp(54px, 7vw, 104px); line-height: 0.95; letter-spacing: -0.02em; margin: 0; }
 .lead { font-size: clamp(16px, 1.15vw, 19px); line-height: 1.45; color: var(--muted-2); max-width: 62ch; margin: 14px 0 0; text-wrap: pretty; }
 
+/* Navegación secuencial de la carpeta de inversión */
+.journey-nav {
+  width: min(var(--maxw), calc(100% - 64px));
+  margin: 28px auto 0;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 18px;
+  background: rgba(23, 20, 15, .88);
+  backdrop-filter: blur(14px);
+}
+.journey-btn { min-height: 52px; display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 12px; text-align: left; }
+.journey-btn--next { justify-content: flex-end; text-align: right; }
+.journey-btn--previous svg { transform: rotate(180deg); }
+.journey-btn:hover:not(:disabled), .journey-index:hover { background: var(--surface-2); }
+.journey-btn:disabled { opacity: .3; cursor: default; }
+.journey-btn span { min-width: 0; display: flex; flex-direction: column; }
+.journey-btn small, .journey-index small { color: var(--muted); font: 10px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; }
+.journey-btn strong { overflow: hidden; color: var(--text); font-size: 13px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.journey-index { min-width: 78px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 10px; border-inline: 1px solid var(--line); }
+.journey-index span { color: var(--gold-hi); font: 12px var(--f-mono); }
+@media (max-width: 680px) {
+  .journey-nav { width: calc(100% - 28px); margin-top: 18px; padding: 8px; gap: 5px; }
+  .journey-btn { min-width: 0; padding: 8px 6px; gap: 6px; }
+  .journey-btn strong { max-width: 92px; }
+  .journey-btn small { display: none; }
+  .journey-index { min-width: 58px; padding-inline: 6px; }
+}
+
 /* =========================================================
    DASHBOARD · Editorial premium
    ========================================================= */

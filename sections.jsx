@@ -5,7 +5,7 @@ const fmt   = (n) => "$" + Number(n || 0).toLocaleString("en-US");
 const fmtMx = (n) => "$" + Number(n || 0).toLocaleString("en-US") + " MXN";
 
 // --------------------------- Section shell ---------------------------
-const Shell = ({ tile, onHome, navigate, related, kicker, children }) => {
+const Shell = ({ tile, onHome, navigate, related, kicker, journey, children }) => {
   const { data } = window.useData();
   const brandUrl = ((data && data.config) || {}).brand_url || "https://yodesarrollo.mx";
   return (
@@ -32,6 +32,32 @@ const Shell = ({ tile, onHome, navigate, related, kicker, children }) => {
         </div>
       </header>
       <main className="sec-body">{children}</main>
+      {journey && (
+        <nav className="journey-nav" aria-label="Navegación entre hojas">
+          <button
+            className="journey-btn journey-btn--previous"
+            type="button"
+            onClick={() => journey.previous && navigate(journey.previous.id)}
+            disabled={!journey.previous}
+          >
+            <IconArrow size={15} sw={2} />
+            <span><small>Hoja anterior</small><strong>{journey.previous ? journey.previous.label : "Inicio"}</strong></span>
+          </button>
+          <button className="journey-index" type="button" onClick={onHome} title="Ver todas las hojas">
+            <span>{journey.index} / {journey.total}</span>
+            <small>Ver índice</small>
+          </button>
+          <button
+            className="journey-btn journey-btn--next"
+            type="button"
+            onClick={() => journey.next && navigate(journey.next.id)}
+            disabled={!journey.next}
+          >
+            <span><small>Hoja siguiente</small><strong>{journey.next ? journey.next.label : "Fin"}</strong></span>
+            <IconArrow size={15} sw={2} />
+          </button>
+        </nav>
+      )}
       {related && related.length > 0 && (
         <footer className="related">
           <span className="related-label">Saltar a</span>

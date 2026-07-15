@@ -432,9 +432,26 @@ const SectionView = ({ id, onHome, onNavigate }) => {
   const tile = tilesById[id];
   if (!tile) return null;
   const C = tile.Section;
+  const journeyIds = (data.tiles || [])
+    .filter((row) => row && row.enabled !== false && tilesById[row.id])
+    .slice()
+    .sort((a, b) => Number(a.order || 0) - Number(b.order || 0))
+    .map((row) => row.id);
+  (data.proyectos || []).forEach((project) => {
+    if (project && project.id && project.activo !== false && tilesById[project.id] && !journeyIds.includes(project.id)) {
+      journeyIds.push(project.id);
+    }
+  });
+  const currentIndex = journeyIds.indexOf(id);
+  const journey = currentIndex < 0 ? null : {
+    index: currentIndex + 1,
+    total: journeyIds.length,
+    previous: currentIndex > 0 ? tilesById[journeyIds[currentIndex - 1]] : null,
+    next: currentIndex < journeyIds.length - 1 ? tilesById[journeyIds[currentIndex + 1]] : null,
+  };
   return (
     <div className="section-wrap" key={id}>
-      <C tile={tile} onHome={onHome} navigate={onNavigate} />
+      <C tile={tile} onHome={onHome} navigate={onNavigate} journey={journey} />
     </div>
   );
 };
