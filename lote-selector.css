@@ -251,6 +251,13 @@
   z-index: 5;
   box-shadow: 0 4px 12px rgba(0,0,0,0.55), 0 0 0 3px rgba(var(--tint-rgb),0.18);
 }
+/* Táctil (enjambre UX): en dispositivos de dedo, área de toque ≥44px sin agrandar
+   el disco visible, y foco de teclado visible en cada pin. */
+@media (pointer: coarse) {
+  .lote-dot::before { content: ""; position: absolute; left: 50%; top: 50%;
+    width: 44px; height: 44px; transform: translate(-50%, -50%); border-radius: 50%; }
+}
+.lote-dot:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 .lote-dot.sel {
   z-index: 10;
   transform: translate(-50%, -50%) scale(1.55);

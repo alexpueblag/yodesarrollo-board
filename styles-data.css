@@ -386,6 +386,10 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   transition: opacity 0.25s ease;
 }
 .tile-large:hover .tile-large-cta { opacity: 1; }
+/* Táctil (enjambre UX): sin hover, los CTA 'Explorar' quedaban invisibles y los
+   tiles parecían imágenes decorativas. En dispositivos de dedo se muestran fijos. */
+@media (hover: none) { .tile-large-cta { opacity: 0.85; } }
+.tile-large:focus-visible { outline: 2px solid var(--a, #d4be8a); outline-offset: 3px; }
 
 /* ════════════════════════════════════════════════════════════════════════════
  * FILA 2 — TILES MEDIANOS (herramientas)

@@ -68,6 +68,14 @@ const LoteSelector = (props) => {
   const mapRef = React.useRef(null);
   const dragRef = React.useRef(null);
   const exportTextRef = React.useRef(null);
+  const detailRef = React.useRef(null);
+  // En móvil (una columna) el detalle del lote queda debajo del plano, fuera de
+  // vista: al seleccionar, lo traemos a la vista para que se sienta que "pasó algo".
+  React.useEffect(() => {
+    if (selected && detailRef.current && window.matchMedia && window.matchMedia("(max-width:900px)").matches) {
+      detailRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [selected]);
 
   const filtered = LOTES.filter((l) => {
     if (filter === "all") return true;
@@ -217,7 +225,7 @@ const LoteSelector = (props) => {
           </div>
         </div>
 
-        <aside className="lote-detail">
+        <aside className="lote-detail" ref={detailRef}>
           {sel ? (
             <LoteDetail
               lote={sel} fundII={fundII} ventaEtapa={ventaEtapa} ETAPAS={ETAPAS}
