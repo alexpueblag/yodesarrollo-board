@@ -483,11 +483,15 @@ body::before {
   .tile-caption { font-size: 12px; }
 }
 @media (max-width: 600px) {
-  .board { padding: 14px 14px 18px; height: auto; min-height: 100vh; overflow: visible; }
-  .tile-grid { grid-template-columns: repeat(5, minmax(0, 72px)); gap: 12px 10px; flex: none; }
-  .tile { max-width: 72px; }
-  .tile-caption { font-size: 11px; }
-  .foot-cta { padding: 8px 12px; font-size: 12px; }
+  .board { padding: 16px 14px 26px; height: auto; min-height: 0; overflow: visible; }
+  /* móvil: en vez de 5 columnas apretadas (72px), 3 tiles cómodos y tocables */
+  .tile-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: none; gap: 14px 12px; flex: none; align-content: start; }
+  .tile { max-width: none; }
+  .tile-caption { font-size: 11.5px; }
+  .foot-cta { padding: 10px 14px; font-size: 13px; }
+}
+@media (max-width: 400px) {
+  .tile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* =========================================================
