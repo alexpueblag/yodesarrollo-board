@@ -47,11 +47,16 @@ function credencialValida_(k) {
   let ok = false;
   try {
     const response = UrlFetchApp.fetch(
-      PORTERO_EXEC + '?recurso=canje&board=IV&t=' + encodeURIComponent(k),
+      PORTERO_EXEC + '?recurso=canje&t=' + encodeURIComponent(k),
       { muteHttpExceptions: true, followRedirects: true }
     );
     const body = JSON.parse(response.getContentText());
-    ok = !!(body && body.ok);
+    // Este gate protege TODO el board: basta con que la sesion del Portero sea valida.
+    // No pedimos scoping por codigo de board (antes 'IV', que no existe en el vocabulario
+    // del Portero y hacia rebotar a todo correo con boards!='*'). Si algun dia se reintroduce
+    // scoping, un error:'board' significa "sesion valida pero sin ese board" -> NO invalida la
+    // credencial (evita el bucle de borrar token + recargar).
+    ok = !!(body && (body.ok || body.error === 'board'));
   } catch (err) {
     ok = false;
   }
