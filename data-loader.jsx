@@ -73,10 +73,26 @@ const credencial = () => {
   try { return localStorage.getItem(PORTERO_LSK) || ""; } catch (e) { return ""; }
 };
 
-// Credencial rechazada por el servidor: limpiar todo y dejar que el Portero pida acceso de nuevo.
+// Credencial rechazada por el servidor: limpiar y dejar que el Portero pida acceso de nuevo.
+// A PRUEBA DE BUCLES: si el servidor rechaza el token una y otra vez (p. ej. el correo no tiene
+// acceso a ESTE tablero), recargar sin límite genera el "rebota y se queda autocargando". Por eso
+// recargamos como máximo RECARGAS_MAX veces por sesión; superado el tope, paramos y mostramos un
+// mensaje en vez de seguir el bucle. El contador se reinicia al primer fetch exitoso (ver load()).
+const RECARGAS_KEY = "ydr_rechazos";
+const RECARGAS_MAX = 2;
+let SIN_ACCESO_TABLERO = false;
 const credencialRechazada = () => {
   cacheClear();
+  let n = 0;
+  try { n = parseInt(sessionStorage.getItem(RECARGAS_KEY) || "0", 10) || 0; } catch (e) {}
   try { localStorage.removeItem(PORTERO_LSK); sessionStorage.removeItem("pyod_rol"); } catch (e) {}
+  if (n >= RECARGAS_MAX) {
+    // Ya reintentamos y el token nuevo también fue rechazado → cortar el bucle.
+    SIN_ACCESO_TABLERO = true;
+    console.warn("[data-loader] credencial rechazada " + n + " veces; se corta el bucle de recarga.");
+    return;
+  }
+  try { sessionStorage.setItem(RECARGAS_KEY, String(n + 1)); } catch (e) {}
   location.reload();
 };
 
@@ -122,6 +138,7 @@ const DataProvider = ({ children }) => {
       setData(live);
       setStatus("ready");
       setSource("live");
+      try { sessionStorage.removeItem(RECARGAS_KEY); } catch (e) {}  // token válido → reinicia el anti-bucle
     } catch (e) {
       console.warn("[data-loader] revalidación en segundo plano falló:", e.message);
       if (!shown) setStatus("error");  // solo es error si nunca logramos mostrar nada
@@ -173,8 +190,19 @@ const DataLoadingView = () => (
 const DataErrorView = ({ onRetry }) => (
   <div className="data-loading">
     <div className="dl-inner">
-      <span className="dl-text mono">No se pudo cargar la data.</span>
-      <button className="foot-cta" onClick={onRetry}>Reintentar</button>
+      {SIN_ACCESO_TABLERO ? (
+        <React.Fragment>
+          <span className="dl-text mono">Tu acceso no incluye este tablero.</span>
+          <span className="dl-text mono" style={{ opacity: .7, fontSize: "12px" }}>
+            Pide acceso al administrador o entra con el correo autorizado.
+          </span>
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <span className="dl-text mono">No se pudo cargar la data.</span>
+          <button className="foot-cta" onClick={onRetry}>Reintentar</button>
+        </React.Fragment>
+      )}
     </div>
   </div>
 );
