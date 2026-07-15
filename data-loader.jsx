@@ -80,12 +80,13 @@ const credencialRechazada = () => {
   location.reload();
 };
 
-const fetchLive = async () => {
+const fetchLive = async (forceRefresh = false) => {
   const url = (window.YDR_CONFIG && window.YDR_CONFIG.appsScriptUrl) || "";
   if (!url) throw new Error("no_apps_script_url");
   const k = credencial();
   if (!k) throw new Error("sin_credencial");
-  const res = await fetchWithTimeout(url + (url.indexOf("?") === -1 ? "?" : "&") + "k=" + encodeURIComponent(k), FETCH_TIMEOUT);
+  const query = "k=" + encodeURIComponent(k) + (forceRefresh ? "&refresh=1" : "");
+  const res = await fetchWithTimeout(url + (url.indexOf("?") === -1 ? "?" : "&") + query, FETCH_TIMEOUT);
   if (!res.ok) throw new Error("http_" + res.status);
   const json = await res.json();
   if (!json.ok) {
@@ -103,7 +104,7 @@ const DataProvider = ({ children }) => {
   const [status, setStatus] = React.useState("loading");   // loading | ready | error
   const [source, setSource] = React.useState(null);        // cache | live
 
-  const load = React.useCallback(async () => {
+  const load = React.useCallback(async (forceRefresh = false) => {
     // 1. PINTA YA — muestra al instante lo último disponible para que el cliente nunca espere.
     let shown = false;
     const cached = cacheReadAny();
@@ -116,7 +117,7 @@ const DataProvider = ({ children }) => {
 
     // 2. REVALIDA EN SEGUNDO PLANO — trae lo más fresco sin bloquear lo ya pintado.
     try {
-      const live = await fetchLive();
+      const live = await fetchLive(forceRefresh);
       cacheWrite(live);
       setData(live);
       setStatus("ready");
@@ -127,7 +128,7 @@ const DataProvider = ({ children }) => {
     }
   }, []);
 
-  const refresh = React.useCallback(() => load(), [load]);
+  const refresh = React.useCallback(() => load(true), [load]);
 
   const save = React.useCallback(async (action, payload) => {
     const url = (window.YDR_CONFIG && window.YDR_CONFIG.appsScriptUrl) || "";
