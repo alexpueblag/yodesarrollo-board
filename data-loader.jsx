@@ -73,27 +73,26 @@ const credencial = () => {
   try { return localStorage.getItem(PORTERO_LSK) || ""; } catch (e) { return ""; }
 };
 
-// Credencial rechazada por el servidor: limpiar y dejar que el Portero pida acceso de nuevo.
-// A PRUEBA DE BUCLES: si el servidor rechaza el token una y otra vez (p. ej. el correo no tiene
-// acceso a ESTE tablero), recargar sin límite genera el "rebota y se queda autocargando". Por eso
-// recargamos como máximo RECARGAS_MAX veces por sesión; superado el tope, paramos y mostramos un
-// mensaje en vez de seguir el bucle. El contador se reinicia al primer fetch exitoso (ver load()).
-const RECARGAS_KEY = "ydr_rechazos";
-const RECARGAS_MAX = 2;
+// Credencial rechazada por el backend de ESTE tablero.
+//
+// REGLA DE ORO: NUNCA borramos la credencial compartida del Portero (pyod_clave_v1).
+// Ese token es la sesión de TODO el YOD OS; otros tableros y el hub lo aceptan. Que el
+// backend de un tablero la rechace (porque su Apps Script está por re-desplegarse, o
+// porque este correo no tiene permiso para ESTE board) NO significa que la sesión global
+// sea inválida. Borrarla aquí sacaba al usuario de TODO el OS con solo abrir este board
+// (y, al recargar, el Portero volvía a pedir acceso → "rebota y se autocarga").
+//
+// En vez de eso mostramos un aviso NO destructivo (como hace Tesorería) y dejamos la
+// sesión intacta. Si el token de verdad expiró, el usuario cierra sesión a mano con el
+// botón de la vista de error.
 let SIN_ACCESO_TABLERO = false;
+const cerrarSesionManual = () => {
+  try { localStorage.removeItem(PORTERO_LSK); sessionStorage.removeItem("pyod_rol"); } catch (e) {}
+  location.reload();
+};
 const credencialRechazada = () => {
   cacheClear();
-  let n = 0;
-  try { n = parseInt(sessionStorage.getItem(RECARGAS_KEY) || "0", 10) || 0; } catch (e) {}
-  try { localStorage.removeItem(PORTERO_LSK); sessionStorage.removeItem("pyod_rol"); } catch (e) {}
-  if (n >= RECARGAS_MAX) {
-    // Ya reintentamos y el token nuevo también fue rechazado → cortar el bucle.
-    SIN_ACCESO_TABLERO = true;
-    console.warn("[data-loader] credencial rechazada " + n + " veces; se corta el bucle de recarga.");
-    return;
-  }
-  try { sessionStorage.setItem(RECARGAS_KEY, String(n + 1)); } catch (e) {}
-  location.reload();
+  SIN_ACCESO_TABLERO = true;
 };
 
 const fetchLive = async (forceRefresh = false) => {
@@ -138,7 +137,7 @@ const DataProvider = ({ children }) => {
       setData(live);
       setStatus("ready");
       setSource("live");
-      try { sessionStorage.removeItem(RECARGAS_KEY); } catch (e) {}  // token válido → reinicia el anti-bucle
+      SIN_ACCESO_TABLERO = false;  // token válido → limpia cualquier aviso previo
     } catch (e) {
       console.warn("[data-loader] revalidación en segundo plano falló:", e.message);
       if (!shown) setStatus("error");  // solo es error si nunca logramos mostrar nada
@@ -192,10 +191,16 @@ const DataErrorView = ({ onRetry }) => (
     <div className="dl-inner">
       {SIN_ACCESO_TABLERO ? (
         <React.Fragment>
-          <span className="dl-text mono">Tu acceso no incluye este tablero.</span>
-          <span className="dl-text mono" style={{ opacity: .7, fontSize: "12px" }}>
-            Pide acceso al administrador o entra con el correo autorizado.
+          <span className="dl-text mono">No pudimos validar tu acceso a este tablero.</span>
+          <span className="dl-text mono" style={{ opacity: .7, fontSize: "12px", maxWidth: "360px", textAlign: "center", lineHeight: 1.5 }}>
+            Tu sesión sigue activa en los demás tableros del YOD OS. Si el problema
+            persiste, el backend de este tablero puede necesitar re-despliegue.
           </span>
+          <div style={{ display: "flex", gap: "10px", marginTop: "6px", flexWrap: "wrap", justifyContent: "center" }}>
+            <a className="foot-cta" href="https://alexpueblag.github.io/yod-portal/os/">Volver a YOD OS</a>
+            <button className="foot-cta" onClick={onRetry}>Reintentar</button>
+            <button className="foot-cta" style={{ opacity: .7 }} onClick={cerrarSesionManual}>Cerrar sesión</button>
+          </div>
         </React.Fragment>
       ) : (
         <React.Fragment>
