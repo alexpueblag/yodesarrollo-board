@@ -4,6 +4,19 @@
 const fmt   = (n) => "$" + Number(n || 0).toLocaleString("en-US");
 const fmtMx = (n) => "$" + Number(n || 0).toLocaleString("en-US") + " MXN";
 
+// Liga de ARCHIVO (no de imagen). El backend convierte todo *_url al formato
+// lh3.googleusercontent.com (miniatura); para botones de material eso abre solo
+// la "portada". Aquí se reconstruye la liga real de Drive a partir del ID, y se
+// antepone https:// cuando la celda trae la liga sin protocolo (ej. wa.me/...).
+const linkArchivo = (u) => {
+  const s = String(u || "").trim();
+  if (!s) return s;
+  const m = s.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return "https://drive.google.com/file/d/" + m[1] + "/view";
+  if (!/^[a-z][a-z0-9+.-]*:|^\/\//i.test(s)) return "https://" + s;
+  return s;
+};
+
 // --------------------------- Section shell ---------------------------
 const Shell = ({ tile, onHome, navigate, related, kicker, journey, children }) => {
   const { data } = window.useData();
@@ -1032,7 +1045,7 @@ const SecDecision = (props) => {
               <span className="path-sub muted">{p.sub}</span>
               <p>{p.descripcion}</p>
               {p.url
-                ? <a href={p.url} target="_blank" rel="noreferrer" className="path-cta">{p.cta} <IconArrow size={14} sw={2} /></a>
+                ? <a href={linkArchivo(p.url)} target="_blank" rel="noreferrer" className="path-cta">{p.cta} <IconArrow size={14} sw={2} /></a>
                 : <button className="path-cta">{p.cta} <IconArrow size={14} sw={2} /></button>
               }
             </article>
@@ -1082,7 +1095,7 @@ const SecContacto = (props) => {
               {docs.map((d) => (
                 <li key={d.order}>
                   {d.url
-                    ? <a href={d.url} target="_blank" rel="noreferrer"><span>{d.titulo}</span><span className="muted small">{d.meta}</span></a>
+                    ? <a href={linkArchivo(d.url)} target="_blank" rel="noreferrer"><span>{d.titulo}</span><span className="muted small">{d.meta}</span></a>
                     : (<><span>{d.titulo}</span><span className="muted small">{d.meta}</span></>)
                   }
                 </li>
@@ -1094,7 +1107,7 @@ const SecContacto = (props) => {
             <h3>{cta.titulo}</h3>
             <p>{cta.cuerpo}</p>
             {cta.url
-              ? <a href={cta.url} target="_blank" rel="noreferrer" className="path-cta">{cta.cta} <IconArrow size={14} sw={2} /></a>
+              ? <a href={linkArchivo(cta.url)} target="_blank" rel="noreferrer" className="path-cta">{cta.cta} <IconArrow size={14} sw={2} /></a>
               : <button className="path-cta">{cta.cta} <IconArrow size={14} sw={2} /></button>
             }
           </article>
@@ -1213,22 +1226,22 @@ const SecProyecto = (props) => {
             <h2 className="block-title">Material del proyecto</h2>
             <div className="proj-action-row">
               {p.presentacion_url && (
-                <a className="path-cta" href={p.presentacion_url} target="_blank" rel="noreferrer">
+                <a className="path-cta" href={linkArchivo(p.presentacion_url)} target="_blank" rel="noreferrer">
                   Ver presentación completa <IconArrow size={14} sw={2} />
                 </a>
               )}
               {p.pdf_dossier_url && (
-                <a className="path-cta" href={p.pdf_dossier_url} target="_blank" rel="noreferrer">
+                <a className="path-cta" href={linkArchivo(p.pdf_dossier_url)} target="_blank" rel="noreferrer">
                   Ver propuesta (PDF) <IconArrow size={14} sw={2} />
                 </a>
               )}
               {p.video_url && (
-                <a className="path-cta" href={p.video_url} target="_blank" rel="noreferrer">
+                <a className="path-cta" href={linkArchivo(p.video_url)} target="_blank" rel="noreferrer">
                   Ver avance de obra <IconArrow size={14} sw={2} />
                 </a>
               )}
               {p.cta_url && (
-                <a className="path-cta" href={p.cta_url} target="_blank" rel="noreferrer">
+                <a className="path-cta" href={linkArchivo(p.cta_url)} target="_blank" rel="noreferrer">
                   {p.cta_text || "Más información"} <IconArrow size={14} sw={2} />
                 </a>
               )}
