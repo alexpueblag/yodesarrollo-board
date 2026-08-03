@@ -44,12 +44,12 @@
   display: inline-flex; align-items: center; gap: 8px;
   padding: 6px 10px;
   border: 1px solid rgba(var(--text-rgb),0.12);
-  background: rgba(21,23,26,0.85);
+  background: rgba(21,23,26,0.92);
   backdrop-filter: blur(8px);
   border-radius: 999px;
   cursor: pointer;
   font-size: 0.6875rem;
-  color: #a3a097;
+  color: #cfcabd;
   z-index: 100;
   transition: all 0.2s ease;
 }
@@ -186,7 +186,7 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   gap: 12px;
   flex-wrap: wrap;
   font-size: 1rem;
-  color: rgba(var(--text-rgb),0.7);
+  color: rgba(var(--text-rgb),0.82);
   margin-top: 8px;
 }
 .cover-meta em { font-style: italic; color: var(--gold); }
