@@ -11,12 +11,36 @@ const fmtMx = (n) => "$" + Number(n || 0).toLocaleString("en-US") + " MXN";
 const linkArchivo = (u) => {
   const s = String(u || "").trim();
   if (!s) return s;
+  if (/^(assets\/|\.\/|\/)/.test(s)) return s;   // material local del repo
   const m = s.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/);
   if (m) return "https://drive.google.com/file/d/" + m[1] + "/view";
   if (!/^[a-z][a-z0-9+.-]*:|^\/\//i.test(s)) return "https://" + s;
   return s;
 };
 
+// Material local (assets/material/): sustituye a las ligas de Drive mientras la
+// cuenta de Google esté suspendida (ago-2026). Para volver a usar la liga del
+// Sheet en un botón, borra su entrada aquí.
+const MATERIAL_LOCAL = {
+  "casa-alysa": {
+    presentacion_url: "assets/material/casa-alysa-presentacion.pdf",
+    pdf_dossier_url:  "assets/material/casa-alysa-onepager.pdf",
+    video_url:        "assets/material/casa-alysa-avance.mp4",
+  },
+  "real-miramar": {
+    presentacion_url: "assets/material/real-miramar-presentacion.pdf",
+    pdf_dossier_url:  "assets/material/real-miramar-onepager.pdf",
+  },
+  "dunas-kino": {
+    presentacion_url: "assets/material/dunas-kino-presentacion.pdf",
+    pdf_dossier_url:  "assets/material/dunas-kino-presentacion.pdf",
+  },
+};
+// Liga de material: primero la copia local, luego lo que diga el Sheet.
+const matUrl = (p, key) => {
+  const local = MATERIAL_LOCAL[p.id];
+  return linkArchivo((local && local[key]) || p[key]);
+};
 // --------------------------- Section shell ---------------------------
 const Shell = ({ tile, onHome, navigate, related, kicker, journey, children }) => {
   const { data } = window.useData();
@@ -1226,17 +1250,17 @@ const SecProyecto = (props) => {
             <h2 className="block-title">Material del proyecto</h2>
             <div className="proj-action-row">
               {p.presentacion_url && (
-                <a className="path-cta" href={linkArchivo(p.presentacion_url)} target="_blank" rel="noreferrer">
+                <a className="path-cta" href={matUrl(p, "presentacion_url")} target="_blank" rel="noreferrer">
                   Ver presentación completa <IconArrow size={14} sw={2} />
                 </a>
               )}
               {p.pdf_dossier_url && (
-                <a className="path-cta" href={linkArchivo(p.pdf_dossier_url)} target="_blank" rel="noreferrer">
+                <a className="path-cta" href={matUrl(p, "pdf_dossier_url")} target="_blank" rel="noreferrer">
                   Ver propuesta (PDF) <IconArrow size={14} sw={2} />
                 </a>
               )}
               {p.video_url && (
-                <a className="path-cta" href={linkArchivo(p.video_url)} target="_blank" rel="noreferrer">
+                <a className="path-cta" href={matUrl(p, "video_url")} target="_blank" rel="noreferrer">
                   Ver avance de obra <IconArrow size={14} sw={2} />
                 </a>
               )}
