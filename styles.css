@@ -17,6 +17,7 @@
   --muted-2: #B5AC99;
   --gold: #B98B3C;
   --gold-hi: #D8AE5E;
+  --gold-fill: #D8AE5E; /* oro como FONDO (no cambia en claro; texto encima siempre #1a1409) */
   --maxw: 1480px;
 
   --f-display: "Instrument Serif", "Cormorant Garamond", Georgia, serif;
@@ -495,7 +496,7 @@ body::before {
   transition: background 160ms, transform 160ms, box-shadow 160ms;
   box-shadow: 0 4px 14px -4px rgba(201,169,110,0.5);
 }
-.foot-cta:hover { background: var(--gold-hi); transform: translateY(-1px); box-shadow: 0 8px 22px -4px rgba(201,169,110,0.55); }
+.foot-cta:hover { background: var(--gold-fill); transform: translateY(-1px); box-shadow: 0 8px 22px -4px rgba(201,169,110,0.55); }
 .foot-cta:active { transform: translateY(0); }
 
 @media (max-width: 1280px) {
@@ -869,7 +870,7 @@ body::before {
   background: linear-gradient(180deg, var(--accent), color-mix(in oklab, var(--accent) 60%, transparent));
   border-radius: 8px 8px 0 0;
 }
-.stage.current .stage-fill { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); }
+.stage.current .stage-fill { background: linear-gradient(180deg, var(--gold-fill), var(--gold)); }
 .stage-meta { display: flex; flex-direction: column; gap: 4px; }
 .stage-name { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; }
 .stage-price { font-size: 18px; letter-spacing: -0.01em; }
@@ -931,7 +932,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
 .result-row.big .r-value { font-size: clamp(28px, 2.6vw, 38px); letter-spacing: -0.02em; }
 .result-bar { display: flex; align-items: center; gap: 14px; margin-top: 8px; }
 .bar-track { flex: 1; height: 8px; background: rgba(var(--tint-rgb),0.04); border-radius: 999px; overflow: hidden; }
-.bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-hi)); transition: width 240ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-fill)); transition: width 240ms cubic-bezier(0.2, 0.7, 0.2, 1); }
 .bar-pct { color: var(--gold-hi); font-size: 16px; min-width: 64px; text-align: right; }
 
 /* =========================================================
@@ -1231,7 +1232,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
   transition: all 160ms;
 }
 .path-card.strong .path-cta { background: var(--gold); color: #1a1409; border-color: var(--gold); font-weight: 600; }
-.path-cta:hover { background: var(--gold-hi); color: #1a1409; }
+.path-cta:hover { background: var(--gold-fill); color: #1a1409; }
 
 /* =========================================================
    CONTACTO
@@ -1382,13 +1383,89 @@ body[data-theme="claro"] .calc-result { box-shadow: 0 2px 14px rgba(0,0,0,0.06);
 .cmp-total { font-size: 15px; }
 .cmp-card-sub { font-size: 11.5px; margin-top: 5px; padding-left: 19px; letter-spacing: -0.01em; }
 
-/* ── Tarjetas de fondo oscuro fijo (grandes con imagen + ecosistema):
+/* ── Tarjetas de fondo oscuro fijo (grandes con imagen + ecosistema + medianas):
    el texto va sobre fondo oscuro SIEMPRE, así que se mantiene claro sin importar el tema ── */
-.tile-large, .tile-eco {
+.tile-large, .tile-eco, .tile-med {
   --text-rgb: 245,241,234;
+  --tint-rgb: 255,255,255;
   --text: #f5f1ea;
   --muted: rgba(245,241,234,0.72);
   --muted-2: rgba(245,241,234,0.58);
   --gold: #C9A24E;
+  --gold-hi: #D8AE5E;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CÓDIGO DE COLORES TOKENIZADO · TEMA CLARO (portero.js pone
+   data-tema="claro" en <html>). El flip de --text-rgb/--tint-rgb
+   es lo que vuelve legibles las ~80 rgba(var(--text-rgb),α).
+   ═══════════════════════════════════════════════════════════ */
+[data-tema="claro"]{
+  --tint-rgb: 26,24,20;
+  --text-rgb: 26,24,20;
+  --bg:#f4f1e9; --bg-2:#ece7db;
+  --surface: rgba(26,24,20,.05);
+  --surface-2: rgba(26,24,20,.08);
+  --line: rgba(26,24,20,.12); --line-2: rgba(26,24,20,.2);
+  --text:#1a1814; --muted:#6d6455; --muted-2:#57503f;
+  --gold:#B98B3C; --gold-hi:#7d5f1e;
+}
+/* Logo blanco → negro en claro */
+[data-tema="claro"] .brand-logo { filter: brightness(0); }
+/* La barra de navegación flotante tenía fondo oscuro fijo */
+[data-tema="claro"] .journey-nav { background: rgba(244,241,233,.88); }
+/* Paneles con velo negro fijo → velo de tinta suave en claro */
+[data-tema="claro"] .cron-chart,
+[data-tema="claro"] .lote-detail,
+[data-tema="claro"] .export-box { background: rgba(26,24,20,.05); }
+[data-tema="claro"] .seg,
+[data-tema="claro"] .export-text,
+[data-tema="claro"] .ap-fld input,
+[data-tema="claro"] .ap-row input { background: rgba(26,24,20,.06); }
+[data-tema="claro"] input[type="date"] { color-scheme: light; }
+/* Sombras negras intensas se suavizan */
+[data-tema="claro"] .card,
+[data-tema="claro"] .calc-controls,
+[data-tema="claro"] .calc-result { box-shadow: 0 2px 14px rgba(0,0,0,0.06); }
+/* Acentos de estado (verde/terracota/azul claros) → versión oscura legible */
+[data-tema="claro"] .status-pill.status-available,
+[data-tema="claro"] .st-gain.up,
+[data-tema="claro"] .pr-gain.up,
+[data-tema="claro"] .gain-pct,
+[data-tema="claro"] .ht-gain,
+[data-tema="claro"] .diag-saved-note { color: #45632e; }
+[data-tema="claro"] .status-pill.status-reserved,
+[data-tema="claro"] .pr-gain.down { color: #93422e; }
+[data-tema="claro"] .status-pill.status-commercial,
+[data-tema="claro"] .ld-note strong.accent { color: #2f5c8a; }
+
+/* ── Zonas SIEMPRE OSCURAS (carátula, loader, overlays):
+   se fijan localmente para que el flip de claro no las rompa ── */
+/* shell.css (yod-portal) pinta .yod-canvas SIEMPRE claro (#f6f3ed) y el
+   .app del board era transparente: en oscuro el texto crema quedaba sobre
+   canvas claro. El board pinta su propio fondo tematizado. */
+.app {
+  color: var(--text); /* re-ancla la herencia: .yod-shell pone tinta oscura fija */
+  background:
+    linear-gradient(rgba(var(--tint-rgb),0.012) 1px, transparent 1px) 0 0 / 60px 60px,
+    linear-gradient(90deg, rgba(var(--tint-rgb),0.012) 1px, transparent 1px) 0 0 / 60px 60px,
+    var(--bg);
+}
+
+/* shell.css (yod-portal) pinta el header con banda clara en claro;
+   dentro de la carátula (siempre oscura) esa banda vuelve ilegible el folio */
+/* (!important porque portero pisa header{} con !important en claro) */
+[data-tema="claro"] .cover .cover-head { background: transparent !important; border-bottom-color: transparent !important; box-shadow: none !important; }
+/* portero también ennegrece los <img> de cualquier header en claro;
+   dentro de la carátula oscura el logo debe quedarse como está */
+[data-tema="claro"] .cover .cover-head img { filter: none !important; }
+
+.cover, .data-loading {
+  --text-rgb: 241,237,227;
+  --tint-rgb: 255,255,255;
+  --text: #F1EDE3;
+  --muted: #8A8272;
+  --muted-2: #B5AC99;
+  --gold: #D4BE8A;
   --gold-hi: #D8AE5E;
 }

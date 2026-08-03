@@ -96,8 +96,8 @@
   box-shadow: 0 0 0 4px rgba(201,169,110,0.18);
 }
 .st-stop.hi .st-dot {
-  background: var(--gold-hi);
-  border-color: var(--gold-hi);
+  background: var(--gold-fill);
+  border-color: var(--gold-fill);
   box-shadow: 0 0 0 5px rgba(224,197,144,0.22);
 }
 .st-stop.done .st-dot { background: var(--muted); border-color: var(--muted); opacity: 0.4; }
