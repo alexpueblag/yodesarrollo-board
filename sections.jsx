@@ -890,16 +890,27 @@ const SecCronograma = (props) => {
   const cr = data.cronograma || {};
   const hero          = cr.hero || {};
   const meses         = (cr.meses || []).slice().sort((a, b) => a.mes - b.mes);
-  const alysaHitos    = (cr.alysa_hitos || []).slice().sort((a, b) => a.mes - b.mes);
-  const miramarHitos  = (cr.miramar_hitos || []).slice().sort((a, b) => a.mes - b.mes);
+  const numHitos = (arr) => (arr || []).map((h) => ({ ...h, mes: Number(h.mes) }))
+    .filter((h) => Number.isFinite(h.mes)).sort((a, b) => a.mes - b.mes);
+  const alysaHitos    = numHitos(cr.alysa_hitos);
+  const miramarHitos  = numHitos(cr.miramar_hitos);
   const bulletsAlysa  = ((cr.bullets_alysa) || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
   const bulletsMir    = ((cr.bullets_miramar) || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
-  const dunasHitos    = (cr.dunas_hitos || []).slice().sort((a, b) => a.mes - b.mes);
+  const dunasHitos    = numHitos(cr.dunas_hitos);
   const bulletsDunas  = ((cr.bullets_dunas) || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
   const quote         = (cr.quote && cr.quote.quote) || "";
 
   const TOTAL = hero.total_meses || 24;
   const pct = (m) => (m / TOTAL) * 100;
+
+  // Referencia del día actual: se calcula al abrir, nunca se desfasa.
+  // El ancla del cronograma es hero.fecha_inicio (AAAA-MM-DD) en la hoja del cronograma.
+  const hoy = new Date();
+  const hoyTexto = hoy.toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" });
+  const f0 = hero.fecha_inicio ? new Date(String(hero.fecha_inicio).slice(0, 10) + "T12:00:00") : null;
+  const hoyMes = (f0 && !isNaN(f0))
+    ? Math.max(0, Math.min(TOTAL, (hoy.getFullYear() - f0.getFullYear()) * 12 + (hoy.getMonth() - f0.getMonth()) + (hoy.getDate() - f0.getDate()) / 30))
+    : null;
 
   return (
     <Shell {...props} related={["casa-alysa", "real-miramar", "estrategia", "decision"]}>
@@ -918,8 +929,17 @@ const SecCronograma = (props) => {
 
         <section className="block">
           <h2 className="block-title">Cronograma maestro</h2>
+          <p className="cron-hoy-ref small muted">
+            Referencia: hoy es <b>{hoyTexto}</b>
+            {hoyMes == null && " — ancla la línea de HOY poniendo fecha_inicio (AAAA-MM-DD) en la hoja del cronograma"}
+          </p>
           <div className="cron-chart">
             <div className="cron-grid">
+              {hoyMes != null && (
+                <div className="cron-today" style={{ left: pct(hoyMes) + "%" }}>
+                  <span className="cron-today-tag mono">HOY · {hoyTexto}</span>
+                </div>
+              )}
               {meses.map((tick) => (
                 <div key={tick.mes} className="cron-grid-line" style={{ left: pct(tick.mes) + "%" }}>
                   <span className="cron-grid-month mono">{tick.label}</span>
