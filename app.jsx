@@ -545,6 +545,7 @@ const AppShell = () => {
       )}
 
       <DataSourceBadge />
+      {window.EditModeLayer && <EditModeLayer />}
 
       <TweaksPanel>
         <TweakSection label="Modo de uso" />

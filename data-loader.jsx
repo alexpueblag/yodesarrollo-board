@@ -58,6 +58,68 @@ const cacheClear = () => {
 };
 
 // ---------------------------------------------------------------------------
+// Capa de overrides (Modo Edición v1)
+//
+// Ediciones locales guardadas en localStorage ydr_overrides_v1 con formato
+//   [{ path:"cronograma.hero.stat_1_value", old:"$500K", val:"$600K", ts:169... }]
+// Se aplican ENCIMA de la data (caché o live) al entregarla, así el board
+// siempre muestra lo editado aunque el Sheet todavía no se toque (eso es v2).
+// ---------------------------------------------------------------------------
+const OVERRIDES_KEY = "ydr_overrides_v1";
+
+const ovRead = () => {
+  try {
+    const raw = localStorage.getItem(OVERRIDES_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  } catch (e) { return []; }
+};
+
+const ovWrite = (list) => {
+  try { localStorage.setItem(OVERRIDES_KEY, JSON.stringify(list)); } catch (e) {}
+};
+
+// Deep-set por path "a.b.0.c" (soporta índices de arreglo). No crea ramas
+// inexistentes: si la ruta ya no existe en la data fresca, el override se ignora.
+const ovDeepSet = (obj, path, val) => {
+  const parts = String(path).split(".");
+  let node = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const key = Array.isArray(node) ? parseInt(parts[i], 10) : parts[i];
+    if (node == null || node[key] == null || typeof node[key] !== "object") return false;
+    node = node[key];
+  }
+  const last = Array.isArray(node) ? parseInt(parts[parts.length - 1], 10) : parts[parts.length - 1];
+  if (node == null || !(last in node)) return false;
+  node[last] = val;
+  return true;
+};
+
+const ovApply = (data) => {
+  const list = ovRead();
+  if (!data || !list.length) return data;
+  let clone;
+  try { clone = JSON.parse(JSON.stringify(data)); } catch (e) { return data; }
+  list.forEach((o) => { try { ovDeepSet(clone, o.path, o.val); } catch (e) {} });
+  return clone;
+};
+
+// API pública para edit-mode.jsx (con suscripción para re-render)
+const ovListeners = new Set();
+const ovNotify = () => ovListeners.forEach((fn) => { try { fn(); } catch (e) {} });
+window.YDR_OVERRIDES = {
+  list: ovRead,
+  add(o) {
+    const list = ovRead().filter((x) => x.path !== o.path); // 1 override vigente por ruta
+    list.push({ ...o, ts: o.ts || Date.now() });
+    ovWrite(list); ovNotify();
+  },
+  remove(path) { ovWrite(ovRead().filter((x) => x.path !== path)); ovNotify(); },
+  clear() { ovWrite([]); ovNotify(); },
+  subscribe(fn) { ovListeners.add(fn); return () => ovListeners.delete(fn); },
+};
+
+// ---------------------------------------------------------------------------
 // Fetch con timeout
 // ---------------------------------------------------------------------------
 const fetchWithTimeout = (url, ms) => {
@@ -115,7 +177,7 @@ const fetchLive = async (forceRefresh = false) => {
 // DataProvider
 // ---------------------------------------------------------------------------
 const DataProvider = ({ children }) => {
-  const [data, setData]     = React.useState(null);
+  const [rawData, setData]  = React.useState(null);
   const [status, setStatus] = React.useState("loading");   // loading | ready | error
   const [source, setSource] = React.useState(null);        // cache | live
 
@@ -164,6 +226,11 @@ const DataProvider = ({ children }) => {
   }, []);
 
   React.useEffect(() => { load(); }, [load]);
+
+  // Overrides locales (Modo Edición): re-aplicar cuando cambian
+  const [ovTick, setOvTick] = React.useState(0);
+  React.useEffect(() => window.YDR_OVERRIDES.subscribe(() => setOvTick((t) => t + 1)), []);
+  const data = React.useMemo(() => ovApply(rawData), [rawData, ovTick]);
 
   const value = { data, status, source, refresh, save };
 
