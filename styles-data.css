@@ -122,7 +122,8 @@ body[data-mode="presentation"] .tweaks-panel { display: none !important; }
   display: grid;
   grid-template-rows: auto 1fr auto;
   padding: clamp(24px, 4vw, 48px) clamp(20px, 4vw, 56px);
-  background: radial-gradient(ellipse at top left, #1c1f24 0%, #15171a 50%, #0e1013 100%);
+  background-color: #0e1013;
+  background-image: radial-gradient(ellipse at top left, #1c1f24 0%, #15171a 50%, #0e1013 100%);
   color: rgb(var(--text-rgb));
   position: relative;
   overflow-x: hidden;
