@@ -1875,6 +1875,14 @@ const AUTOR_FALLBACK = {
     { mes: "Afinar", titulo: "El detalle es el proyecto", note: "Luz, materiales, proporciones. Lo que distingue una obra de autor no se ve en el render — se siente al habitarla." },
     { mes: "Acompañar", titulo: "Hasta la última llave", note: "El despacho sigue en la obra hasta el final, cuidando que lo construido sea lo diseñado." },
   ],
+  cuestionario: {
+    kicker: "La Experiencia Aurum",
+    titulo: "Todo empieza con el Cuestionario de Arquitectura de Autor",
+    cuerpo: "Ese 'escuchar' no es una plática suelta: es un cuestionario de perfil de vida que diseñamos para conocerte antes de dibujar. Cómo despiertas, cómo recibes, qué espacios usas de verdad y cuáles solo estorban. De tus respuestas nace el programa de áreas de tu proyecto — cada metro cuadrado justificado por tu forma de vivir, no por un catálogo — y con él, una cotización seria. Lo ideal es llenarlo acompañado, en una videollamada con el despacho: media hora de conversación que le ahorra meses de correcciones al proyecto.",
+    boton: "Abrir el cuestionario",
+    url: "https://alexpueblag.github.io/aurum-experiencia/?utm_source=yodesarrollo-board&utm_medium=presentacion&utm_campaign=board-autor",
+    sub: "Sin costo y sin compromiso. Tus respuestas llegan al despacho y te contactamos para agendar la conversación.",
+  },
 };
 
 const SecAutor = (props) => {
@@ -1883,6 +1891,7 @@ const SecAutor = (props) => {
   const hero  = { ...AUTOR_FALLBACK.hero, ...(d.hero || {}) };
   const cards = (d.cards && d.cards.length ? d.cards : AUTOR_FALLBACK.cards).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
   const pasos = (d.pasos && d.pasos.length ? d.pasos : AUTOR_FALLBACK.pasos).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+  const quiz  = { ...AUTOR_FALLBACK.cuestionario, ...(d.cuestionario || {}) };
 
   return (
     <Shell {...props} related={["quienes-somos", "casa-alysa", "contacto"]}>
@@ -1917,6 +1926,17 @@ const SecAutor = (props) => {
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="block" style={{ textAlign: "center", paddingTop: "28px", paddingBottom: "12px" }}>
+          <span className="kicker">{quiz.kicker}</span>
+          <h2 className="display" style={{ fontSize: "clamp(24px, 3.4vw, 36px)", margin: "10px 0 14px" }}>{quiz.titulo}</h2>
+          <p className="lead" style={{ maxWidth: "640px", margin: "0 auto 22px", textAlign: "left" }}>{quiz.cuerpo}</p>
+          <a className="foot-cta" href={quiz.url} target="_blank" rel="noopener noreferrer"
+             style={{ display: "inline-flex", alignItems: "center", gap: "10px", fontSize: "16px", padding: "14px 28px" }}>
+            {quiz.boton} <IconArrow size={16} sw={2} />
+          </a>
+          <p className="muted small" style={{ marginTop: "12px" }}>{quiz.sub}</p>
         </section>
       </div>
     </Shell>
