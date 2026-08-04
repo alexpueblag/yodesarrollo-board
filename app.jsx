@@ -38,18 +38,10 @@ const SECTION_BY_ID = {
   "arquitectura-autor": window.SecAutor || (() => null),
 };
 
-// Tiles con sección propia que deben existir aunque el Sheet aún no traiga su
-// fila en `Tiles`. Si el Sheet SÍ trae la fila (o la deshabilita), el Sheet manda.
-const TILE_SEEDS = [
-  { id: "quienes-somos", label: "Quiénes somos", kicker: "Lo que hace Yodesarrollo", color: "#2a2a2a", accent: "#d4be8a" },
-  { id: "ppp",           label: "¿Qué es un PPP?", kicker: "Plan de Potencial", color: "#2a2a2a", accent: "#d4be8a" },
-  { id: "arquitectura-autor", label: "Arquitectura de Autor", kicker: "El sello Aurum", color: "#2a2a2a", accent: "#d4be8a" },
-];
-
 // Cuáles tiles son del nivel jerárquico — define el layout del dashboard
 const TIER_LARGE  = ["casa-alysa", "real-miramar"];
 const TIER_MEDIUM = ["diagnostico", "comparativo", "calculadora", "estrategia"];
-const TIER_CHIPS  = ["quienes-somos", "ppp", "arquitectura-autor", "garantias", "cronograma", "decision", "contacto", "acuerdo-pago"];
+const TIER_CHIPS  = ["garantias", "cronograma", "decision", "contacto", "acuerdo-pago"];
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "aesthetic": "carplay",
@@ -61,9 +53,8 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 
 window.buildTileLookup = (tilesData, proyectosData) => {
   const lookup = {};
-  const disabled = new Set();
   (tilesData || []).forEach((row) => {
-    if (row.enabled === false) { disabled.add(row.id); return; }
+    if (row.enabled === false) return;
     lookup[row.id] = {
       ...row,
       Icon:    ICON_BY_ID[row.id]    || (() => null),
@@ -81,16 +72,9 @@ window.buildTileLookup = (tilesData, proyectosData) => {
       color:   p.color  || "#2a2a2a",
       accent:  p.accent || "#d4be8a",
       Icon:    ICON_BY_ID[p.id] || IconRealMiramar,
-      Section: window.SecProyecto || (() => null),
-    };
-  });
-  // Semillas: garantizan que PPP y Quiénes Somos existan aunque falte su fila
-  TILE_SEEDS.forEach((seed) => {
-    if (lookup[seed.id] || disabled.has(seed.id)) return;
-    lookup[seed.id] = {
-      ...seed,
-      Icon:    ICON_BY_ID[seed.id]    || (() => null),
-      Section: SECTION_BY_ID[seed.id] || (() => null),
+      // Los proyectos del ecosistema con sección propia (ppp, quienes-somos,
+      // arquitectura-autor) abren su sección rica; el resto va a la genérica.
+      Section: SECTION_BY_ID[p.id] || window.SecProyecto || (() => null),
     };
   });
   return lookup;
