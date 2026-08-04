@@ -11,6 +11,18 @@
 
 (() => {
 
+// ── Ancla del cronograma: fecha de arranque guardada localmente ─────────────
+// Permite corregir el eje de tiempo sin depender del Sheet (útil mientras la
+// cuenta de Google está fuera). Si el Sheet trae hero.fecha_inicio, ese manda.
+const ANCLA_LSK = "ydr_ancla_crono_v1";
+window.YDR_ANCLA_CRONO = {
+  get() { try { return localStorage.getItem(ANCLA_LSK) || ""; } catch (e) { return ""; } },
+  set(v) {
+    try { v ? localStorage.setItem(ANCLA_LSK, v) : localStorage.removeItem(ANCLA_LSK); } catch (e) {}
+    window.dispatchEvent(new CustomEvent("ydr-ancla-crono"));
+  },
+};
+
 const ROLES_EDICION = ["direccion", "comercial"];
 const rolSesion = () => {
   try { return (sessionStorage.getItem("pyod_rol") || "").toLowerCase(); } catch (e) { return ""; }
@@ -134,6 +146,10 @@ const EditModeLayer = () => {
     return () => clearTimeout(t);
   }, [puedeEditar, data, ovTick, activo]);
 
+  // Fecha de arranque del cronograma (ajuste local, sin Sheet)
+  const [ancla, setAncla] = React.useState(() => window.YDR_ANCLA_CRONO.get());
+  const guardarAncla = (v) => { setAncla(v); window.YDR_ANCLA_CRONO.set(v); };
+
   if (!puedeEditar) return null;
 
   const overrides = window.YDR_OVERRIDES.list();
@@ -226,6 +242,18 @@ const EditModeLayer = () => {
             <button className="em-btn" onClick={() => setPanelAbierto(false)}>✕</button>
           </div>
           <div className="em-panel-note mono">Pendiente de aplicar al Sheet — v2 lo hará automático.</div>
+
+          <div className="em-ancla">
+            <label className="em-ancla-lbl" htmlFor="emAncla">Arranque del cronograma</label>
+            <input id="emAncla" className="em-ancla-input" type="date" value={ancla}
+              onChange={(e) => guardarAncla(e.target.value)} />
+            <p className="em-ancla-help">
+              Con esto el eje de tiempo y la línea de HOY se calculan solos y dejan de
+              envejecer. Se guarda en este dispositivo; cuando el Sheet vuelva, lo que
+              diga el Sheet manda.
+              {ancla && <button className="em-ancla-clear" onClick={() => guardarAncla("")}>Quitar</button>}
+            </p>
+          </div>
           {overrides.length === 0 ? (
             <div className="em-pop-none">Sin cambios pendientes.</div>
           ) : (

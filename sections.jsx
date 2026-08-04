@@ -889,7 +889,7 @@ const SecCronograma = (props) => {
   const { data } = window.useData();
   const cr = data.cronograma || {};
   const hero          = cr.hero || {};
-  const meses         = (cr.meses || []).slice().sort((a, b) => a.mes - b.mes);
+  const mesesSheet    = (cr.meses || []).slice().sort((a, b) => a.mes - b.mes);
   const numHitos = (arr) => (arr || []).map((h) => ({ ...h, mes: Number(h.mes) }))
     .filter((h) => Number.isFinite(h.mes)).sort((a, b) => a.mes - b.mes);
   const alysaHitos    = numHitos(cr.alysa_hitos);
@@ -904,13 +904,31 @@ const SecCronograma = (props) => {
   const pct = (m) => (m / TOTAL) * 100;
 
   // Referencia del día actual: se calcula al abrir, nunca se desfasa.
-  // El ancla del cronograma es hero.fecha_inicio (AAAA-MM-DD) en la hoja del cronograma.
+  // Ancla = hero.fecha_inicio del Sheet, o el ajuste local si el Sheet no la trae
+  // (permite corregir el cronograma sin depender de Google).
   const hoy = new Date();
   const hoyTexto = hoy.toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" });
-  const f0 = hero.fecha_inicio ? new Date(String(hero.fecha_inicio).slice(0, 10) + "T12:00:00") : null;
-  const hoyMes = (f0 && !isNaN(f0))
+  const anclaLocal = window.YDR_ANCLA_CRONO && window.YDR_ANCLA_CRONO.get();
+  const anclaTexto = hero.fecha_inicio || anclaLocal || "";
+  const f0 = anclaTexto ? new Date(String(anclaTexto).slice(0, 10) + "T12:00:00") : null;
+  const anclaOk = f0 && !isNaN(f0);
+  const hoyMes = anclaOk
     ? Math.max(0, Math.min(TOTAL, (hoy.getFullYear() - f0.getFullYear()) * 12 + (hoy.getMonth() - f0.getMonth()) + (hoy.getDate() - f0.getDate()) / 30))
     : null;
+
+  // Eje de tiempo: cuando hay ancla se CALCULA (nunca envejece); si no, se usan
+  // las etiquetas escritas en el Sheet, que sí se desfasan con el tiempo.
+  const MESES_ES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+  const meses = anclaOk
+    ? (() => {
+        const paso = TOTAL > 18 ? 3 : 2, out = [];
+        for (let m = 0; m <= TOTAL; m += paso) {
+          const d = new Date(f0.getFullYear(), f0.getMonth() + m, 1);
+          out.push({ mes: m, label: MESES_ES[d.getMonth()] + " " + String(d.getFullYear()).slice(2) });
+        }
+        return out;
+      })()
+    : mesesSheet;
 
   return (
     <Shell {...props} related={["casa-alysa", "real-miramar", "estrategia", "decision"]}>
@@ -931,7 +949,8 @@ const SecCronograma = (props) => {
           <h2 className="block-title">Cronograma maestro</h2>
           <p className="cron-hoy-ref small muted">
             Referencia: hoy es <b>{hoyTexto}</b>
-            {hoyMes == null && " — ancla la línea de HOY poniendo fecha_inicio (AAAA-MM-DD) en la hoja del cronograma"}
+            {!anclaOk && <span className="cron-sin-ancla"> — el eje viene escrito a mano en el Sheet y se desfasa. Fija la fecha de arranque para que se calcule solo.</span>}
+            {anclaOk && <span className="cron-con-ancla"> · eje calculado desde el arranque ({f0.toLocaleDateString("es-MX", { month: "long", year: "numeric" })}){anclaLocal && !hero.fecha_inicio ? " · ajuste local" : ""}</span>}
           </p>
           <div className="cron-chart">
             <div className="cron-grid">
