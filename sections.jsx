@@ -908,9 +908,16 @@ const SecCronograma = (props) => {
   // (permite corregir el cronograma sin depender de Google).
   const hoy = new Date();
   const hoyTexto = hoy.toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" });
+  // Este cronograma es PROSPECTIVO: el "Mes 0" es el momento en que se presenta
+  // (los hitos dicen "Mes 0 · HOY"). Por eso, si nadie fija una fecha, el eje
+  // arranca en el MES ACTUAL — así la carpeta nunca envejece: se abra cuando se
+  // abra, siempre se lee "de hoy en adelante".
   const anclaLocal = window.YDR_ANCLA_CRONO && window.YDR_ANCLA_CRONO.get();
   const anclaTexto = hero.fecha_inicio || anclaLocal || "";
-  const f0 = anclaTexto ? new Date(String(anclaTexto).slice(0, 10) + "T12:00:00") : null;
+  const autoHoy = !anclaTexto;
+  const f0 = anclaTexto
+    ? new Date(String(anclaTexto).slice(0, 10) + "T12:00:00")
+    : new Date(new Date().getFullYear(), new Date().getMonth(), 1, 12);
   const anclaOk = f0 && !isNaN(f0);
   const hoyMes = anclaOk
     ? Math.max(0, Math.min(TOTAL, (hoy.getFullYear() - f0.getFullYear()) * 12 + (hoy.getMonth() - f0.getMonth()) + (hoy.getDate() - f0.getDate()) / 30))
@@ -949,8 +956,7 @@ const SecCronograma = (props) => {
           <h2 className="block-title">Cronograma maestro</h2>
           <p className="cron-hoy-ref small muted">
             Referencia: hoy es <b>{hoyTexto}</b>
-            {!anclaOk && <span className="cron-sin-ancla"> — el eje viene escrito a mano en el Sheet y se desfasa. Fija la fecha de arranque para que se calcule solo.</span>}
-            {anclaOk && <span className="cron-con-ancla"> · eje calculado desde el arranque ({f0.toLocaleDateString("es-MX", { month: "long", year: "numeric" })}){anclaLocal && !hero.fecha_inicio ? " · ajuste local" : ""}</span>}
+            <span className="cron-con-ancla"> · el cronograma corre desde {f0.toLocaleDateString("es-MX", { month: "long", year: "numeric" })}{autoHoy ? " (mes actual)" : (anclaLocal && !hero.fecha_inicio ? " · fecha fijada aquí" : "")}</span>
           </p>
           <div className="cron-chart">
             <div className="cron-grid">

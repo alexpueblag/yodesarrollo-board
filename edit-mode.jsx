@@ -248,9 +248,9 @@ const EditModeLayer = () => {
             <input id="emAncla" className="em-ancla-input" type="date" value={ancla}
               onChange={(e) => guardarAncla(e.target.value)} />
             <p className="em-ancla-help">
-              Con esto el eje de tiempo y la línea de HOY se calculan solos y dejan de
-              envejecer. Se guarda en este dispositivo; cuando el Sheet vuelva, lo que
-              diga el Sheet manda.
+              De fábrica el cronograma corre desde el mes actual, así nunca envejece.
+              Usa esto solo si quieres fijarlo a una fecha distinta. Se guarda en este
+              dispositivo; cuando el Sheet vuelva, lo que diga el Sheet manda.
               {ancla && <button className="em-ancla-clear" onClick={() => guardarAncla("")}>Quitar</button>}
             </p>
           </div>
