@@ -35,6 +35,7 @@ const SECTION_BY_ID = {
   "acuerdo-pago": window.SecAcuerdoPagos || (() => null),
   "ppp":           window.SecPPP || (() => null),
   "quienes-somos": window.SecQuienesSomos || (() => null),
+  "arquitectura-autor": window.SecAutor || (() => null),
 };
 
 // Tiles con sección propia que deben existir aunque el Sheet aún no traiga su
@@ -42,12 +43,13 @@ const SECTION_BY_ID = {
 const TILE_SEEDS = [
   { id: "quienes-somos", label: "Quiénes somos", kicker: "Lo que hace Yodesarrollo", color: "#2a2a2a", accent: "#d4be8a" },
   { id: "ppp",           label: "¿Qué es un PPP?", kicker: "Plan de Potencial", color: "#2a2a2a", accent: "#d4be8a" },
+  { id: "arquitectura-autor", label: "Arquitectura de Autor", kicker: "El sello Aurum", color: "#2a2a2a", accent: "#d4be8a" },
 ];
 
 // Cuáles tiles son del nivel jerárquico — define el layout del dashboard
 const TIER_LARGE  = ["casa-alysa", "real-miramar"];
 const TIER_MEDIUM = ["diagnostico", "comparativo", "calculadora", "estrategia"];
-const TIER_CHIPS  = ["quienes-somos", "ppp", "garantias", "cronograma", "decision", "contacto", "acuerdo-pago"];
+const TIER_CHIPS  = ["quienes-somos", "ppp", "arquitectura-autor", "garantias", "cronograma", "decision", "contacto", "acuerdo-pago"];
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "aesthetic": "carplay",

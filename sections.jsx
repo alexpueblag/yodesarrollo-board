@@ -1775,9 +1775,79 @@ const SecQuienesSomos = (props) => {
   );
 };
 
+// =============================================================================
+// 15. ARQUITECTURA DE AUTOR — el sello Aurum en cada desarrollo
+// Sheet-driven (tab `autor` del Sheet) con el mismo respaldo en código.
+// =============================================================================
+const AUTOR_FALLBACK = {
+  hero: {
+    kicker: "El sello Aurum",
+    display_line1: "No construimos de catálogo.",
+    display_line2: "Cada proyecto tiene autor.",
+    lead: "Detrás de cada desarrollo de Yodesarrollo está Aurum Arquitectos: el despacho donde nació todo esto. Arquitectura de autor significa que ningún proyecto se copia de un machote — se diseña para su terreno, su clima y la vida que va a suceder adentro. Y eso no es un lujo estético: es la razón por la que un desarrollo se vende mejor, se renta mejor y envejece mejor que el de junto.",
+  },
+  cards: [
+    { numero: "01", titulo: "El diseño es plusvalía", cuerpo: "Dos casas con los mismos metros no valen lo mismo. La orientación, la luz, la proporción y el carácter de un proyecto bien diseñado se cobran en cada venta — y el mercado lo paga. Para un codesarrollador, el diseño no es gasto: es margen." },
+    { numero: "02", titulo: "Diseñado para este clima", cuerpo: "Proyectamos para Sonora: sombra donde pega el sol, ventilación cruzada, materiales que aguantan. Una casa pensada para el desierto cuesta menos operarla toda su vida — y eso también se nota en el valor de reventa." },
+    { numero: "03", titulo: "El mismo lápiz de principio a fin", cuerpo: "Quien diseña el proyecto es quien acompaña la obra. No hay teléfono descompuesto entre el plano y el ladrillo: el criterio del autor llega hasta el último detalle, y el resultado se parece a lo que se prometió." },
+  ],
+  pasos: [
+    { mes: "Escuchar", titulo: "La vida antes que el plano", note: "Cada proyecto empieza con una conversación: cómo se vive, qué se quiere sentir al llegar. En los desarrollos, eso mismo se hace con el perfil del comprador final." },
+    { mes: "Proponer", titulo: "Un concepto con carácter", note: "No tres opciones tibias: una propuesta con postura, explicada y defendida. El cliente decide con algo real enfrente." },
+    { mes: "Afinar", titulo: "El detalle es el proyecto", note: "Luz, materiales, proporciones. Lo que distingue una obra de autor no se ve en el render — se siente al habitarla." },
+    { mes: "Acompañar", titulo: "Hasta la última llave", note: "El despacho sigue en la obra hasta el final, cuidando que lo construido sea lo diseñado." },
+  ],
+};
+
+const SecAutor = (props) => {
+  const { data } = window.useData();
+  const d = (data && data.autor) || {};
+  const hero  = { ...AUTOR_FALLBACK.hero, ...(d.hero || {}) };
+  const cards = (d.cards && d.cards.length ? d.cards : AUTOR_FALLBACK.cards).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+  const pasos = (d.pasos && d.pasos.length ? d.pasos : AUTOR_FALLBACK.pasos).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  return (
+    <Shell {...props} related={["quienes-somos", "casa-alysa", "contacto"]}>
+      <div className="gar">
+        <div className="sec-title-row">
+          <span className="kicker">{hero.kicker}</span>
+          <h1 className="display">{hero.display_line1}<br/>{hero.display_line2}</h1>
+          <p className="lead">{hero.lead}</p>
+        </div>
+
+        <div className="gar-grid">
+          {cards.map((g) => (
+            <article key={g.numero} className="gar-card">
+              <span className="gar-num mono">{g.numero}</span>
+              <h3>{g.titulo}</h3>
+              <p>{g.cuerpo}</p>
+            </article>
+          ))}
+        </div>
+
+        <section className="block">
+          <h2 className="block-title">Cómo trabaja el autor</h2>
+          <div className="timeline">
+            {pasos.map((s, i) => (
+              <div key={i} className="tl-step">
+                <div className="tl-marker"><span className="tl-num mono">{i + 1}</span></div>
+                <div className="tl-body">
+                  <span className="tl-mes mono accent">{s.mes}</span>
+                  <span className="tl-title">{s.titulo}</span>
+                  <span className="tl-note muted small">{s.note}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </Shell>
+  );
+};
+
 Object.assign(window, {
   SecDiagnostico, SecComparativo, SecCasaAlysa, SecRealMiramar,
   SecCalculadora, SecEstrategia, SecGarantias, SecCronograma,
   SecDecision, SecContacto, SecProyecto, SecAcuerdoPagos,
-  SecPPP, SecQuienesSomos,
+  SecPPP, SecQuienesSomos, SecAutor,
 });
