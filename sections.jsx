@@ -1633,8 +1633,151 @@ const SecAcuerdoPagos = (props) => {
   );
 };
 
+// =============================================================================
+// 13. ¿QUÉ ES UN PPP? — Plan de Potencial Patrimonial
+// Sheet-driven (tab `ppp` del Sheet) con respaldo en código: si el Sheet aún no
+// trae la pestaña, la sección se ve completa igual. Regla: lo que llegue del
+// Sheet SIEMPRE gana sobre el respaldo.
+// =============================================================================
+const PPP_FALLBACK = {
+  hero: {
+    kicker: "El punto de partida",
+    display_line1: "Tu terreno ya sabe lo que quiere ser.",
+    display_line2: "Un PPP lo traduce a números.",
+    lead: "Un Plan de Potencial Patrimonial (PPP) es un estudio hecho a la medida de UN terreno: qué permite la norma, qué aguantan los servicios, qué pide el mercado — y cuánto vale cada camino. No es una corazonada ni un folleto: es el expediente con el que un propietario decide con datos, antes de mover un solo peso.",
+  },
+  pasos: [
+    { mes: "Paso 1", titulo: "Escuchamos el terreno", note: "Usos de suelo, densidades y restricciones oficiales, más la realidad de los servicios: agua, energía, drenaje, vialidades y estacionamiento, calculados con las normas vigentes — no con estimaciones de escritorio." },
+    { mes: "Paso 2", titulo: "Dibujamos los escenarios", note: "¿Residencial, usos mixtos, comercial, logístico? Cada vocación posible se corre con sus números: inversión requerida, absorción del mercado y valor de salida. Se comparan lado a lado." },
+    { mes: "Paso 3", titulo: "Armamos la fórmula", note: "Cómo entra el dueño sin malvender ni endeudarse: aportar el terreno al proyecto y participar de cada venta, co-invertir por etapas, o combinar. Cada fórmula con su corrida financiera." },
+    { mes: "Paso 4", titulo: "Entregamos el expediente", note: "Documento con mapas, cuadros normativos, escenarios comparados y UNA propuesta concreta de co-desarrollo. Con eso en la mesa, la decisión es tuya — pero ya no es a ciegas." },
+  ],
+  cards: [
+    { numero: "01", titulo: "Contra la venta apresurada", cuerpo: "El error más caro es vender un terreno por lo que ofrecen hoy, sin saber lo que puede producir mañana. Hemos visto propietarios duplicar el valor de salida de su tierra al aportarla a un desarrollo en lugar de venderla en frío." },
+    { numero: "02", titulo: "Norma antes que promesa", cuerpo: "Todo cuadro del PPP cita su fuente: reglamentos de desarrollo urbano, normas técnicas de agua, energía y estacionamiento, manuales de impacto vial. Si un número no tiene norma o mercado que lo respalde, no entra al plan." },
+    { numero: "03", titulo: "El plan te deja libre", cuerpo: "El PPP no te amarra a Yodesarrollo: el expediente es tuyo. Nuestra apuesta es que, viendo los números, el mejor camino sea desarrollarlo juntos — y estamos dispuestos a demostrarlo en papel antes de pedirte confianza." },
+  ],
+};
+
+const SecPPP = (props) => {
+  const { data } = window.useData();
+  const d = (data && data.ppp) || {};
+  const hero  = { ...PPP_FALLBACK.hero, ...(d.hero || {}) };
+  const pasos = (d.pasos && d.pasos.length ? d.pasos : PPP_FALLBACK.pasos).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+  const cards = (d.cards && d.cards.length ? d.cards : PPP_FALLBACK.cards).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  return (
+    <Shell {...props} related={["calculadora", "estrategia", "contacto"]}>
+      <div className="gar">
+        <div className="sec-title-row">
+          <span className="kicker">{hero.kicker}</span>
+          <h1 className="display">{hero.display_line1}<br/>{hero.display_line2}</h1>
+          <p className="lead">{hero.lead}</p>
+        </div>
+
+        <section className="block">
+          <h2 className="block-title">Cómo se construye un PPP</h2>
+          <div className="timeline">
+            {pasos.map((s, i) => (
+              <div key={i} className="tl-step">
+                <div className="tl-marker"><span className="tl-num mono">{i + 1}</span></div>
+                <div className="tl-body">
+                  <span className="tl-mes mono accent">{s.mes}</span>
+                  <span className="tl-title">{s.titulo}</span>
+                  <span className="tl-note muted small">{s.note}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="gar-grid">
+          {cards.map((g) => (
+            <article key={g.numero} className="gar-card">
+              <span className="gar-num mono">{g.numero}</span>
+              <h3>{g.titulo}</h3>
+              <p>{g.cuerpo}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </Shell>
+  );
+};
+
+// =============================================================================
+// 14. QUIÉNES SOMOS — lo que hace Yodesarrollo
+// Sheet-driven (tab `quienes` del Sheet) con el mismo respaldo en código.
+// =============================================================================
+const QUIENES_FALLBACK = {
+  hero: {
+    kicker: "Yodesarrollo · SAPI de CV",
+    display_line1: "No vendemos casas.",
+    display_line2: "Desarrollamos patrimonio contigo.",
+    lead: "Yodesarrollo nace en Sonora, del lado de la mesa donde se dibujan y se construyen los proyectos: el despacho Aurum Arquitectos. Ahí vimos el mismo problema una y otra vez — dinero dormido en el banco por miedo, y terrenos dormidos bajo el sol por falta de un plan. El co-desarrollo junta a los dos.",
+  },
+  cards: [
+    { numero: "01", titulo: "Socios, no clientes", cuerpo: "En cada proyecto conviven tres aportes: el que pone la tierra, el que pone el capital y el que pone la ejecución. Todos entran a la misma corrida, con reglas escritas y porcentajes claros desde el día uno. Si el proyecto gana, ganan los tres." },
+    { numero: "02", titulo: "Todo con escritura", cuerpo: "La garantía de un codesarrollador no es una promesa: es propiedad real, escriturada. Preferimos crecer más lento sobre papel firme que rápido sobre confianza ciega." },
+    { numero: "03", titulo: "Todo se mide y se ve", cuerpo: "Cada proyecto vive en un tablero como este: aportaciones, avance de obra, fechas y números en la misma pantalla que ve el equipo. La transparencia no es un valor en la pared — es una herramienta que abres desde tu teléfono." },
+  ],
+  pasos: [
+    { mes: "Hoy", titulo: "Diagnóstico honesto", note: "Nos sentamos a entender qué quieres construir — patrimonio, retiro, flujo — antes de hablar de en qué invertir." },
+    { mes: "Semana 1–2", titulo: "Propuesta con números", note: "Recibes escenarios corridos con normas y mercado reales: cuánto entra, cuándo, y qué respalda cada peso." },
+    { mes: "Durante", titulo: "Avance a la vista", note: "Sigues tu proyecto en el tablero: fotos de obra, aportaciones, hitos. Sin llamar a preguntar cómo va." },
+    { mes: "Al cierre", titulo: "Escritura y retorno", note: "El ciclo termina donde empezó la promesa: con propiedad a tu nombre o capital más ganancia de vuelta." },
+  ],
+};
+
+const SecQuienesSomos = (props) => {
+  const { data } = window.useData();
+  const d = (data && data.quienes) || {};
+  const hero  = { ...QUIENES_FALLBACK.hero, ...(d.hero || {}) };
+  const cards = (d.cards && d.cards.length ? d.cards : QUIENES_FALLBACK.cards).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+  const pasos = (d.pasos && d.pasos.length ? d.pasos : QUIENES_FALLBACK.pasos).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  return (
+    <Shell {...props} related={["garantias", "casa-alysa", "real-miramar"]}>
+      <div className="gar">
+        <div className="sec-title-row">
+          <span className="kicker">{hero.kicker}</span>
+          <h1 className="display">{hero.display_line1}<br/>{hero.display_line2}</h1>
+          <p className="lead">{hero.lead}</p>
+        </div>
+
+        <div className="gar-grid">
+          {cards.map((g) => (
+            <article key={g.numero} className="gar-card">
+              <span className="gar-num mono">{g.numero}</span>
+              <h3>{g.titulo}</h3>
+              <p>{g.cuerpo}</p>
+            </article>
+          ))}
+        </div>
+
+        <section className="block">
+          <h2 className="block-title">Cómo se ve trabajar con nosotros</h2>
+          <div className="timeline">
+            {pasos.map((s, i) => (
+              <div key={i} className="tl-step">
+                <div className="tl-marker"><span className="tl-num mono">{i + 1}</span></div>
+                <div className="tl-body">
+                  <span className="tl-mes mono accent">{s.mes}</span>
+                  <span className="tl-title">{s.titulo}</span>
+                  <span className="tl-note muted small">{s.note}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </Shell>
+  );
+};
+
 Object.assign(window, {
   SecDiagnostico, SecComparativo, SecCasaAlysa, SecRealMiramar,
   SecCalculadora, SecEstrategia, SecGarantias, SecCronograma,
   SecDecision, SecContacto, SecProyecto, SecAcuerdoPagos,
+  SecPPP, SecQuienesSomos,
 });
