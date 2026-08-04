@@ -57,6 +57,28 @@ const cacheClear = () => {
   try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
 };
 
+// Antigüedad del dato guardado. Se muestra junto al dato para que nadie
+// confunda una copia de hace semanas con información de hoy.
+const cacheTs = () => {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    return raw ? (JSON.parse(raw).ts || null) : null;
+  } catch (e) { return null; }
+};
+
+window.ydrEdadTexto = (ts) => {
+  if (!ts) return "";
+  const min = Math.floor((Date.now() - ts) / 60000);
+  if (min < 2)   return "hace un momento";
+  if (min < 60)  return "hace " + min + " min";
+  const h = Math.floor(min / 60);
+  if (h < 24)    return "hace " + h + (h === 1 ? " hora" : " horas");
+  const d = Math.floor(h / 24);
+  if (d < 31)    return "hace " + d + (d === 1 ? " día" : " días");
+  const me = Math.floor(d / 30);
+  return "hace " + me + (me === 1 ? " mes" : " meses");
+};
+
 // ---------------------------------------------------------------------------
 // Capa de overrides (Modo Edición v1)
 //
@@ -284,12 +306,20 @@ const DataErrorView = ({ onRetry }) => (
 // ---------------------------------------------------------------------------
 const DataSourceBadge = () => {
   const { source, refresh } = window.useData();
+  const [, tick] = React.useReducer((x) => x + 1, 0);
+  // Refresca la etiqueta cada minuto: si el board queda abierto, la edad sigue viva.
+  React.useEffect(() => { const id = setInterval(tick, 60000); return () => clearInterval(id); }, []);
   if (source === "live") return null;
+  const ts = cacheTs();
+  const edad = window.ydrEdadTexto(ts);
   const label = source === "cache" ? "caché local" : "—";
+  const viejo = ts && (Date.now() - ts) > 48 * 3600 * 1000;
   return (
-    <button className="data-source-badge" onClick={refresh} title="Recargar desde Sheets">
+    <button className="data-source-badge" onClick={refresh}
+      data-viejo={viejo ? "1" : null}
+      title={ts ? "Datos guardados el " + new Date(ts).toLocaleString("es-MX") + " · clic para recargar" : "Recargar desde Sheets"}>
       <span className="dsb-dot" data-src={source}></span>
-      <span className="dsb-label mono">{label}</span>
+      <span className="dsb-label mono">{label}{edad ? " · datos de " + edad : ""}</span>
       <span className="dsb-action mono">⟳</span>
     </button>
   );

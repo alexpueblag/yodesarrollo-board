@@ -1057,3 +1057,7 @@ body[data-mode="presentation"] .em-fab { display: none; }
   font:inherit;font-size:11.5px;text-decoration:underline;padding:0;margin-left:6px;}
 .cron-sin-ancla{color:var(--gold-hi);}
 .cron-con-ancla{color:rgba(var(--text-rgb),.62);}
+
+/* Copia guardada con más de 48 h: se marca para que no pase por dato fresco */
+.data-source-badge[data-viejo="1"]{border-color:rgba(224,150,90,.55);}
+.data-source-badge[data-viejo="1"] .dsb-label{color:#e0965a;}
