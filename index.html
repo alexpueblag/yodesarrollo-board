@@ -30,7 +30,10 @@
   -->
   <script>
     window.YDR_CONFIG = {
-      appsScriptUrl: "https://script.google.com/macros/s/AKfycbynq5JFU2AROO2gpOm6gbuedB_ZlwXoCej1eDO8rmXo63_QWnCBAy3_73il8NGc2u5N2Q/exec"
+      appsScriptUrl: "https://script.google.com/macros/s/AKfycbynq5JFU2AROO2gpOm6gbuedB_ZlwXoCej1eDO8rmXo63_QWnCBAy3_73il8NGc2u5N2Q/exec",
+      // Respaldo empacado en el repo: entra solo si el servidor no contesta
+      // (dominio suspendido). Al reactivarse Google, el servidor vuelve a mandar.
+      datosRespaldo: "datos.json"
     };
   </script>
 
@@ -47,7 +50,7 @@
   <script type="text/babel" src="tweaks-panel.jsx"></script>
 
   <!-- Data layer: useData, DataProvider, loading/error views -->
-  <script type="text/babel" src="data-loader.jsx?v=g1"></script>
+  <script type="text/babel" src="data-loader.jsx?v=rs1"></script>
 
   <!-- Modo Edición v1 (solo rol direccion/comercial) -->
   <script type="text/babel" src="edit-mode.jsx?v=cr3"></script>

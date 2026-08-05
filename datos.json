@@ -1,0 +1,388 @@
+{
+ "ok": true,
+ "data": {
+  "_lee_esto": "Contenido del tablero Codesarrolladores. Edítalo aquí (en GitHub: botón del lápiz) y al guardar el tablero se actualiza solo. No necesitas Google ni permisos.",
+  "config": {
+   "folio": "YDR-2026-001",
+   "cliente": "Edición fundadora · 2026"
+  },
+  "tiles": [
+   {
+    "id": "casa-alysa",
+    "label": "Casa Alysa",
+    "kicker": "Coinversión",
+    "order": 1,
+    "enabled": true
+   },
+   {
+    "id": "real-miramar",
+    "label": "Real de Miramar",
+    "kicker": "Plusvalía",
+    "order": 2,
+    "enabled": true
+   },
+   {
+    "id": "dunas-kino",
+    "label": "Dunas Kino",
+    "kicker": "Plusvalía",
+    "order": 3,
+    "enabled": true
+   },
+   {
+    "id": "calculadora",
+    "label": "Calculadora",
+    "kicker": "Simulador",
+    "order": 3,
+    "enabled": true
+   },
+   {
+    "id": "comparativo",
+    "label": "Comparativo",
+    "kicker": "Rendimientos",
+    "order": 4,
+    "enabled": true
+   },
+   {
+    "id": "cronograma",
+    "label": "Cronograma",
+    "kicker": "24 meses",
+    "order": 5,
+    "enabled": true
+   },
+   {
+    "id": "garantias",
+    "label": "Garantías",
+    "kicker": "Respaldo",
+    "order": 6,
+    "enabled": true
+   },
+   {
+    "id": "decision",
+    "label": "Decisión",
+    "kicker": "Caminos",
+    "order": 7,
+    "enabled": true
+   },
+   {
+    "id": "contacto",
+    "label": "Contacto",
+    "kicker": "Equipo",
+    "order": 8,
+    "enabled": true
+   }
+  ],
+  "proyectos": [
+   {
+    "id": "casa-alysa",
+    "nombre": "Casa Alysa",
+    "modelo": "coinversion",
+    "orden": 1,
+    "activo": true,
+    "kicker": "Retorno esperado al vender de 6-8 meses",
+    "color": "#2a2a2a",
+    "accent": "#d4be8a",
+    "ci_ticket_min": 200000,
+    "ci_paso": 100000,
+    "ci_num_tramos": 4,
+    "ci_tasa_base": 22,
+    "ci_tasa_incr": 1.5,
+    "ci_plazo": 8,
+    "ci_tramo_estrella": 3,
+    "por_que": "Activo tangible en zona consolidada|Obra al 80% al momento de entrar|Salida por venta, no por refinanciamiento",
+    "como": "Firmas el acuerdo de coinversión|Aportas el capital pactado|Cobras al vender, con el rendimiento acordado",
+    "hero_display": "Casa Alysa",
+    "hero_lead": "Capitalización estratégica para la etapa final de acabados en un desarrollo premium con 80% de avance de obra.",
+    "ubicacion": "Valle del Conejo, Altozano · Hermosillo",
+    "stat_1_value": "22%",
+    "stat_1_label": "Rendimiento anual bruto",
+    "stat_2_value": "6-8m",
+    "stat_2_label": "Salida estimada",
+    "stat_3_value": "80%",
+    "stat_3_label": "Avance de obra",
+    "stat_4_value": "Altozano",
+    "stat_4_label": "Valle del Conejo",
+    "img_url": "assets/render/alysa-1.jpg",
+    "img_hero_url": "assets/render/alysa-1.jpg",
+    "presentacion_url": "assets/material/casa-alysa-presentacion.pdf",
+    "pdf_dossier_url": "assets/material/casa-alysa-onepager.pdf",
+    "video_url": "assets/material/casa-alysa-avance.mp4"
+   },
+   {
+    "id": "real-miramar",
+    "nombre": "Real de Miramar",
+    "modelo": "plusvalia",
+    "orden": 2,
+    "activo": true,
+    "kicker": "47 lotes · Guaymas · Preventa Fundadora II",
+    "color": "#2a2a2a",
+    "accent": "#8FBF8B",
+    "pv_fund2": 3750,
+    "pv_preventa1": 4075,
+    "pv_preventa2": 4325,
+    "pv_venta": 4750,
+    "pv_mercado24": 5747,
+    "pv_plazo": 24,
+    "pv_lote_ejemplo_m2": 180,
+    "por_que": "Vialidad central de concreto y diseño orientado al peatón|Casa club y áreas de convivencia para residentes|Manejo pluvial ecológico y sustentable|Landscape autóctono con bajo consumo de agua|CCTV, seguridad privada y acceso controlado|A 800 m del malecón Miramar",
+    "como": "Reservas tu lote con $30,000 reembolsables al 100% durante 7 días|Anticipo del 30% al firmar|3 pagos por hito hasta liquidar",
+    "hero_display": "Real de Miramar",
+    "hero_lead": "Compra hoy al precio de fundador, vende mañana al precio del producto terminado. Hasta 53% de plusvalía proyectada en 24 meses.",
+    "ubicacion": "Guaymas, Sonora · a 800 m del malecón",
+    "stat_1_value": "47",
+    "stat_1_label": "Lotes totales",
+    "stat_2_value": "$3,750/m²",
+    "stat_2_label": "Precio Fundador II",
+    "stat_3_value": "800 m",
+    "stat_3_label": "Al malecón",
+    "stat_4_value": "~26%",
+    "stat_4_label": "TIR anualizada",
+    "img_url": "assets/render/miramar-1.jpg",
+    "img_hero_url": "assets/render/miramar-1.jpg",
+    "img_plano_url": "assets/miramar_master_plan_h.png",
+    "master_plan_url": "assets/miramar_master_plan_h.png",
+    "commercial_label": "Precio público · etapa final",
+    "presentacion_url": "assets/material/real-miramar-presentacion.pdf",
+    "pdf_dossier_url": "assets/material/real-miramar-onepager.pdf"
+   },
+   {
+    "id": "dunas-kino",
+    "nombre": "Dunas Kino",
+    "modelo": "plusvalia",
+    "orden": 3,
+    "activo": true,
+    "kicker": "Plusvalía a 12 meses",
+    "hero_display": "Dunas Kino",
+    "hero_lead": "Lotes residenciales en Bahía de Kino.",
+    "ubicacion": "Bahía de Kino, Sonora",
+    "color": "#2a2a2a",
+    "accent": "#7fd4e8",
+    "img_url": "assets/render/dunas-1.jpg",
+    "img_hero_url": "assets/render/dunas-1.jpg",
+    "pv_fund2": 6800,
+    "pv_preventa1": 7300,
+    "pv_venta": 8200,
+    "pv_mercado24": 8900,
+    "pv_plazo": 12,
+    "pv_lote_ejemplo_m2": 200,
+    "stat_1_value": "$6,800/m²",
+    "stat_1_label": "Preventa I",
+    "stat_2_value": "20-25%",
+    "stat_2_label": "Plusvalía a 12m",
+    "stat_3_value": "12m",
+    "stat_3_label": "Plazo a salida",
+    "stat_4_value": "Kino",
+    "stat_4_label": "Bahía de Kino",
+    "presentacion_url": "assets/material/dunas-kino-presentacion.pdf",
+    "por_que": "Destino de playa con demanda creciente|Etapa de preventa con precio de entrada|Salida por venta directa",
+    "como": "Eliges tu lote|Apartas con el anticipo|Liquidas en el plazo pactado"
+   }
+  ],
+  "lotes": [],
+  "cronograma": {
+   "hero": {
+    "kicker": "Cronograma",
+    "display": "Los dos caminos, mes a mes",
+    "lead": "Cuándo entra cada peso y cuándo sale.",
+    "total_meses": 24,
+    "stat_1_value": "8m",
+    "stat_1_label": "Alysa",
+    "stat_2_value": "24m",
+    "stat_2_label": "Miramar",
+    "stat_3_value": "20-25%",
+    "stat_3_label": "Tasa anual",
+    "stat_4_value": "+57%",
+    "stat_4_label": "Plusvalía 24m"
+   },
+   "meses": [],
+   "alysa_hitos": [
+    {
+     "mes": 0,
+     "label": "Entrada",
+     "note": "obra al 80%"
+    },
+    {
+     "mes": 4,
+     "label": "Acabados",
+     "note": "casa lista"
+    },
+    {
+     "mes": 8,
+     "label": "Venta estimada",
+     "note": "cierre y reparto"
+    }
+   ],
+   "miramar_hitos": [
+    {
+     "mes": 0,
+     "label": "Fundador II",
+     "price": "$4,290",
+     "gain": ""
+    },
+    {
+     "mes": 6,
+     "label": "Preventa I",
+     "price": "$4,800",
+     "gain": "+12%"
+    },
+    {
+     "mes": 12,
+     "label": "Preventa II",
+     "price": "$5,250",
+     "gain": "+22%"
+    },
+    {
+     "mes": 24,
+     "label": "Mercado",
+     "price": "$6,800",
+     "gain": "+59%",
+     "hi": true
+    }
+   ],
+   "dunas_hitos": [],
+   "bullets_alysa": [],
+   "bullets_miramar": [],
+   "bullets_dunas": [],
+   "quote": {
+    "quote": "Patrimonio que se construye, no que se cuenta."
+   }
+  },
+  "comparativo": [
+   {
+    "instrumento": "Pagaré bancario",
+    "rendimiento": "9-11%",
+    "liquidez": "Alta",
+    "riesgo": "Bajo",
+    "nota": "Rendimiento nominal, sin activo detrás"
+   },
+   {
+    "instrumento": "CETES",
+    "rendimiento": "10-11%",
+    "liquidez": "Alta",
+    "riesgo": "Muy bajo",
+    "nota": "Referencia del mercado"
+   },
+   {
+    "instrumento": "Coinversión YoDesarrollo",
+    "rendimiento": "20-25%",
+    "liquidez": "Al cierre",
+    "riesgo": "Medio",
+    "nota": "Respaldado por el inmueble"
+   }
+  ],
+  "inversionistas": [],
+  "movimientos": [],
+  "diagnostico": {
+   "form": []
+  },
+  "generated_at": "2026-08-05T12:00:00-07:00",
+  "garantias": {
+   "hero": {
+    "kicker": "Garantías",
+    "display": "Qué respalda tu capital",
+    "lead": "Ni promesas ni proyecciones: activos y documentos."
+   },
+   "cards": [
+    {
+     "order": 1,
+     "titulo": "Cuenta exclusiva del proyecto",
+     "texto": "Cada peso aportado se deposita en cuenta bancaria a nombre de Exploraciones Mineras del Desierto, con reportes trimestrales del uso de fondos."
+    },
+    {
+     "order": 2,
+     "titulo": "Devolución total con intereses",
+     "texto": "Si los hitos comprometidos no se cumplen en plazo, recibes el 100% de lo aportado más intereses CETES + 2 puntos."
+    },
+    {
+     "order": 3,
+     "titulo": "Predio escriturado",
+     "texto": "El terreno ya pertenece a Exploraciones Mineras del Desierto. No es promesa: es activo verificable en el Registro Público de la Propiedad."
+    }
+   ]
+  },
+  "decision": {
+   "hero": {
+    "kicker": "Decisión",
+    "display": "Tus caminos",
+    "lead": "Cuál te conviene según lo que buscas."
+   },
+   "paths": [
+    {
+     "order": 1,
+     "titulo": "Quiero rendimiento en meses",
+     "texto": "Coinversión en Casa Alysa: entras al capital de obra y cobras al vender.",
+     "cta_text": "Ver Casa Alysa",
+     "cta_url": "#casa-alysa"
+    },
+    {
+     "order": 2,
+     "titulo": "Quiero patrimonio que crezca",
+     "texto": "Lotes en Real de Miramar: entras a precio de fundador y sales a mercado.",
+     "cta_text": "Ver Real de Miramar",
+     "cta_url": "#real-miramar"
+    },
+    {
+     "order": 3,
+     "titulo": "Quiero comparar antes",
+     "texto": "Revisa el comparativo contra los instrumentos que ya conoces.",
+     "cta_text": "Ver comparativo",
+     "cta_url": "#comparativo"
+    },
+    {
+     "order": 4,
+     "titulo": "Quiero hablarlo",
+     "texto": "Agenda una llamada y lo vemos con tus números.",
+     "cta_text": "Contacto",
+     "cta_url": "#contacto"
+    }
+   ]
+  },
+  "contacto": {
+   "hero": {
+    "kicker": "Contacto",
+    "display": "Hablemos",
+    "lead": "Alejandro Puebla · Dirección"
+   },
+   "asesor": {
+    "nombre": "Alejandro Puebla",
+    "puesto": "Dirección",
+    "whatsapp": "525518331100",
+    "correo": "comercial@yodesarrollo.mx"
+   },
+   "docs": []
+  },
+  "estrategia": {
+   "hero": {
+    "kicker": "Estrategia",
+    "display": "Los dos plazos, juntos",
+    "lead": "Rendimiento a corto plazo y patrimonio a largo, sin elegir uno solo."
+   },
+   "steps": [
+    {
+     "order": 1,
+     "mes": "Mes 0",
+     "titulo": "Entrar a la coinversión",
+     "note": "Capital respaldado por activo tangible."
+    },
+    {
+     "order": 2,
+     "mes": "Mes 8",
+     "titulo": "Cobrar rendimiento",
+     "note": "Recuperar capital más el rendimiento pactado."
+    },
+    {
+     "order": 3,
+     "mes": "Mes 24",
+     "titulo": "Consolidar plusvalía",
+     "note": "Salida estimada del lote en Real de Miramar."
+    }
+   ]
+  },
+  "calculadora": {
+   "hero": {
+    "kicker": "Calculadora",
+    "display": "Corre tus números",
+    "lead": "Mueve el capital y mira el resultado en los dos caminos."
+   }
+  }
+ }
+}

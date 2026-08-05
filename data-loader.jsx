@@ -179,20 +179,135 @@ const credencialRechazada = () => {
   SIN_ACCESO_TABLERO = true;
 };
 
-const fetchLive = async (forceRefresh = false) => {
-  const url = (window.YDR_CONFIG && window.YDR_CONFIG.appsScriptUrl) || "";
-  if (!url) throw new Error("no_apps_script_url");
-  const k = credencial();
-  if (!k) throw new Error("sin_credencial");
-  const query = "k=" + encodeURIComponent(k) + (forceRefresh ? "&refresh=1" : "");
-  const res = await fetchWithTimeout(url + (url.indexOf("?") === -1 ? "?" : "&") + query, FETCH_TIMEOUT);
+/* ─────────────────────────────────────────────────────────────────────────
+   COPIA LIBRE · procesamiento de datos
+   Estos cálculos los hacía el servidor (Apps Script) antes de mandar los datos.
+   Al quitar el servidor, se hacen aquí: así datos.json guarda solo lo simple
+   (precios, textos) y el tablero arma lo demás — tramos de capital, etapas de
+   precio, plusvalía, lote de ejemplo. Portado tal cual del backend original.
+   ───────────────────────────────────────────────────────────────────────── */
+const _num = (v) => { const n = Number(v); return isFinite(n) ? n : 0; };
+const _red = (v, d) => { const f = Math.pow(10, d || 0); return Math.round(v * f) / f; };
+const _lista = (v) => Array.isArray(v) ? v : String(v || "").split("|").map(x => x.trim()).filter(Boolean);
+const _money = (v) => "$" + Math.round(_num(v)).toLocaleString("en-US") + " MXN";
+
+const _tramos = (p) => {
+  const n = Math.max(1, _num(p.ci_num_tramos) || 1), base = _num(p.ci_ticket_min);
+  const paso = _num(p.ci_paso), tasa0 = _num(p.ci_tasa_base), inc = _num(p.ci_tasa_incr);
+  const plazo = _num(p.ci_plazo) || 8, estrella = _num(p.ci_tramo_estrella);
+  const filas = [];
+  for (let i = 0; i < n; i++) {
+    const capital = base + paso * i, tasa = tasa0 + inc * i;
+    const retPlazo = capital * tasa / 100 * plazo / 12;
+    filas.push({ order: i + 1, capital, rate: _red(tasa, 2),
+      retorno6: Math.round(capital * tasa / 100 * 6 / 12),
+      retorno8: Math.round(retPlazo), total: Math.round(capital + retPlazo),
+      star: estrella === i + 1, plazo });
+  }
+  return filas;
+};
+
+const _etapas = (p) => {
+  const defs = [["fundador","Entrada hoy",p.pv_fund2],["preventa-i","Preventa I",p.pv_preventa1],
+    ["preventa-ii","Preventa II",p.pv_preventa2],["venta","Precio de venta",p.pv_venta],
+    ["mercado","Mercado objetivo",p.pv_mercado24]];
+  const filas = [];
+  defs.forEach(d => { const precio = _num(d[2]); if (!precio) return;
+    filas.push({ id: d[0], label: d[1], price_m2: precio, order: filas.length + 1,
+      current: filas.length === 0, done: false }); });
+  return filas;
+};
+
+const _loteEjemplo = (p) => {
+  const m2 = _num(p.pv_lote_ejemplo_m2), ent = _num(p.pv_fund2 || p.pv_preventa1);
+  const sal = _num(p.pv_venta || p.pv_mercado24);
+  if (!m2 || !ent || !sal) return { titulo: "", filas: [] };
+  const ini = Math.round(m2 * ent), fin = Math.round(m2 * sal);
+  return { titulo: "Lote ejemplo · " + m2 + " m²", filas: [
+    { label: "Superficie", value: m2 + " m²" },
+    { label: "Entrada hoy", value: _money(ini) },
+    { label: "Valor de venta", value: _money(fin) },
+    { label: "Plusvalía bruta", value: _money(fin - ini), highlight: true }] };
+};
+
+const _heroDe = (p) => ({ kicker: p.kicker || "", display: p.hero_display || p.nombre || "",
+  lead: p.hero_lead || "", ubicacion: p.ubicacion || "", img_url: p.img_hero_url || p.img_url || "",
+  stat_1_value: p.stat_1_value || "", stat_1_label: p.stat_1_label || "",
+  stat_2_value: p.stat_2_value || "", stat_2_label: p.stat_2_label || "",
+  stat_3_value: p.stat_3_value || "", stat_3_label: p.stat_3_label || "",
+  stat_4_value: p.stat_4_value || "", stat_4_label: p.stat_4_label || "" });
+
+const procesarDatos = (d) => {
+  const lotes = d.lotes || [];
+  const proyectos = (d.proyectos || []).map((raw) => {
+    const p = Object.assign({}, raw);
+    p.por_que = _lista(p.por_que); p.como = _lista(p.como);
+    p.lotes = lotes.filter(l => String(l.proyecto_id) === String(p.id));
+    if (p.modelo === "coinversion") p.tiers = _tramos(p);
+    if (p.modelo === "plusvalia") {
+      p.etapas = _etapas(p);
+      const ent = _num(p.pv_fund2 || p.pv_preventa1), sal = _num(p.pv_mercado24 || p.pv_venta);
+      const plazo = _num(p.pv_plazo) || 24;
+      p.plusvalia = { plusvalia_24m_pct: _red(ent ? ((sal / ent) - 1) * 100 : 0, 1),
+        anualizado_pct: _red(ent && plazo ? (Math.pow(sal / ent, 12 / plazo) - 1) * 100 : 0, 1) };
+      p.pv_lista = _num(p.pv_venta);
+      p.lote_ejemplo = _loteEjemplo(p);
+    }
+    return p;
+  }).sort((a, b) => _num(a.orden) - _num(b.orden));
+
+  const alysa = proyectos.find(p => p.modelo === "coinversion") || {};
+  const miramar = proyectos.find(p => p.modelo === "plusvalia") || {};
+  return Object.assign({}, d, { proyectos,
+    alysa: { hero: _heroDe(alysa), tiers: alysa.tiers || [],
+      por_que: (alysa.por_que || []).map(h => ({ html: h })),
+      como: (alysa.como || []).map((html, i) => ({ order: i + 1, html })) },
+    miramar: { hero: _heroDe(miramar), etapas: miramar.etapas || [], lotes: miramar.lotes || [],
+      plusvalia: miramar.plusvalia || {},
+      /* La vista antigua espera el lote de ejemplo como LISTA con 'key'
+         (title + filas), no como el objeto {titulo, filas} del proyecto. */
+      lote_ejemplo: [{ key: "titulo", label: (miramar.lote_ejemplo || {}).titulo || "" }]
+        .concat(((miramar.lote_ejemplo || {}).filas || []).map((f, i) => ({
+          key: "f" + i, label: f.label, value: f.value, highlight: !!f.highlight }))),
+      por_que: (miramar.por_que || []).map(h => ({ html: h })),
+      como: (miramar.como || []).map((html, i) => ({ order: i + 1, html })) } });
+};
+
+/* MODO RESILIENTE (agosto 2026) — el Sheet vive en un dominio con la
+   suscripción suspendida, así que el Apps Script puede no responder.
+   Orden de carga:
+     1. El servidor de siempre (Apps Script + Sheet): si contesta, manda él.
+     2. Si falla, datos.json del propio repo (respaldo empacado, con los
+        mismos cálculos que hacía el servidor, portados a procesarDatos).
+   Cuando el dominio se reactive no hay que tocar nada: el paso 1 vuelve a
+   ganar solo. OJO: aquí ya no se borra la credencial ante un error "liga" —
+   el Portero de respaldo puede haber validado una clave que el backend
+   original no conoce, y borrarla provocaba el loop de acceso. */
+const fetchRespaldoLocal = async () => {
+  const local = (window.YDR_CONFIG && window.YDR_CONFIG.datosRespaldo) || "";
+  if (!local) throw new Error("sin_respaldo_local");
+  const res = await fetchWithTimeout(local + "?cb=" + Date.now(), FETCH_TIMEOUT);
   if (!res.ok) throw new Error("http_" + res.status);
   const json = await res.json();
-  if (!json.ok) {
-    if (json.error === "liga") credencialRechazada();
-    throw new Error("api_error:" + (json.error || "unknown"));
+  return procesarDatos(json.data || json);
+};
+
+const fetchLive = async (forceRefresh = false) => {
+  try {
+    const url = (window.YDR_CONFIG && window.YDR_CONFIG.appsScriptUrl) || "";
+    if (!url) throw new Error("no_apps_script_url");
+    const k = credencial();
+    if (!k) throw new Error("sin_credencial");
+    const query = "k=" + encodeURIComponent(k) + (forceRefresh ? "&refresh=1" : "");
+    const res = await fetchWithTimeout(url + (url.indexOf("?") === -1 ? "?" : "&") + query, FETCH_TIMEOUT);
+    if (!res.ok) throw new Error("http_" + res.status);
+    const json = await res.json();
+    if (!json.ok) throw new Error("api_error:" + (json.error || "unknown"));
+    return json.data;
+  } catch (e) {
+    console.warn("[data-loader] servidor no disponible (" + e.message + "), usando respaldo local");
+    return fetchRespaldoLocal();
   }
-  return json.data;
 };
 
 // ---------------------------------------------------------------------------
@@ -241,7 +356,7 @@ const DataProvider = ({ children }) => {
     });
     const json = await res.json();
     if (!json.ok) {
-      if (json.error === "liga") credencialRechazada();
+      /* COPIA LIBRE: no hay sesión que rechazar. */
       throw new Error(json.error || "save_failed");
     }
     return json;
